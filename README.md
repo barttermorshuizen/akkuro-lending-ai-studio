@@ -1,4 +1,4 @@
-# Responses starter app
+# Akkuro Lending AI Studio - based on the Responses starter app
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![NextJS](https://img.shields.io/badge/Built_with-NextJS-blue)
@@ -31,6 +31,7 @@ This app is meant to be used as a starting point to build a conversational assis
 
    - Set the `OPENAI_API_KEY` environment variable [globally in your system](https://platform.openai.com/docs/libraries#create-and-export-an-api-key)
    - Set the `OPENAI_API_KEY` environment variable in the project: Create a `.env` file at the root of the project and add the following line (see `.env.example` for reference):
+   - Set `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` and `GOOGLE_SHEET_ID` environment variable so that the storeProduct service can connect to a google sheet.
 
    ```bash
    OPENAI_API_KEY=<your_api_key>
@@ -39,7 +40,7 @@ This app is meant to be used as a starting point to build a conversational assis
 3. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/openai/openai-responses-starter-app.git
+   git clone https://github.com/barttermorshuizen/akkuro-lending-ai-studio
    ```
 
 4. **Install dependencies:**
