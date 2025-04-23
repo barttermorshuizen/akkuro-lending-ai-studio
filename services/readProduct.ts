@@ -11,7 +11,7 @@ export const readProduct = async () => {
 
   const sheets = google.sheets({ version: 'v4', auth: authClient });
   const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
-  const range = 'Sheet1!A2:C2';
+  const range = 'Sheet1!A2:D2';
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -22,7 +22,8 @@ export const readProduct = async () => {
   const productName = row[0] ?? null;
   const targetCustomer = row[1] ?? null;
   const intendedUse = row[2] ?? null;
+  const countryCode = row[3] ?? null;
 
-  console.log("readProduct response", { productName, targetCustomer, intendedUse });
-  return { productName, targetCustomer, intendedUse };
+  console.log("readProduct response", { productName, targetCustomer, intendedUse, countryCode });
+  return { productName, targetCustomer, intendedUse, countryCode };
 };

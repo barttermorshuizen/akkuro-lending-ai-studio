@@ -15,6 +15,10 @@ export const toolsList = [
         type: "string",
         description: "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
       },
+      countryCode: {
+        type: "string",
+        description: "The 2-letter ISO country code of the loan's geography",
+      },
     },
   },
   {

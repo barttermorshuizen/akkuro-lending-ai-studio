@@ -2,21 +2,35 @@ import { storeProduct } from '@/services/storeProduct';
 import { readProduct } from '@/services/readProduct';
 
 // Functions mapping to tool calls
-// Define one function per tool call - each tool call should have a matching function
+// Define one function per tool call
 // Parameters for a tool call are passed as an object to the corresponding function
-
-
 export const store_product = async ({
   productName,
   targetCustomer,
-  intendedUse
+  intendedUse,
+  countryCode,
 }: {
   productName: string;
   targetCustomer: string;
   intendedUse: string;
+  countryCode: string;
 }) => {
-  console.log("store_product params", productName, "-", targetCustomer, "-", intendedUse);
-  const res = await storeProduct(productName, targetCustomer, intendedUse);
+  console.log(
+    "store_product params",
+    productName,
+    "-",
+    targetCustomer,
+    "-",
+    intendedUse,
+    "-",
+    countryCode
+  );
+  const res = await storeProduct(
+    productName,
+    targetCustomer,
+    intendedUse,
+    countryCode
+  );
   console.log("executed store_product function", res);
   return { status: 'success' };
 };

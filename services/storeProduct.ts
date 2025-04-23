@@ -2,7 +2,7 @@
 'use server';
 import { google } from 'googleapis';
 
-export const storeProduct = async ( productName : string, targetCustomer: string, intendedUse: string) => {
+export const storeProduct = async (productName: string, targetCustomer: string, intendedUse: string, countryCode: string) => {
   console.log("store_product input", { productName, targetCustomer, intendedUse });
 
   const authClient = new google.auth.JWT({
@@ -14,14 +14,14 @@ export const storeProduct = async ( productName : string, targetCustomer: string
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
   const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
-  const range = 'Sheet1!A2:C2';
+  const range = 'Sheet1!A2:D2';
 
   const response = await sheets.spreadsheets.values.update({
     spreadsheetId,
     range,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
-      values: [[productName, targetCustomer, intendedUse]],
+      values: [[productName, targetCustomer, intendedUse, countryCode]],
     },
   });
 
