@@ -14,9 +14,9 @@ export const storeProduct = async ( productName : string, targetCustomer: string
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
   const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
-  const range = 'Sheet1!A:C';
+  const range = 'Sheet1!A2:C2';
 
-  const response = await sheets.spreadsheets.values.append({
+  const response = await sheets.spreadsheets.values.update({
     spreadsheetId,
     range,
     valueInputOption: 'USER_ENTERED',
