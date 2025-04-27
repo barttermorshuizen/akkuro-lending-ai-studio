@@ -5,6 +5,7 @@ import { WebSearchConfig } from "@/stores/useToolsStore";
 interface WebSearchTool extends WebSearchConfig {
   type: "web_search";
 }
+
 export const getTools = () => {
   const {
     webSearchEnabled,
@@ -12,30 +13,28 @@ export const getTools = () => {
     functionsEnabled,
     vectorStore,
     webSearchConfig,
+    countryCode,
   } = useToolsStore.getState();
 
-  const tools = [];
+  const tools: any[] = [];
 
   if (webSearchEnabled) {
     const webSearchTool: WebSearchTool = {
       type: "web_search",
+      user_location: {
+        type: "approximate",
+        country: countryCode || webSearchConfig.user_location?.country || "",
+        region: webSearchConfig.user_location?.region || "",
+        city: webSearchConfig.user_location?.city || "",
+      },
     };
-    if (
-      webSearchConfig.user_location &&
-      (webSearchConfig.user_location.country !== "" ||
-        webSearchConfig.user_location.region !== "" ||
-        webSearchConfig.user_location.city !== "")
-    ) {
-      webSearchTool.user_location = webSearchConfig.user_location;
-    }
-
     tools.push(webSearchTool);
   }
 
-  if (fileSearchEnabled) {
+  if (fileSearchEnabled && vectorStore && vectorStore.id) {
     const fileSearchTool = {
       type: "file_search",
-      vector_store_ids: [vectorStore?.id],
+      vector_store_ids: [vectorStore.id],
     };
     tools.push(fileSearchTool);
   }
@@ -53,13 +52,11 @@ export const getTools = () => {
             required: Object.keys(tool.parameters),
             additionalProperties: false,
           },
-          strict: true,
         };
       })
     );
   }
 
   console.log("tools", tools);
-
   return tools;
 };

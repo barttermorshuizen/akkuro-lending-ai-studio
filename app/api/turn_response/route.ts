@@ -1,51 +1,104 @@
-import { MODEL, MAX_RESPONSE_TOKENS, MAX_RESPONSE_CHARS } from "@/config/constants";
+import { MODEL } from "@/config/constants";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { handleTool } from "@/lib/tools/tools-handling";
 
 export async function POST(request: Request) {
   try {
     const { messages, tools } = await request.json();
-    console.log("Received messages:", messages);
-
+    console.log("Received messages:", JSON.stringify(messages, null, 2));
+    console.log("OpenAI request payload:", { model: MODEL, messages, tools });
+    // Manual function_call handling
+    const lastMsg = (messages as any[])[messages.length - 1];
+    if (lastMsg.role === "assistant" && (lastMsg as any).function_call) {
+      const fc = (lastMsg as any).function_call;
+      let params: any = {};
+      try {
+        params = typeof fc.arguments === "string" ? JSON.parse(fc.arguments) : fc.arguments;
+      } catch {}
+      const result = await handleTool(fc.name, params);
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(`data: ${JSON.stringify({
+            event: "assistant.function_call",
+            data: { name: fc.name, arguments: fc.arguments, call_id: fc.call_id },
+          })}\n\n`);
+          controller.enqueue(`data: ${JSON.stringify({
+            event: "tool",
+            data: { call_id: fc.call_id, output: JSON.stringify(result), role: "tool" },
+          })}\n\n`);
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
+    }
+    
+    
     const openai = new OpenAI();
 
     const events = await openai.responses.create({
       model: MODEL,
-      input: messages,
+      input: messages.filter((msg: any) =>
+        !msg.type || !["function_call", "tool"].includes(msg.type)
+      ),
       tools,
       stream: true,
       parallel_tool_calls: false,
-      max_output_tokens: MAX_RESPONSE_TOKENS,
     });
 
     // Create a ReadableStream that emits SSE data
     const stream = new ReadableStream({
       async start(controller) {
-        let charCount = 0;
-        const maxChars = MAX_RESPONSE_CHARS;
         try {
           for await (const event of events) {
-            // Sending all events to the client with character limit enforcement
-            if (event.type === "response.output_text.delta") {
-              const delta = event.delta || "";
-              const remaining = maxChars - charCount;
-              const outputDelta = delta.length > remaining ? delta.slice(0, remaining) : delta;
-              charCount += outputDelta.length;
-              const truncated = {
-                event: event.type,
-                data: { ...event, delta: outputDelta },
+            // Echo assistant function_call when model invokes a tool
+            if (event.type === "response.output_item.added" && event.item?.type === "function_call") {
+              const fc = event.item;
+              const sseFc = {
+                event: "assistant.function_call",
+                data: {
+                  name: fc.name,
+                  arguments: fc.arguments,
+                  call_id: fc.call_id,
+                  item_id: fc.id,
+                },
               };
-              controller.enqueue(`data: ${JSON.stringify(truncated)}\n\n`);
-              if (charCount >= maxChars) {
-                break;
-              }
-            } else {
-              const data = JSON.stringify({
-                event: event.type,
-                data: event,
-              });
-              controller.enqueue(`data: ${data}\n\n`);
+              controller.enqueue(`data: ${JSON.stringify(sseFc)}\n\n`);
             }
+            // Invoke tool when function_call completes and emit result
+            if (event.type === "response.output_item.done" && event.item?.type === "function_call") {
+              const fc = event.item;
+              let params: any = {};
+              try {
+                params = JSON.parse(fc.arguments || "{}");
+              } catch {}
+              try {
+                const result = await handleTool(fc.name as any, params);
+                const sseTool = {
+                  event: "tool",
+                  data: {
+                    call_id: fc.call_id,
+                    output: JSON.stringify(result),
+                    role: "tool",
+                  },
+                };
+                controller.enqueue(`data: ${JSON.stringify(sseTool)}\n\n`);
+              } catch (err) {
+                console.error("Tool invocation error:", err);
+              }
+            }
+            // Relay all events to the client
+            const dataMsg = JSON.stringify({
+              event: event.type,
+              data: event,
+            });
+            controller.enqueue(`data: ${dataMsg}\n\n`);
           }
           // End of stream
           controller.close();

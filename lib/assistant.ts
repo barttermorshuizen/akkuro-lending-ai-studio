@@ -1,10 +1,10 @@
-import { DEVELOPER_PROMPT } from "@/config/constants";
 import { parse } from "partial-json";
 import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
 import { getTools } from "./tools/tools";
 import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
+import { stateInstructions } from "@/config/stateInstructions";
 
 export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
@@ -99,18 +99,22 @@ export const handleTurn = async (
 
 export const processMessages = async () => {
   const {
+    conversationState,
     chatMessages,
     conversationItems,
     setChatMessages,
     setConversationItems,
   } = useConversationStore.getState();
 
+  // State-specific instruction lookup
+  const stateInstruction = stateInstructions[conversationState] ?? "";
+
   const tools = getTools();
   const allConversationItems = [
-    // Adding developer prompt as first item in the conversation
+    // Adding state-specific system instruction
     {
-      role: "developer",
-      content: DEVELOPER_PROMPT,
+      role: "system",
+      content: stateInstruction,
     },
     ...conversationItems,
   ];
@@ -190,12 +194,7 @@ export const processMessages = async () => {
             });
             conversationItems.push({
               role: "assistant",
-              content: [
-                {
-                  type: "output_text",
-                  text,
-                },
-              ],
+              content: text,
             });
             setChatMessages([...chatMessages]);
             setConversationItems([...conversationItems]);
@@ -298,10 +297,8 @@ export const processMessages = async () => {
           toolCallMessage.output = JSON.stringify(toolResult);
           setChatMessages([...chatMessages]);
           conversationItems.push({
-            type: "function_call_output",
-            call_id: toolCallMessage.call_id,
-            status: "completed",
-            output: JSON.stringify(toolResult),
+            role: "assistant",
+            content: JSON.stringify(toolResult),
           });
           setConversationItems([...conversationItems]);
 

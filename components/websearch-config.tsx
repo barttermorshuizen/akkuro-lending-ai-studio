@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import CountrySelector from "./country-selector";
 
 export default function WebSearchSettings() {
-  const { webSearchConfig, setWebSearchConfig } = useToolsStore();
+  const { webSearchConfig, setWebSearchConfig, countryCode, setCountryCode } = useToolsStore();
 
   const handleClear = () => {
     console.log("Clearing web search config", webSearchConfig);
@@ -51,8 +51,8 @@ export default function WebSearchSettings() {
             Country
           </label>
           <CountrySelector
-            value={webSearchConfig.user_location?.country ?? ""}
-            onChange={(value) => handleLocationChange("country", value)}
+            value={countryCode}
+            onChange={(value) => setCountryCode(value)}
           />
         </div>
 

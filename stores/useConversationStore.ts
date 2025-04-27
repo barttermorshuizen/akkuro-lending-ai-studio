@@ -4,35 +4,50 @@ import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { INITIAL_MESSAGE } from "@/config/constants";
 
 interface ConversationState {
-  // Items displayed in the chat
   chatMessages: Item[];
-  // Items sent to the Responses API
-  conversationItems: any[];
-
+  conversationItems: ChatCompletionMessageParam[];
+  conversationStates: string[];
+  conversationState: string;
   setChatMessages: (items: Item[]) => void;
-  setConversationItems: (messages: any[]) => void;
+  setConversationItems: (messages: ChatCompletionMessageParam[]) => void;
   addChatMessage: (item: Item) => void;
   addConversationItem: (message: ChatCompletionMessageParam) => void;
+  setConversationState: (state: string) => void;
   rawSet: (state: any) => void;
 }
 
-const useConversationStore = create<ConversationState>((set) => ({
+const CONVERSATION_STATES = [
+  "InitialSetup",
+  "LoanParameters",
+  "AcceptanceCriteria",
+  "Pricing",
+  "RegulatoryCheck",
+  "GoLive",
+];
+
+const useConversationStore = create<ConversationState>((set, get) => ({
   chatMessages: [
     {
       type: "message",
-      role: "assistant",
-      content: [{ type: "output_text", text: INITIAL_MESSAGE }],
+      role: "system",
+      content: [
+        {
+          type: "output_text",
+          text: INITIAL_MESSAGE.trim(),
+        },
+      ],
     },
   ],
   conversationItems: [],
+  conversationStates: CONVERSATION_STATES,
+  conversationState: CONVERSATION_STATES[0],
   setChatMessages: (items) => set({ chatMessages: items }),
   setConversationItems: (messages) => set({ conversationItems: messages }),
   addChatMessage: (item) =>
-    set((state) => ({ chatMessages: [...state.chatMessages, item] })),
+    set({ chatMessages: [...get().chatMessages, item] }),
   addConversationItem: (message) =>
-    set((state) => ({
-      conversationItems: [...state.conversationItems, message],
-    })),
+    set({ conversationItems: [...get().conversationItems, message] }),
+  setConversationState: (state) => set({ conversationState: state }),
   rawSet: set,
 }));
 

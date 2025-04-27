@@ -36,6 +36,8 @@ interface StoreState {
   setVectorStore: (store: VectorStore) => void;
   webSearchConfig: WebSearchConfig;
   setWebSearchConfig: (config: WebSearchConfig) => void;
+  countryCode: string;
+  setCountryCode: (code: string) => void;
 }
 
 const useToolsStore = create<StoreState>()(
@@ -50,6 +52,8 @@ const useToolsStore = create<StoreState>()(
           region: "",
         },
       },
+      countryCode: "",
+      setCountryCode: (code) => set({ countryCode: code }),
       fileSearchEnabled: false,
       previousFileSearchEnabled: false,
       setFileSearchEnabled: (enabled) => {
