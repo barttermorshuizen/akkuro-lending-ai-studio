@@ -10,6 +10,44 @@ interface ToolCallProps {
 }
 
 function ApiCallCell({ toolCall }: ToolCallProps) {
+  const getErrorStyle = (output: string) => {
+    try {
+      const parsed = JSON.parse(output);
+      if (parsed.error) {
+        switch (parsed.code) {
+          case 'SERVICE_UNAVAILABLE':
+            return 'bg-yellow-50 border-l-4 border-yellow-400';
+          case 'CONFIG_ERROR':
+            return 'bg-orange-50 border-l-4 border-orange-400';
+          case 'NOT_FOUND':
+            return 'bg-gray-50 border-l-4 border-gray-400';
+          default:
+            return 'bg-red-50 border-l-4 border-red-400';
+        }
+      }
+      return '';
+    } catch {
+      return '';
+    }
+  };
+
+  const getErrorMessage = (output: string) => {
+    try {
+      const parsed = JSON.parse(output);
+      if (parsed.error) {
+        return (
+          <div className="text-sm p-2 flex flex-col gap-1">
+            <span className="font-medium">{parsed.error}</span>
+            <span className="text-gray-600">{parsed.message}</span>
+          </div>
+        );
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
   return (
     <div className="flex flex-col w-[70%] relative mb-[-8px]">
       <div>
@@ -43,18 +81,23 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
             </div>
             <div className="max-h-96 overflow-y-scroll mx-6 p-2 text-xs">
               {toolCall.output ? (
-                <SyntaxHighlighter
-                  customStyle={{
-                    backgroundColor: "#fafafa",
-                    padding: "8px",
-                    paddingLeft: "0px",
-                    marginTop: 0,
-                  }}
-                  language="json"
-                  style={coy}
-                >
-                  {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
-                </SyntaxHighlighter>
+                <>
+                  {getErrorMessage(toolCall.output) || (
+                    <SyntaxHighlighter
+                      customStyle={{
+                        backgroundColor: "#fafafa",
+                        padding: "8px",
+                        paddingLeft: "0px",
+                        marginTop: 0,
+                      }}
+                      language="json"
+                      style={coy}
+                      className={getErrorStyle(toolCall.output)}
+                    >
+                      {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
+                    </SyntaxHighlighter>
+                  )}
+                </>
               ) : (
                 <div className="text-zinc-500 flex items-center gap-2 py-2">
                   <Clock size={16} /> Waiting for result...

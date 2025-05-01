@@ -10,6 +10,7 @@ export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
   annotations?: Annotation[];
   text?: string;
+  choices?: string[];
 }
 
 // Message items for storing conversation history matching API shape
@@ -66,7 +67,9 @@ export const handleTurn = async (
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
+      console.log("Received chunk:", chunkValue); // Log received chunk
       buffer += chunkValue;
+      console.log("Current buffer:", buffer); // Log current buffer
 
       const lines = buffer.split("\n\n");
       buffer = lines.pop() || "";
@@ -78,8 +81,13 @@ export const handleTurn = async (
             done = true;
             break;
           }
-          const data = JSON.parse(dataStr);
-          onMessage(data);
+          try {
+            const data = JSON.parse(dataStr);
+            console.log("Parsed SSE data:", data); // Log parsed data
+            onMessage(data);
+          } catch (e) {
+            console.error("Failed to parse SSE data:", dataStr, e); // Log parsing errors
+          }
         }
       }
     }
@@ -119,7 +127,8 @@ export const processMessages = async () => {
     ...conversationItems,
   ];
 
-  let assistantMessageContent = "";
+  let assistantMessageBuffer = "";
+  let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
 
   await handleTurn(allConversationItems, tools, async ({ event, data }) => {
@@ -128,47 +137,44 @@ export const processMessages = async () => {
       case "response.output_text.annotation.added": {
         const { delta, item_id, annotation } = data;
 
-        console.log("event", data);
-
-        let partial = "";
         if (typeof delta === "string") {
-          partial = delta;
+          assistantMessageBuffer += delta;
         }
-        assistantMessageContent += partial;
 
-        // If the last message isn't an assistant message, create a new one
-        const lastItem = chatMessages[chatMessages.length - 1];
-        if (
-          !lastItem ||
-          lastItem.type !== "message" ||
-          lastItem.role !== "assistant" ||
-          (lastItem.id && lastItem.id !== item_id)
-        ) {
-          chatMessages.push({
-            type: "message",
-            role: "assistant",
-            id: item_id,
-            content: [
-              {
-                type: "output_text",
-                text: assistantMessageContent,
-              },
-            ],
-          } as MessageItem);
-        } else {
-          const contentItem = lastItem.content[0];
-          if (contentItem && contentItem.type === "output_text") {
-            contentItem.text = assistantMessageContent;
-            if (annotation) {
-              contentItem.annotations = [
-                ...(contentItem.annotations ?? []),
-                annotation,
-              ];
+        // Try to parse accumulated buffer as JSON
+        try {
+          const parsed = JSON.parse(assistantMessageBuffer);
+          if (parsed.text && Array.isArray(parsed.choices)) {
+            // Only create/update message once we have valid JSON
+            if (!currentMessageItem || currentMessageItem.id !== item_id) {
+              currentMessageItem = {
+                type: "message",
+                role: "assistant",
+                id: item_id,
+                content: [{
+                  type: "output_text",
+                  text: parsed.text,
+                  choices: parsed.choices,
+                }],
+              };
+              chatMessages.push(currentMessageItem);
+            } else {
+              const contentItem = currentMessageItem.content[0];
+              if (contentItem && contentItem.type === "output_text") {
+                contentItem.text = parsed.text;
+                contentItem.choices = parsed.choices;
+                if (annotation) {
+                  contentItem.annotations = [...(contentItem.annotations ?? []), annotation];
+                }
+              }
             }
+            // Clear buffer after successful parse
+            assistantMessageBuffer = "";
+            setChatMessages([...chatMessages]);
           }
+        } catch {
+          // Continue accumulating if not valid JSON yet
         }
-
-        setChatMessages([...chatMessages]);
         break;
       }
 
@@ -181,23 +187,42 @@ export const processMessages = async () => {
         // Handle differently depending on the item type
         switch (item.type) {
           case "message": {
-            const text = item.content?.text || "";
+            // Skip message handling here as it's already handled in response.output_text.delta
+            break;
+          }
+          case "function_call": {
+            functionArguments += item.arguments || "";
             chatMessages.push({
-              type: "message",
-              role: "assistant",
-              content: [
-                {
-                  type: "output_text",
-                  text,
-                },
-              ],
-            });
-            conversationItems.push({
-              role: "assistant",
-              content: text,
+              type: "tool_call",
+              tool_type: "function_call",
+              status: "in_progress",
+              id: item.id,
+              name: item.name,
+              arguments: item.arguments || "",
+              parsedArguments: {},
+              output: null,
             });
             setChatMessages([...chatMessages]);
-            setConversationItems([...conversationItems]);
+            break;
+          }
+          case "web_search_call": {
+            chatMessages.push({
+              type: "tool_call",
+              tool_type: "web_search_call",
+              status: item.status || "in_progress",
+              id: item.id,
+            });
+            setChatMessages([...chatMessages]);
+            break;
+          }
+          case "file_search_call": {
+            chatMessages.push({
+              type: "tool_call",
+              tool_type: "file_search_call",
+              status: item.status || "in_progress",
+              id: item.id,
+            });
+            setChatMessages([...chatMessages]);
             break;
           }
           case "function_call": {
@@ -250,6 +275,7 @@ export const processMessages = async () => {
         }
         conversationItems.push(item);
         setConversationItems([...conversationItems]);
+        break;
       }
 
       case "response.function_call_arguments.delta": {
@@ -296,17 +322,70 @@ export const processMessages = async () => {
           // Record tool output
           toolCallMessage.output = JSON.stringify(toolResult);
           setChatMessages([...chatMessages]);
+          // Add tool result to conversation items
           conversationItems.push({
             role: "assistant",
-            content: JSON.stringify(toolResult),
+            content: "Tool execution completed successfully."
           });
-          setConversationItems([...conversationItems]);
-
-          // Create another turn after tool output has been added
-          await processMessages();
+          
+          // Determine message based on the current tool
+          let confirmationText = "";
+          let choices: string[] = [];
+          
+          switch(toolCallMessage.name) {
+            case "store_initial_setup":
+              confirmationText = "The initial setup has been stored successfully. Would you like to move to the loan parameters setup?";
+              choices = ["Move to loan parameters"];
+              break;
+            case "store_loan_parameters":
+              confirmationText = "The loan parameters have been stored successfully. Would you like to move to the acceptance criteria setup?";
+              choices = ["Move to acceptance criteria"];
+              break;
+            case "store_acceptance_criteria":
+              confirmationText = "The acceptance criteria have been stored successfully. Would you like to move to the pricing setup?";
+              choices = ["Move to pricing"];
+              break;
+            case "store_pricing":
+              confirmationText = "The pricing details have been stored successfully. Would you like to move to the regulatory check?";
+              choices = ["Move to regulatory check"];
+              break;
+            case "store_regulatory_check":
+              confirmationText = "The regulatory requirements have been stored successfully. Would you like to move to the go-live phase?";
+              choices = ["Move to go-live"];
+              break;
+            case "store_go_live":
+              confirmationText = "Would you like to check the product model in Akkuro Studio, view the mobile app or start over?";
+              choices = ["Check in Akkuro Studio", "View Mobile App", "Start Over"];
+              break;
+          }
+          
+          // Create confirmation message if we have text and choices
+          if (confirmationText && choices.length > 0) {
+            const confirmationMessage: MessageItem = {
+              type: "message",
+              role: "assistant",
+              content: [{
+                type: "output_text",
+                text: confirmationText,
+                choices: choices
+              }]
+            };
+            
+            // Add to conversation items
+            conversationItems.push({
+              role: "assistant",
+              content: confirmationMessage.content[0].text
+            });
+            
+            setConversationItems([...conversationItems]);
+            
+            // Add to chat messages for display
+            chatMessages.push(confirmationMessage);
+            setChatMessages([...chatMessages]);
+          }
+          }
+          break;
         }
-        break;
-      }
 
       case "response.web_search_call.completed": {
         const { item_id, output } = data;
@@ -332,5 +411,6 @@ export const processMessages = async () => {
 
       // Handle other events as needed
     }
+
   });
 };

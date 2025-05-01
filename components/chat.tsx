@@ -13,9 +13,16 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
   const itemsEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [inputMessageText, setinputMessageText] = useState<string>("");
   // This state is used to provide better user experience for non-English IMEs such as Japanese
   const [isComposing, setIsComposing] = useState(false);
+
+  const handleChoiceSelect = useCallback((choice: string) => {
+    setinputMessageText(choice);
+    // Focus the textarea after setting the text
+    textareaRef.current?.focus();
+  }, []);
 
   const scrollToBottom = () => {
     itemsEndRef.current?.scrollIntoView({ behavior: "instant" });
@@ -44,7 +51,10 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                   <ToolCall toolCall={item} />
                 ) : item.type === "message" ? (
                   <div className="flex flex-col gap-1">
-                    <Message message={item} />
+                    <Message
+                      message={item}
+                      onChoiceSelect={handleChoiceSelect}
+                    />
                     {item.content &&
                       item.content[0].annotations &&
                       item.content[0].annotations.length > 0 && (
@@ -66,6 +76,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                 <div className="flex items-end gap-1.5 md:gap-2 pl-4">
                   <div className="flex min-w-0 flex-1 flex-col">
                     <textarea
+                      ref={textareaRef}
                       id="prompt-textarea"
                       tabIndex={0}
                       dir="auto"

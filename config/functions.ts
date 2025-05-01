@@ -1,38 +1,53 @@
-import { storeProduct } from '@/services/storeProduct';
+import { storeInitialSetup } from '@/services/storeInitialSetup';
+import { storeLoanParameters } from '@/services/storeLoanParameters';
+import { storeAcceptanceCriteria } from '@/services/storeAcceptanceCriteria';
+import { storePricing } from '@/services/storePricing';
+import { storeRegulatoryCheck } from '@/services/storeRegulatoryCheck';
+import { storeGoLive } from '@/services/storeGoLive';
 import { readProduct } from '@/services/readProduct';
+import { ProductModel } from '@/types/product';
 
 // Functions mapping to tool calls
-// Define one function per tool call
-// Parameters for a tool call are passed as an object to the corresponding function
-export const store_product = async ({
-  productName,
-  targetCustomer,
-  intendedUse,
-  countryCode,
-}: {
-  productName: string;
-  targetCustomer: string;
-  intendedUse: string;
-  countryCode: string;
-}) => {
-  console.log(
-    "store_product params",
-    productName,
-    "-",
-    targetCustomer,
-    "-",
-    intendedUse,
-    "-",
-    countryCode
-  );
-  const res = await storeProduct(
-    productName,
-    targetCustomer,
-    intendedUse,
-    countryCode
-  );
-  console.log("executed store_product function", res);
-  return { status: 'success' };
+export const store_initial_setup = async (params: Partial<ProductModel>) => {
+  console.log("store_initial_setup params", params);
+  const res = await storeInitialSetup(params);
+  console.log("executed store_initial_setup function", res);
+  return { status: 'success', requiresFollowUp: false };
+};
+
+export const store_loan_parameters = async (params: Partial<ProductModel>) => {
+  console.log("store_loan_parameters params", params);
+  const res = await storeLoanParameters(params);
+  console.log("executed store_loan_parameters function", res);
+  return { status: 'success', requiresFollowUp: false };
+};
+
+export const store_acceptance_criteria = async (params: Partial<ProductModel>) => {
+  console.log("store_acceptance_criteria params", params);
+  const res = await storeAcceptanceCriteria(params);
+  console.log("executed store_acceptance_criteria function", res);
+  return { status: 'success', requiresFollowUp: false };
+};
+
+export const store_pricing = async (params: Partial<ProductModel>) => {
+  console.log("store_pricing params", params);
+  const res = await storePricing(params);
+  console.log("executed store_pricing function", res);
+  return { status: 'success', requiresFollowUp: false };
+};
+
+export const store_regulatory_check = async (params: Partial<ProductModel>) => {
+  console.log("store_regulatory_check params", params);
+  const res = await storeRegulatoryCheck(params);
+  console.log("executed store_regulatory_check function", res);
+  return { status: 'success', requiresFollowUp: false };
+};
+
+export const store_go_live = async (params: Partial<ProductModel>) => {
+  console.log("store_go_live params", params);
+  const res = await storeGoLive(params);
+  console.log("executed store_go_live function", res);
+  return { status: 'success', requiresFollowUp: false };
 };
 
 export const read_product = async () => {
@@ -43,6 +58,11 @@ export const read_product = async () => {
 };
 
 export const functionsMap = {
-  store_product,
+  store_initial_setup,
+  store_loan_parameters,
+  store_acceptance_criteria,
+  store_pricing,
+  store_regulatory_check,
+  store_go_live,
   read_product,
 };
