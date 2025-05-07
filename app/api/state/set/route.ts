@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     // TODO: Broadcast state change via SSE or WebSocket if implemented
 
     return NextResponse.json({ state });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

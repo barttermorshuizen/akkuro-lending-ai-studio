@@ -4,6 +4,34 @@ import { ProductModel } from '@/types/product';
 import { readProduct } from './readProduct';
 import { ConfigurationError, ProductNotFoundError, ServiceUnavailableError } from '@/types/errors';
 
+// ISO 3166-1 country code mapping for common non-standard codes
+const COUNTRY_CODE_MAPPING: { [key: string]: string } = {
+  'UK': 'GB',  // United Kingdom
+  'USA': 'US', // United States
+};
+
+// Validate and normalize country code
+function validateCountryCode(code: string): string {
+  if (!code) return '';
+  
+  const normalizedCode = code.toUpperCase();
+  
+  // Check if it's a common non-standard code that needs mapping
+  if (COUNTRY_CODE_MAPPING[normalizedCode]) {
+    return COUNTRY_CODE_MAPPING[normalizedCode];
+  }
+  
+  // Validate the code format (2 uppercase letters)
+  if (!/^[A-Z]{2}$/.test(normalizedCode)) {
+    throw new ConfigurationError(
+      `Invalid country code "${code}". Country code must be a valid ISO 3166-1 code (2 letters). ` +
+      `For example, use "GB" for the United Kingdom or "US" for the United States.`
+    );
+  }
+  
+  return normalizedCode;
+}
+
 // Re-use column mapping from readProduct
 const COLUMNS = {
   productName: 0,
@@ -41,6 +69,18 @@ const COLUMNS = {
 
 export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
   console.log("store_initial_setup input", updates);
+
+  // Validate country code if provided
+  if (updates.countryCode) {
+    try {
+      updates.countryCode = validateCountryCode(updates.countryCode);
+    } catch (error) {
+      if (error instanceof ConfigurationError) {
+        throw error;
+      }
+      throw new ConfigurationError('Invalid country code format');
+    }
+  }
 
   // Validate environment variables
   if (!process.env.GOOGLE_CLIENT_EMAIL) {

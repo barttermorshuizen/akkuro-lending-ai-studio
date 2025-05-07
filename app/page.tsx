@@ -26,7 +26,7 @@ export default function Main() {
       }
     }
     initCountry();
-  }, []);
+  }, [setCountryCode]);
 
   return (
     <div className="flex h-screen relative">

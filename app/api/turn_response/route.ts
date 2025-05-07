@@ -3,10 +3,44 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { handleTool } from "@/lib/tools/tools-handling";
 
+// Validate and normalize country code in message content
+// Normalize country codes in any string content
+function normalizeCountryCode(content: string): string {
+  return content.replace(/["']UK["']/g, '"GB"')
+                .replace(/["']USA["']/g, '"US"');
+}
+
+// Process any object to normalize country codes in string values
+function processObject(obj: any): any {
+  if (!obj) return obj;
+  
+  if (typeof obj === 'string') {
+    return normalizeCountryCode(obj);
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => processObject(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const result: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = processObject(value);
+    }
+    return result;
+  }
+  
+  return obj;
+}
+
 export async function POST(request: Request) {
   try {
-    const { messages, tools } = await request.json();
-    console.log("Received messages:", JSON.stringify(messages, null, 2));
+    const { messages: rawMessages, tools: rawTools } = await request.json();
+    const messages = processObject(rawMessages);
+    const tools = processObject(rawTools);
+    console.log("Received messages:", JSON.stringify(rawMessages, null, 2));
+    console.log("Processed messages:", JSON.stringify(messages, null, 2));
+    console.log("Processed tools:", JSON.stringify(tools, null, 2));
     console.log("OpenAI request payload:", { model: MODEL, messages, tools });
     // Manual function_call handling
     const lastMsg = (messages as any[])[messages.length - 1];

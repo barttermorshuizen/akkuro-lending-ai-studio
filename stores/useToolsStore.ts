@@ -2,6 +2,19 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { defaultVectorStore } from "@/config/constants";
 
+// ISO 3166-1 country code mapping
+const COUNTRY_CODE_MAPPING: { [key: string]: string } = {
+  'UK': 'GB',  // United Kingdom
+  'USA': 'US', // United States
+};
+
+// Normalize country code
+function normalizeCountryCode(code: string): string {
+  if (!code) return '';
+  const normalizedCode = code.toUpperCase();
+  return COUNTRY_CODE_MAPPING[normalizedCode] || normalizedCode;
+}
+
 type File = {
   id: string;
   name: string;
@@ -53,7 +66,7 @@ const useToolsStore = create<StoreState>()(
         },
       },
       countryCode: "",
-      setCountryCode: (code) => set({ countryCode: code }),
+      setCountryCode: (code) => set({ countryCode: normalizeCountryCode(code) }),
       fileSearchEnabled: false,
       previousFileSearchEnabled: false,
       setFileSearchEnabled: (enabled) => {
@@ -69,7 +82,15 @@ const useToolsStore = create<StoreState>()(
         set({ functionsEnabled: enabled });
       },
       setVectorStore: (store) => set({ vectorStore: store }),
-      setWebSearchConfig: (config) => set({ webSearchConfig: config }),
+      setWebSearchConfig: (config) => set({
+        webSearchConfig: {
+          ...config,
+          user_location: config.user_location ? {
+            ...config.user_location,
+            country: normalizeCountryCode(config.user_location.country || '')
+          } : undefined
+        }
+      }),
     }),
     {
       name: "tools-store",

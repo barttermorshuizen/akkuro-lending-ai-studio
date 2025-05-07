@@ -17,7 +17,7 @@ export const toolsList = [
       },
       countryCode: {
         type: "string",
-        description: "The 2-letter ISO country code of the loan's geography",
+        description: "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
       },
     },
   },
