@@ -20,14 +20,14 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
 
   return (
     <div
-      className={`flex flex-col gap-1 ${isAssistant ? "items-start" : "items-end"}`}
+      className={`flex text-[15px] flex-col gap-1 ${isAssistant ? "items-start" : "items-end"}`}
     >
       <div className="font-bold">{isAssistant ? "Kuro" : "You"}</div>
       <div
-        className={`flex items-center gap-2 ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
+        className={`flex items-center max-w-[85%] gap-2 ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
       >
         <div
-          className={`rounded-md shadow-messageChat px-4 py-2 max-w-[85%] ${
+          className={`rounded-md flex shadow-messageChat px-4 py-3 w-fit ${
             isAssistant
               ? "bg-white rounded-tl-none text-black"
               : "bg-primary text-white rounded-tr-none"

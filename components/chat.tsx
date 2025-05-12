@@ -6,6 +6,7 @@ import Message from "./message";
 import Annotations from "./annotations";
 import VoiceInput from "./voice-input";
 import { Item } from "@/lib/assistant";
+import Image from "next/image";
 
 interface ChatProps {
   items: Item[];
@@ -53,7 +54,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
     <div className="flex justify-center items-center size-full">
       <div className="flex grow flex-col h-full max-w-[750px]">
         <div className="flex flex-row items-center py-4 gap-2">
-          <div className="text-3xl font-bold text-white">Akkuro</div>
+          <Image src="/akkuro.svg" alt="Akkuro" width={153} height={27} />
           <div className="text-xs text-white">Chatbot v1</div>
         </div>
         <div className="h-[90vh] rounded-t-xl bg-chatBackground overflow-y-auto px-6 flex flex-col">
@@ -98,7 +99,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                       id="prompt-textarea"
                       tabIndex={0}
                       dir="auto"
-                      rows={2}
+                      rows={1}
                       placeholder={isListening ? "Listening..." : "Message..."}
                       className="mb-2 resize-none border-0 focus:outline-none text-sm bg-transparent px-0 pb-6 pt-4"
                       value={inputMessageText}
@@ -111,7 +112,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                   <button
                     disabled={!inputMessageText}
                     data-testid="send-button"
-                    className="bg-primary text-white px-4 py-3 rounded-lg cursor-pointer"
+                    className="bg-primary text-white px-8 py-[10px] rounded-lg cursor-pointer"
                     onClick={() => {
                       onSendMessage(inputMessageText);
                       setinputMessageText("");
