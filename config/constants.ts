@@ -1,4 +1,4 @@
-export const MODEL = "gpt-4o-mini";
+export const MODEL = 'gpt-4o-mini';
 export const MAX_RESPONSE_TOKENS = 300;
 export const MAX_RESPONSE_CHARS = 600;
 
@@ -37,6 +37,6 @@ Hi, how can I help you?
 `;
 
 export const defaultVectorStore = {
-  id: "",
-  name: "Example",
+  id: '',
+  name: 'Example',
 };

@@ -1,49 +1,53 @@
-import { MessageItem } from "@/lib/assistant";
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import ChoicePanel from "./choice-panel";
+import { Item, MessageItem } from "@/lib/assistant";
+import TextToSpeech from "./text-to-speech";
 
 interface MessageProps {
-  message: MessageItem;
+  message: Item;
   onChoiceSelect?: (choice: string) => void;
 }
 
 const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
+  // Only process if it's a message item
+  if (message.type !== "message") return null;
+
+  const messageItem = message as MessageItem;
+  const isAssistant =
+    messageItem.role === "assistant" || messageItem.role === "system";
+  const content = messageItem.content[0];
+  const text = content?.text || "";
+  const choices = content?.choices || [];
+
   return (
-    <div className="text-sm">
-      {message.role === "user" ? (
-        <div className="flex justify-end">
-          <div>
-            <div className="ml-4 rounded-[16px] px-4 py-2 md:ml-24 bg-[#ededed] text-stone-900  font-light">
-              <div>
-                <div>
-                  <ReactMarkdown>
-                    {message.content[0].text as string}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div
+      className={`flex flex-col gap-1 ${isAssistant ? "items-start" : "items-end"}`}
+    >
+      <div className="font-bold">{isAssistant ? "Kuro" : "You"}</div>
+      <div
+        className={`flex items-center gap-2 ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
+      >
+        <div
+          className={`rounded-md shadow-messageChat px-4 py-2 max-w-[85%] ${
+            isAssistant
+              ? "bg-white rounded-tl-none text-black"
+              : "bg-primary text-white rounded-tr-none"
+          }`}
+        >
+          {text}
         </div>
-      ) : (
-        <div className="flex flex-col">
-          <div className="flex">
-            <div className="mr-4 rounded-[16px] px-4 py-2 md:mr-24 text-black bg-white font-light">
-              <div>
-                {/* Render text content. If choices are present, the text should be the clean text from the JSON. */}
-                <ReactMarkdown>
-                  {message.content[0].text as string}
-                </ReactMarkdown>
-                {/* Render ChoicePanel only if choices are present */}
-                {message.content[0].choices && onChoiceSelect && (
-                  <ChoicePanel
-                    choices={message.content[0].choices}
-                    onSelect={onChoiceSelect}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+        {isAssistant && <TextToSpeech text={text} />}
+      </div>
+      {isAssistant && choices.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {choices.map((choice: string, index: number) => (
+            <button
+              key={index}
+              className="bg-white text-black px-4 py-2 rounded-xl shadow-messageChat hover:bg-gray-100 transition-colors"
+              onClick={() => onChoiceSelect?.(choice)}
+            >
+              {choice}
+            </button>
+          ))}
         </div>
       )}
     </div>

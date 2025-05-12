@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ToolCall from "./tool-call";
 import Message from "./message";
 import Annotations from "./annotations";
+import VoiceInput from "./voice-input";
 import { Item } from "@/lib/assistant";
 
 interface ChatProps {
@@ -15,6 +16,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
   const itemsEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [inputMessageText, setinputMessageText] = useState<string>("");
+  const [isListening, setIsListening] = useState(false);
   // This state is used to provide better user experience for non-English IMEs such as Japanese
   const [isComposing, setIsComposing] = useState(false);
 
@@ -24,17 +26,24 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
     textareaRef.current?.focus();
   }, []);
 
+  const handleVoiceTranscript = useCallback((transcript: string) => {
+    setinputMessageText(transcript);
+  }, []);
+
   const scrollToBottom = () => {
     itemsEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey && !isComposing) {
-      event.preventDefault();
-      onSendMessage(inputMessageText);
-      setinputMessageText("");
-    }
-  }, [onSendMessage, inputMessageText, isComposing]);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === "Enter" && !event.shiftKey && !isComposing) {
+        event.preventDefault();
+        onSendMessage(inputMessageText);
+        setinputMessageText("");
+      }
+    },
+    [onSendMessage, inputMessageText, isComposing],
+  );
 
   useEffect(() => {
     scrollToBottom();
@@ -42,8 +51,12 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
 
   return (
     <div className="flex justify-center items-center size-full">
-      <div className="flex grow flex-col h-full max-w-[750px] gap-2">
-        <div className="h-[90vh] overflow-y-scroll px-10 flex flex-col">
+      <div className="flex grow flex-col h-full max-w-[750px]">
+        <div className="flex flex-row items-center py-4 gap-2">
+          <div className="text-3xl font-bold text-white">Akkuro</div>
+          <div className="text-xs text-white">Chatbot v1</div>
+        </div>
+        <div className="h-[90vh] rounded-t-xl bg-chatBackground overflow-y-auto px-6 flex flex-col">
           <div className="mt-auto space-y-5 pt-4">
             {items.map((item, index) => (
               <React.Fragment key={index}>
@@ -69,11 +82,16 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
             <div ref={itemsEndRef} />
           </div>
         </div>
-        <div className="flex-1 p-4 px-10">
-          <div className="flex items-center">
+        <div className="flex-1 p-4 px-6 bg-chatBackground flex flex-col items-center rounded-b-xl">
+          <div className="flex items-center w-full flex-1">
             <div className="flex w-full items-center pb-4 md:pb-1">
-              <div className="flex w-full flex-col gap-1.5 rounded-[20px] p-2.5 pl-1.5 transition-colors bg-white border border-stone-200 shadow-sm">
-                <div className="flex items-end gap-1.5 md:gap-2 pl-4">
+              <div className="flex w-full flex-col gap-1.5 rounded-lg pr-2.5 pl-1.5 transition-colors bg-white border border-stone-200 shadow-sm">
+                <div className="flex items-center gap-1.5 md:gap-2 pl-4">
+                  <VoiceInput
+                    onTranscript={handleVoiceTranscript}
+                    isListening={isListening}
+                    setIsListening={setIsListening}
+                  />
                   <div className="flex min-w-0 flex-1 flex-col">
                     <textarea
                       ref={textareaRef}
@@ -81,8 +99,8 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                       tabIndex={0}
                       dir="auto"
                       rows={2}
-                      placeholder="Message..."
-                      className="mb-2 resize-none border-0 focus:outline-none text-sm bg-transparent px-0 pb-6 pt-2"
+                      placeholder={isListening ? "Listening..." : "Message..."}
+                      className="mb-2 resize-none border-0 focus:outline-none text-sm bg-transparent px-0 pb-6 pt-4"
                       value={inputMessageText}
                       onChange={(e) => setinputMessageText(e.target.value)}
                       onKeyDown={handleKeyDown}
@@ -93,31 +111,20 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                   <button
                     disabled={!inputMessageText}
                     data-testid="send-button"
-                    className="flex size-8 items-end justify-center rounded-full bg-black text-white transition-colors hover:opacity-70 focus-visible:outline-none focus-visible:outline-black disabled:bg-[#D7D7D7] disabled:text-[#f4f4f4] disabled:hover:opacity-100"
+                    className="bg-primary text-white px-4 py-3 rounded-lg cursor-pointer"
                     onClick={() => {
                       onSendMessage(inputMessageText);
                       setinputMessageText("");
                     }}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      fill="none"
-                      viewBox="0 0 32 32"
-                      className="icon-2xl"
-                    >
-                      <path
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        d="M15.192 8.906a1.143 1.143 0 0 1 1.616 0l5.143 5.143a1.143 1.143 0 0 1-1.616 1.616l-3.192-3.192v9.813a1.143 1.143 0 0 1-2.286 0v-9.813l-3.192 3.192a1.143 1.143 0 1 1-1.616-1.616z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    Send
                   </button>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="text-[#9e9791] pt-2 text-sm">
+            AI can make mistakes. Please check your response.
           </div>
         </div>
       </div>
