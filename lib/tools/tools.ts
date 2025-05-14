@@ -4,19 +4,19 @@ import { WebSearchConfig } from "@/stores/useToolsStore";
 
 // ISO 3166-1 country code mapping
 const COUNTRY_CODE_MAPPING: { [key: string]: string } = {
-  'UK': 'GB',  // United Kingdom
-  'USA': 'US', // United States
+  UK: "GB", // United Kingdom
+  USA: "US", // United States
 };
 
 // Normalize country code
 function normalizeCountryCode(code: string): string {
-  if (!code) return '';
+  if (!code) return "";
   const normalizedCode = code.toUpperCase();
   return COUNTRY_CODE_MAPPING[normalizedCode] || normalizedCode;
 }
 
 interface WebSearchTool extends WebSearchConfig {
-  type: "web_search";
+  type: "web_search_preview";
 }
 
 export const getTools = () => {
@@ -33,10 +33,12 @@ export const getTools = () => {
 
   if (webSearchEnabled) {
     const webSearchTool: WebSearchTool = {
-      type: "web_search",
+      type: "web_search_preview",
       user_location: {
         type: "approximate",
-        country: normalizeCountryCode(countryCode || webSearchConfig.user_location?.country || ""),
+        country: normalizeCountryCode(
+          countryCode || webSearchConfig.user_location?.country || "",
+        ),
         region: webSearchConfig.user_location?.region || "",
         city: webSearchConfig.user_location?.city || "",
       },
@@ -66,7 +68,7 @@ export const getTools = () => {
             additionalProperties: false,
           },
         };
-      })
+      }),
     );
   }
 

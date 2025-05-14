@@ -13,11 +13,13 @@ export const toolsList = [
       },
       intendedUse: {
         type: "string",
-        description: "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
+        description:
+          "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
       },
       countryCode: {
         type: "string",
-        description: "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
+        description:
+          "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
       },
     },
   },
@@ -161,6 +163,11 @@ export const toolsList = [
   {
     name: "read_product",
     description: "Read the stored loan product model from the Google Sheet",
+    parameters: {},
+  },
+  {
+    name: "product_stimulation",
+    description: "Stimulate the product creation process",
     parameters: {},
   },
 ];

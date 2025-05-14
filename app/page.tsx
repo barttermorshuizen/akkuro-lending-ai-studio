@@ -31,7 +31,7 @@ export default function Main() {
   return (
     <div className="flex h-screen bg-background relative">
       {/* Main content */}
-      <div className={`${isCollapsed ? "w-full" : "md:w-2/3 w-full"} h-full`}>
+      <div className={`${isCollapsed ? "w-full" : "w-full"} flex-1 h-full`}>
         <Assistant />
       </div>
 

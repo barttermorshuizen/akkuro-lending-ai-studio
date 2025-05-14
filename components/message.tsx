@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 import { Item, MessageItem } from "@/lib/assistant";
 import TextToSpeech from "./text-to-speech";
 
@@ -16,13 +17,24 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
     messageItem.role === "assistant" || messageItem.role === "system";
   const content = messageItem.content[0];
   const text = content?.text || "";
-  const choices = content?.choices || [];
+  // const choices = content?.choices || [];
 
   return (
     <div
       className={`flex text-[15px] flex-col gap-1 ${isAssistant ? "items-start" : "items-end"}`}
     >
-      <div className="font-bold">{isAssistant ? "Kuro" : "You"}</div>
+      <div
+        className={`flex gap-2 items-center ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
+      >
+        <div className="font-bold">{isAssistant ? "Kuro" : "You"}</div>
+        <div className="text-xs text-gray-500" suppressHydrationWarning={true}>
+          {messageItem.sendAt?.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })}
+        </div>
+      </div>
       <div
         className={`flex items-center max-w-[85%] gap-2 ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
       >
@@ -33,11 +45,13 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
               : "bg-primary text-white rounded-tr-none"
           }`}
         >
-          {text}
+          <div className="markdown-content [&>*]:block [&>*]:mb-2 last:[&>*]:mb-0">
+            <ReactMarkdown>{text}</ReactMarkdown>
+          </div>
         </div>
         {isAssistant && <TextToSpeech text={text} />}
       </div>
-      {isAssistant && choices.length > 0 && (
+      {/* {isAssistant && choices.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {choices.map((choice: string, index: number) => (
             <button
@@ -49,7 +63,7 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
             </button>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -10,7 +10,6 @@ export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
   annotations?: Annotation[];
   text?: string;
-  choices?: string[];
 }
 
 // Message items for storing conversation history matching API shape
@@ -19,6 +18,7 @@ export interface MessageItem {
   role: "user" | "assistant" | "system";
   id?: string;
   content: ContentItem[];
+  sendAt?: Date;
 }
 
 // Custom items to display in chat
@@ -32,6 +32,7 @@ export interface ToolCallItem {
   arguments?: string;
   parsedArguments?: any;
   output?: string | null;
+  sendAt?: Date;
 }
 
 export type Item = MessageItem | ToolCallItem;
@@ -39,7 +40,7 @@ export type Item = MessageItem | ToolCallItem;
 export const handleTurn = async (
   messages: any[],
   tools: any[],
-  onMessage: (data: any) => void
+  onMessage: (data: any) => void,
 ) => {
   try {
     // Get response from the API (defined in app/api/turn_response/route.ts)
@@ -141,40 +142,34 @@ export const processMessages = async () => {
           assistantMessageBuffer += delta;
         }
 
-        // Try to parse accumulated buffer as JSON
-        try {
-          const parsed = JSON.parse(assistantMessageBuffer);
-          if (parsed.text && Array.isArray(parsed.choices)) {
-            // Only create/update message once we have valid JSON
-            if (!currentMessageItem || currentMessageItem.id !== item_id) {
-              currentMessageItem = {
-                type: "message",
-                role: "assistant",
-                id: item_id,
-                content: [{
-                  type: "output_text",
-                  text: parsed.text,
-                  choices: parsed.choices,
-                }],
-              };
-              chatMessages.push(currentMessageItem);
-            } else {
-              const contentItem = currentMessageItem.content[0];
-              if (contentItem && contentItem.type === "output_text") {
-                contentItem.text = parsed.text;
-                contentItem.choices = parsed.choices;
-                if (annotation) {
-                  contentItem.annotations = [...(contentItem.annotations ?? []), annotation];
-                }
-              }
+        // Create or update message with plain text
+        if (!currentMessageItem || currentMessageItem.id !== item_id) {
+          currentMessageItem = {
+            type: "message",
+            role: "assistant",
+            id: item_id,
+            content: [
+              {
+                type: "output_text",
+                text: assistantMessageBuffer,
+              },
+            ],
+            sendAt: new Date(),
+          };
+          chatMessages.push(currentMessageItem);
+        } else {
+          const contentItem = currentMessageItem.content[0];
+          if (contentItem && contentItem.type === "output_text") {
+            contentItem.text = assistantMessageBuffer;
+            if (annotation) {
+              contentItem.annotations = [
+                ...(contentItem.annotations ?? []),
+                annotation,
+              ];
             }
-            // Clear buffer after successful parse
-            assistantMessageBuffer = "";
-            setChatMessages([...chatMessages]);
           }
-        } catch {
-          // Continue accumulating if not valid JSON yet
         }
+        setChatMessages([...chatMessages]);
         break;
       }
 
@@ -201,6 +196,7 @@ export const processMessages = async () => {
               arguments: item.arguments || "",
               parsedArguments: {},
               output: null,
+              sendAt: new Date(),
             });
             setChatMessages([...chatMessages]);
             break;
@@ -211,6 +207,7 @@ export const processMessages = async () => {
               tool_type: "web_search_call",
               status: item.status || "in_progress",
               id: item.id,
+              sendAt: new Date(),
             });
             setChatMessages([...chatMessages]);
             break;
@@ -221,41 +218,7 @@ export const processMessages = async () => {
               tool_type: "file_search_call",
               status: item.status || "in_progress",
               id: item.id,
-            });
-            setChatMessages([...chatMessages]);
-            break;
-          }
-          case "function_call": {
-            functionArguments += item.arguments || "";
-            chatMessages.push({
-              type: "tool_call",
-              tool_type: "function_call",
-              status: "in_progress",
-              id: item.id,
-              name: item.name, // function name,e.g. "get_weather"
-              arguments: item.arguments || "",
-              parsedArguments: {},
-              output: null,
-            });
-            setChatMessages([...chatMessages]);
-            break;
-          }
-          case "web_search_call": {
-            chatMessages.push({
-              type: "tool_call",
-              tool_type: "web_search_call",
-              status: item.status || "in_progress",
-              id: item.id,
-            });
-            setChatMessages([...chatMessages]);
-            break;
-          }
-          case "file_search_call": {
-            chatMessages.push({
-              type: "tool_call",
-              tool_type: "file_search_call",
-              status: item.status || "in_progress",
-              id: item.id,
+              sendAt: new Date(),
             });
             setChatMessages([...chatMessages]);
             break;
@@ -316,7 +279,7 @@ export const processMessages = async () => {
           // Handle tool call (execute function)
           const toolResult = await handleTool(
             toolCallMessage.name as keyof typeof functionsMap,
-            toolCallMessage.parsedArguments
+            toolCallMessage.parsedArguments,
           );
 
           // Record tool output
@@ -325,67 +288,68 @@ export const processMessages = async () => {
           // Add tool result to conversation items
           conversationItems.push({
             role: "assistant",
-            content: "Tool execution completed successfully."
+            content: "Tool execution completed successfully.",
           });
-          
+
           // Determine message based on the current tool
           let confirmationText = "";
-          let choices: string[] = [];
-          
-          switch(toolCallMessage.name) {
+
+          switch (toolCallMessage.name) {
             case "store_initial_setup":
-              confirmationText = "The initial setup has been stored successfully. Would you like to move to the loan parameters setup?";
-              choices = ["Move to loan parameters"];
+              confirmationText =
+                "Great! I've stored all the initial setup details. Would you like to move on to setting up the loan parameters? We'll need to define things like loan amounts, interest rates, and repayment terms.";
               break;
             case "store_loan_parameters":
-              confirmationText = "The loan parameters have been stored successfully. Would you like to move to the acceptance criteria setup?";
-              choices = ["Move to acceptance criteria"];
+              confirmationText =
+                "Perfect! I've saved all the loan parameters. Should we move on to defining the acceptance criteria? This is where we'll set up who can qualify for this loan.";
               break;
             case "store_acceptance_criteria":
-              confirmationText = "The acceptance criteria have been stored successfully. Would you like to move to the pricing setup?";
-              choices = ["Move to pricing"];
+              confirmationText =
+                "Excellent! The acceptance criteria are all set. Ready to move on to pricing? We'll need to determine interest rates, fees, and any special discounts.";
               break;
             case "store_pricing":
-              confirmationText = "The pricing details have been stored successfully. Would you like to move to the regulatory check?";
-              choices = ["Move to regulatory check"];
+              confirmationText =
+                "I've stored all the pricing details. Should we proceed with the regulatory check? This will ensure our product complies with all necessary regulations.";
               break;
             case "store_regulatory_check":
-              confirmationText = "The regulatory requirements have been stored successfully. Would you like to move to the go-live phase?";
-              choices = ["Move to go-live"];
+              confirmationText =
+                "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
               break;
             case "store_go_live":
-              confirmationText = "Would you like to check the product model in Akkuro Studio, view the mobile app or start over?";
-              choices = ["Check in Akkuro Studio", "View Mobile App", "Start Over"];
+              confirmationText =
+                "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, take a look at how it appears in the mobile app, or start fresh with a new product?";
               break;
           }
-          
-          // Create confirmation message if we have text and choices
-          if (confirmationText && choices.length > 0) {
+
+          // Create confirmation message if we have text
+          if (confirmationText) {
             const confirmationMessage: MessageItem = {
               type: "message",
               role: "assistant",
-              content: [{
-                type: "output_text",
-                text: confirmationText,
-                choices: choices
-              }]
+              content: [
+                {
+                  type: "output_text",
+                  text: confirmationText,
+                },
+              ],
+              sendAt: new Date(),
             };
-            
+
             // Add to conversation items
             conversationItems.push({
               role: "assistant",
-              content: confirmationMessage.content[0].text
+              content: confirmationMessage.content[0].text,
             });
-            
+
             setConversationItems([...conversationItems]);
-            
+
             // Add to chat messages for display
             chatMessages.push(confirmationMessage);
             setChatMessages([...chatMessages]);
           }
-          }
-          break;
         }
+        break;
+      }
 
       case "response.web_search_call.completed": {
         const { item_id, output } = data;
@@ -408,9 +372,11 @@ export const processMessages = async () => {
         }
         break;
       }
-
+      case "response.completed": {
+        console.log("response.completed", data);
+        break;
+      }
       // Handle other events as needed
     }
-
   });
 };

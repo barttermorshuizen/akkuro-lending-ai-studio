@@ -15,19 +15,19 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
       const parsed = JSON.parse(output);
       if (parsed.error) {
         switch (parsed.code) {
-          case 'SERVICE_UNAVAILABLE':
-            return 'bg-yellow-50 border-l-4 border-yellow-400';
-          case 'CONFIG_ERROR':
-            return 'bg-orange-50 border-l-4 border-orange-400';
-          case 'NOT_FOUND':
-            return 'bg-gray-50 border-l-4 border-gray-400';
+          case "SERVICE_UNAVAILABLE":
+            return "bg-yellow-50 border-l-4 border-yellow-400";
+          case "CONFIG_ERROR":
+            return "bg-orange-50 border-l-4 border-orange-400";
+          case "NOT_FOUND":
+            return "bg-gray-50 border-l-4 border-gray-400";
           default:
-            return 'bg-red-50 border-l-4 border-red-400';
+            return "bg-red-50 border-l-4 border-red-400";
         }
       }
-      return '';
+      return "";
     } catch {
-      return '';
+      return "";
     }
   };
 
@@ -49,8 +49,8 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
   };
 
   return (
-    <div className="flex flex-col w-[70%] relative mb-[-8px]">
-      <div>
+    <div className="flex flex-col max-w-[70%] mb-[-8px]">
+      <div className="w-full">
         <div className="flex flex-col text-sm rounded-[16px]">
           <div className="font-semibold p-3 pl-0 text-gray-700 rounded-b-none flex gap-2">
             <div className="flex gap-2 items-center text-blue-500 ml-[-8px]">
@@ -63,7 +63,7 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
             </div>
           </div>
 
-          <div className="bg-[#fafafa] rounded-xl py-2 ml-4 mt-2">
+          <div className="bg-[#fafafa] max-w-[50vw] lg:max-w-[30vw] rounded-xl py-2 ml-4 mt-2">
             <div className="max-h-96 overflow-y-scroll text-xs border-b mx-6 p-2">
               <SyntaxHighlighter
                 customStyle={{

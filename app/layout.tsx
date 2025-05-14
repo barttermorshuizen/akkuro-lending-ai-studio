@@ -14,10 +14,10 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Akkuro Lending Studio",
+  title: "Akkuro",
   description: "Starter app for the OpenAI Responses API",
   icons: {
-    icon: "/openai_logo.svg",
+    icon: "/app-logo.png",
   },
 };
 
