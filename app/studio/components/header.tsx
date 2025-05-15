@@ -24,7 +24,7 @@ export default function Header() {
           objectFit="contain"
         />
         <span className="text-[#999999] text-2xl">/</span>
-        <span className="text-[#999999] text-2xl">Lending</span>
+        <span className="text-[#999999] text-2xl">Studio</span>
       </div>
       <Show when={!!userInfo}>
         <div className="flex flex-row gap-2">
