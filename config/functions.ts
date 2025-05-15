@@ -8,6 +8,7 @@ import { readProduct } from "@/services/readProduct";
 import { ProductModel } from "@/types/product";
 import useConfiguringProduct from "@/stores/useConfiguringProduct";
 import { transformProductModelToProductConfigurationDTO } from "./productsConfigurationMapping";
+import { sendProductUpdate } from "@/lib/productSyncChannel";
 
 // Functions mapping to tool calls
 export const store_initial_setup = async (params: Partial<ProductModel>) => {
@@ -75,7 +76,7 @@ export const product_simulation = async () => {
   const setProduct = useConfiguringProduct.getState().setProduct;
   const product = transformProductModelToProductConfigurationDTO(res);
   setProduct(product);
-
+  sendProductUpdate(product);
   console.log("executed product_simulation function", res);
   return res;
 };

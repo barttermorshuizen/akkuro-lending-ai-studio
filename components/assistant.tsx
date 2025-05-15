@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Chat from "./chat";
 import useConversationStore from "@/stores/useConversationStore";
 import { Item, processMessages } from "@/lib/assistant";
@@ -8,6 +8,7 @@ import Header from "./header";
 import useConfiguringProduct from "@/stores/useConfiguringProduct";
 import { PanelRightOpen, PanelRightClose } from "lucide-react";
 import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
+import { listenToProductUpdates } from "@/lib/productSyncChannel";
 
 const defaultProduct: ProductConfigurationDTO = {
   productName: "",
@@ -55,6 +56,12 @@ export default function Assistant() {
   };
 
   const { product, setProduct } = useConfiguringProduct();
+
+  useEffect(() => {
+    listenToProductUpdates((incomingProduct) => {
+      setProduct(incomingProduct);
+    });
+  }, [setProduct]);
 
   return (
     <div className="h-full flex p-4 w-full">

@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 interface ConfiguringProductState {
   product: ProductConfigurationDTO | null;
-  setProduct: (product: ProductConfigurationDTO) => void;
+  setProduct: (product: ProductConfigurationDTO | null) => void;
 }
 
 const emptyProduct: ProductConfigurationDTO = {
@@ -24,9 +24,27 @@ const emptyProduct: ProductConfigurationDTO = {
   earlyRepaymentBenefit: "",
 };
 
+const productChannel =
+  typeof window !== "undefined" ? new BroadcastChannel("product_sync") : null;
+
 const useConfiguringProduct = create<ConfiguringProductState>((set) => ({
   product: null,
-  setProduct: (product: ProductConfigurationDTO) => set({ product }),
+  setProduct: (product) => {
+    set({ product });
+    // Broadcast thay đổi đến các tab khác
+    productChannel?.postMessage({
+      type: "PRODUCT_UPDATE",
+      product,
+    });
+  },
 }));
+
+if (productChannel) {
+  productChannel.onmessage = (event) => {
+    if (event.data.type === "PRODUCT_UPDATE") {
+      useConfiguringProduct.setState({ product: event.data.product });
+    }
+  };
+}
 
 export default useConfiguringProduct;
