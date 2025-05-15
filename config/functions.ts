@@ -6,15 +6,21 @@ import { storeRegulatoryCheck } from "@/services/storeRegulatoryCheck";
 import { storeGoLive } from "@/services/storeGoLive";
 import { readProduct } from "@/services/readProduct";
 import { ProductModel } from "@/types/product";
-import useConfiguringProduct from "@/stores/useConfiguringProduct";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import { transformProductModelToProductConfigurationDTO } from "./productsConfigurationMapping";
 import { sendProductUpdate } from "@/lib/productSyncChannel";
+import useConversationStore from "@/stores/useConversationStore";
+import { conversationStates } from "@/lib/stateMachine";
 
 // Functions mapping to tool calls
 export const store_initial_setup = async (params: Partial<ProductModel>) => {
   console.log("store_initial_setup params", params);
   const res = await storeInitialSetup(params);
   console.log("executed store_initial_setup function", res);
+
+  useConversationStore.getState().setConversationState(conversationStates[1]);
+  console.log("set conversation state to", conversationStates[1]);
+
   return { status: "success", requiresFollowUp: false };
 };
 
@@ -22,6 +28,10 @@ export const store_loan_parameters = async (params: Partial<ProductModel>) => {
   console.log("store_loan_parameters params", params);
   const res = await storeLoanParameters(params);
   console.log("executed store_loan_parameters function", res);
+
+  useConversationStore.getState().setConversationState(conversationStates[2]);
+  console.log("set conversation state to", conversationStates[2]);
+
   return { status: "success", requiresFollowUp: false };
 };
 
@@ -31,6 +41,10 @@ export const store_acceptance_criteria = async (
   console.log("store_acceptance_criteria params", params);
   const res = await storeAcceptanceCriteria(params);
   console.log("executed store_acceptance_criteria function", res);
+
+  useConversationStore.getState().setConversationState(conversationStates[3]);
+  console.log("set conversation state to", conversationStates[3]);
+
   return { status: "success", requiresFollowUp: false };
 };
 
@@ -38,6 +52,10 @@ export const store_pricing = async (params: Partial<ProductModel>) => {
   console.log("store_pricing params", params);
   const res = await storePricing(params);
   console.log("executed store_pricing function", res);
+
+  useConversationStore.getState().setConversationState(conversationStates[4]);
+  console.log("set conversation state to", conversationStates[4]);
+
   return { status: "success", requiresFollowUp: false };
 };
 
@@ -45,6 +63,10 @@ export const store_regulatory_check = async (params: Partial<ProductModel>) => {
   console.log("store_regulatory_check params", params);
   const res = await storeRegulatoryCheck(params);
   console.log("executed store_regulatory_check function", res);
+
+  useConversationStore.getState().setConversationState(conversationStates[5]);
+  console.log("set conversation state to", conversationStates[5]);
+
   return { status: "success", requiresFollowUp: false };
 };
 
@@ -73,10 +95,11 @@ export const product_simulation = async () => {
   console.log("product_simulation called");
   const res = await readProduct();
 
-  const setProduct = useConfiguringProduct.getState().setProduct;
+  const setProduct = useConfiguringProductStore.getState().setProduct;
   const product = transformProductModelToProductConfigurationDTO(res);
   setProduct(product);
   sendProductUpdate(product);
+
   console.log("executed product_simulation function", res);
   return res;
 };

@@ -1,6 +1,7 @@
 import { toolsList } from "../../config/tools-list";
 import useToolsStore from "@/stores/useToolsStore";
 import { WebSearchConfig } from "@/stores/useToolsStore";
+import { isValidISOCountryCode } from "../countryCodeHelper";
 
 // ISO 3166-1 country code mapping
 const COUNTRY_CODE_MAPPING: { [key: string]: string } = {
@@ -32,13 +33,17 @@ export const getTools = () => {
   const tools: any[] = [];
 
   if (webSearchEnabled) {
+    const isValidCountryCode = isValidISOCountryCode(
+      countryCode || webSearchConfig.user_location?.country || "",
+    );
+    const country = isValidCountryCode
+      ? countryCode || webSearchConfig.user_location?.country || ""
+      : "NL";
     const webSearchTool: WebSearchTool = {
       type: "web_search_preview",
       user_location: {
         type: "approximate",
-        country: normalizeCountryCode(
-          countryCode || webSearchConfig.user_location?.country || "",
-        ),
+        country: normalizeCountryCode(country),
         region: webSearchConfig.user_location?.region || "",
         city: webSearchConfig.user_location?.city || "",
       },

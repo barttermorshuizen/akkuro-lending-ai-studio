@@ -5,28 +5,9 @@ import useConversationStore from "@/stores/useConversationStore";
 import { Item, processMessages } from "@/lib/assistant";
 import ProductScreen from "./product-screen";
 import Header from "./header";
-import useConfiguringProduct from "@/stores/useConfiguringProduct";
-import { PanelRightOpen, PanelRightClose } from "lucide-react";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
-
-const defaultProduct: ProductConfigurationDTO = {
-  productName: "",
-  targetSegment: "",
-  intendedUse: "",
-  countryCode: "",
-  currentState: "",
-  loanAmountRange: "",
-  interestRateType: "",
-  repaymentTermOptions: "",
-  interestRates: "",
-  collateralRequirement: "",
-  minimumRevenue: "",
-  minimumOperatingHistory: "",
-  creditScoreThreshold: "",
-  sustainabilityIncentive: "",
-  earlyRepaymentBenefit: "",
-};
 
 export default function Assistant() {
   const { chatMessages, addConversationItem, addChatMessage } =
@@ -55,7 +36,7 @@ export default function Assistant() {
     }
   };
 
-  const { product, setProduct } = useConfiguringProduct();
+  const { product, setProduct } = useConfiguringProductStore();
 
   useEffect(() => {
     listenToProductUpdates((incomingProduct) => {

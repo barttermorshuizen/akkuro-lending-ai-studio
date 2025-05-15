@@ -335,7 +335,7 @@ export const stateInstructions: Record<string, string> = {
     
     Use the store_go_live tool when you have collected all required information.
     After storing, follow up with the user by asking if they would like to view a simulation or preview of the product. This is an opportunity to let the user explore how the configured product would work in real scenarios. 
-    If user responses positively, or whenever user mention about 'simulation' or product output or any other related keywords in their messages, call the product_simulation tool.
+    If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
 
     Format your responses in a clear, structured way:
     - Use bullet points (•) for listing options or requirements

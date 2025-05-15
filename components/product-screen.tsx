@@ -1,13 +1,12 @@
 import CarouselScreens from "./carousel-screens";
 import Show from "./condition/show";
-import { Button } from "./ui/button";
 import Image from "next/image";
 import PhoneFrameStatusBar from "@/app/assets/phone-frame/status-bar.svg";
 import PhoneFrameHomeIndicator from "@/app/assets/phone-frame/home-indicator.svg";
 import { useMemo } from "react";
 import IntroScreen from "./screens/intro-screen";
 import ConfiguratingProductScreen from "./screens/configurating-product-screen";
-import useConfiguringProduct from "@/stores/useConfiguringProduct";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductScreen() {
@@ -25,7 +24,7 @@ export default function ProductScreen() {
     [],
   );
 
-  const { product } = useConfiguringProduct();
+  const { product } = useConfiguringProductStore();
 
   return (
     <>

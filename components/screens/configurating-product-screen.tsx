@@ -1,16 +1,15 @@
 "use client";
 
 import AkkuroDarkLogo from "@/public/akkuro-dark.svg";
-import { ProductModel } from "@/types/product";
 import Image from "next/image";
 import {
   ProductConfigurationDTO,
   productsConfigurationMapping,
 } from "@/config/productsConfigurationMapping";
-import useConfiguringProduct from "@/stores/useConfiguringProduct";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 
 export default function ConfiguratingProductScreen() {
-  const { product } = useConfiguringProduct();
+  const { product } = useConfiguringProductStore();
 
   return (
     <div className="w-full h-full flex flex-col justify-start overflow-y-hidden pt-8 items-center text-black text-xl">

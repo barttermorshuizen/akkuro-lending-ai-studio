@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-ExtraLight-TRIAL.otf")
     format("opentype");
   font-weight: 100;
@@ -7,14 +7,14 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-UltraLight-TRIAL.otf")
     format("opentype");
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Light-TRIAL.otf")
     format("opentype");
   font-weight: 300;
@@ -22,7 +22,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Normal-TRIAL.otf")
     format("opentype");
   font-weight: 400;
@@ -30,7 +30,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Regular-TRIAL.otf")
     format("opentype");
   font-weight: 500;
@@ -38,7 +38,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Medium-TRIAL.otf")
     format("opentype");
   font-weight: 600;
@@ -46,7 +46,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Bold-TRIAL.otf")
     format("opentype");
   font-weight: 700;
@@ -54,7 +54,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-ExtraBold-TRIAL.otf")
     format("opentype");
   font-weight: 800;
@@ -62,7 +62,7 @@
 }
 
 @font-face {
-  font-family: "Acid Grotesk";
+  font-family: "AcidGrotesk";
   src: url("/fonts/acid-grotesk/FFF-AcidGrotesk-Black-TRIAL.otf")
     format("opentype");
   font-weight: 900;
@@ -126,6 +126,8 @@
     --chart-5: 27 87% 67%;
 
     --radius: 0.5rem;
+
+    --dark-forest: 113 19% 12%;
   }
   .dark {
     --background: 224 71.4% 4.1%;
