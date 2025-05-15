@@ -40,7 +40,7 @@ export default function Login() {
   return (
     <div className="bg-[url('/hero-pattern.svg')] h-full w-full bg-cover bg-center bg-no-repeat pt-16">
       <form
-        className="flex flex-col gap-4 max-w-md mt-36 ml-40"
+        className="flex flex-col gap-4 max-w-md mt-16 ml-40"
         action={formAction}
       >
         <h1 className="text-white text-6xl font-extralight mb-6">

@@ -82,7 +82,7 @@ export default function Lending() {
 
   useEffect(() => {
     if (isHydrated && !userInfo) {
-      router.replace("/lending/login");
+      router.replace("/login");
     }
   }, [isHydrated, userInfo, router]);
 
