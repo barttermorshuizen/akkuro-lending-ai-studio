@@ -335,7 +335,7 @@ export const stateInstructions: Record<string, string> = {
     
     Use the store_go_live tool when you have collected all required information.
     After storing, confirm the completion of the product setup.
-    If user mention about 'stimulation' or product output or any other related keywords in their messages, call the product_stimulation tool.
+    If user mention about 'simulation' or product output or any other related keywords in their messages, call the product_simulation tool.
 
     Format your responses in a clear, structured way:
     - Use bullet points (•) for listing options or requirements

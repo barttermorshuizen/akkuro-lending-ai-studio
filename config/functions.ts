@@ -68,15 +68,15 @@ export const read_product = async () => {
   return res;
 };
 
-export const product_stimulation = async () => {
-  console.log("product_stimulation called");
+export const product_simulation = async () => {
+  console.log("product_simulation called");
   const res = await readProduct();
 
   const setProduct = useConfiguringProduct.getState().setProduct;
   const product = transformProductModelToProductConfigurationDTO(res);
   setProduct(product);
 
-  console.log("executed product_stimulation function", res);
+  console.log("executed product_simulation function", res);
   return res;
 };
 
@@ -88,5 +88,5 @@ export const functionsMap = {
   store_regulatory_check,
   store_go_live,
   read_product,
-  product_stimulation,
+  product_simulation,
 };

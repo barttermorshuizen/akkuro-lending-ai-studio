@@ -166,8 +166,8 @@ export const toolsList = [
     parameters: {},
   },
   {
-    name: "product_stimulation",
-    description: "Stimulate the product creation process",
+    name: "product_simulation",
+    description: "Simulate the product creation process",
     parameters: {},
   },
 ];

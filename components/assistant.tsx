@@ -61,7 +61,9 @@ export default function Assistant() {
       <div className="flex flex-row justify-center items-center size-full">
         <div
           className={`flex flex-col w-full flex-1 ${
-            !product ? "lg:max-w-[50%] h-full" : "xl:max-w-[80vw]"
+            !product
+              ? "lg:max-w-[70%] xl:max-w-[50%] h-full"
+              : "xl:max-w-[80vw]"
           }`}
         >
           <Header />

@@ -67,16 +67,6 @@ export default function ProductScreen() {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 1.1 }}
-                className="px-4 w-full"
-              >
-                <Button className="bg-[#008071] py-6 text-white w-full">
-                  Next
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
               >
                 <Image src={PhoneFrameHomeIndicator} alt="Home Indicator" />
