@@ -42,18 +42,18 @@ const Annotations = ({ annotations }: { annotations: Annotation[] }) => {
             a.type === annotation.type &&
             ((annotation.type === "file_citation" &&
               a.fileId === annotation.fileId) ||
-              (annotation.type === "url_citation" && a.url === annotation.url))
+              (annotation.type === "url_citation" && a.url === annotation.url)),
         )
       ) {
         acc.push(annotation);
       }
       return acc;
     },
-    []
+    [],
   );
 
   return (
-    <div className="flex max-w-full mr-28 ml-4 overflow-x-scroll gap-2 mb-2">
+    <div className="flex flex-wrap max-w-full mr-28 ml-4 overflow-x-scroll gap-2 mb-2">
       {uniqueAnnotations.map((annotation: Annotation, index: number) => (
         <AnnotationPill key={index} annotation={annotation} />
       ))}

@@ -1,8 +1,12 @@
-'use server';
-import { google } from 'googleapis';
-import { ProductModel } from '@/types/product';
-import { readProduct } from './readProduct';
-import { ConfigurationError, ProductNotFoundError, ServiceUnavailableError } from '@/types/errors';
+"use server";
+import { google } from "googleapis";
+import { ProductModel } from "@/types/product";
+import { readProduct } from "./readProduct";
+import {
+  ConfigurationError,
+  ProductNotFoundError,
+  ServiceUnavailableError,
+} from "@/types/errors";
 
 // Re-use column mapping from readProduct
 const COLUMNS = {
@@ -36,7 +40,7 @@ const COLUMNS = {
   reportingObligations: 27,
   launchDate: 28,
   distributionChannels: 29,
-  monitoringRequirements: 30
+  monitoringRequirements: 30,
 };
 
 export const storeGoLive = async (updates: Partial<ProductModel>) => {
@@ -44,13 +48,13 @@ export const storeGoLive = async (updates: Partial<ProductModel>) => {
 
   // Validate environment variables
   if (!process.env.GOOGLE_CLIENT_EMAIL) {
-    throw new ConfigurationError('Google client email is not configured');
+    throw new ConfigurationError("Google client email is not configured");
   }
   if (!process.env.GOOGLE_PRIVATE_KEY) {
-    throw new ConfigurationError('Google private key is not configured');
+    throw new ConfigurationError("Google private key is not configured");
   }
   if (!process.env.GOOGLE_SHEET_ID) {
-    throw new ConfigurationError('Google sheet ID is not configured');
+    throw new ConfigurationError("Google sheet ID is not configured");
   }
 
   try {
@@ -58,31 +62,31 @@ export const storeGoLive = async (updates: Partial<ProductModel>) => {
     const product = await readProduct();
 
     // Merge updates with existing data
-    const updatedProduct = { 
-      ...product, 
+    const updatedProduct = {
+      ...product,
       ...updates,
-      currentState: 'GoLive' 
+      currentState: "GoLive",
     };
 
     const authClient = new google.auth.JWT({
       email: process.env.GOOGLE_CLIENT_EMAIL,
-      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const sheets = google.sheets({ version: "v4", auth: authClient });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = 'Sheet1!A2:AE2'; // Extended range to cover all columns
+    const range = "Sheet1!A2:AE2"; // Extended range to cover all columns
 
     // Convert product data to array format for sheets
     const rowData = new Array(Object.keys(COLUMNS).length).fill(null);
     Object.entries(updatedProduct).forEach(([key, value]) => {
       const columnIndex = COLUMNS[key as keyof typeof COLUMNS];
       if (columnIndex !== undefined) {
-        if (key === 'distributionChannels' && Array.isArray(value)) {
-          rowData[columnIndex] = value.join(',');
+        if (key === "distributionChannels" && Array.isArray(value)) {
+          rowData[columnIndex] = value.join(",");
         } else {
-          rowData[columnIndex] = value?.toString() ?? '';
+          rowData[columnIndex] = value?.toString() ?? "";
         }
       }
     });
@@ -90,7 +94,7 @@ export const storeGoLive = async (updates: Partial<ProductModel>) => {
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId,
       range,
-      valueInputOption: 'USER_ENTERED',
+      valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [rowData],
       },
@@ -99,12 +103,14 @@ export const storeGoLive = async (updates: Partial<ProductModel>) => {
     console.log("store_go_live response", response.data);
     return response.data;
   } catch (error) {
-    if (error instanceof ConfigurationError ||
-        error instanceof ServiceUnavailableError ||
-        error instanceof ProductNotFoundError) {
+    if (
+      error instanceof ConfigurationError ||
+      error instanceof ServiceUnavailableError ||
+      error instanceof ProductNotFoundError
+    ) {
       throw error;
     }
-    console.error('Unexpected error in storeGoLive:', error);
-    throw new Error('Failed to store go live data');
+    console.error("Unexpected error in storeGoLive:", error);
+    throw new Error("Failed to store go live data");
   }
 };

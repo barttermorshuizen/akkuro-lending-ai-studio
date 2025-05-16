@@ -36,6 +36,7 @@ const useConversationStore = create<ConversationState>((set, get) => ({
           text: INITIAL_MESSAGE.trim(),
         },
       ],
+      sendAt: new Date(),
     },
   ],
   conversationItems: [],
