@@ -90,7 +90,7 @@ export default function Lending() {
   }
 
   return (
-    <div className="h-full w-full flex flex-row mx-auto">
+    <div className="h-full w-full flex flex-row mx-auto bg-chatBackground">
       <div className="flex-1 flex-col justify-center items-center h-full hidden xl:flex"></div>
       <div className="flex flex-1 flex-col justify-center xl:absolute top-16 left-0 xl:w-[70vw] shadow-lending bg-background xl:h-[calc(100vh-64px)] items-center">
         <div className="flex flex-col gap-16">
@@ -137,11 +137,11 @@ export default function Lending() {
             <ChatIcon className="size-8" />
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-[700px] h-[700px] bg-transparent border-none p-0">
+        <DialogContent className="max-w-[700px] bg-transparent border-none p-0">
           <DialogHeader className="hidden">
             <DialogTitle>Chat with Akkuro AI</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col flex-1 h-full">
+          <div className="flex flex-col h-[75vh]">
             <Chat items={chatMessages} onSendMessage={handleSendMessage} />
           </div>
         </DialogContent>

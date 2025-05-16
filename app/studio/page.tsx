@@ -27,25 +27,11 @@ function ProductInfo({ name, description }: ProductInfoProps) {
 
 export default function Studio() {
   const { product, setProduct } = useConfiguringProductStore();
-  const [isHydrated, setIsHydrated] = useState(false);
-  const { userInfo } = useAuthStore();
   useEffect(() => {
     listenToProductUpdates((incomingProduct) => {
       setProduct(incomingProduct);
     });
   }, [setProduct]);
-
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
-  if (!isHydrated) {
-    return null;
-  }
-
-  if (!userInfo) {
-    redirect("/login");
-  }
 
   return (
     <div className="w-full h-[calc(100vh-64px)] bg-white flex flex-col lg:px-32 font-light text-4xl lg:py-12">

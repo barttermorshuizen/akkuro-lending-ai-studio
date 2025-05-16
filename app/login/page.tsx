@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { login } from "@/lib/actions";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import useAuthStore from "@/stores/useAuthStore";
 
@@ -14,33 +15,28 @@ export default function Login() {
     userInfo: null,
   });
 
-  const [isValidation, setIsValidation] = useState(false);
-
   console.log("Current state:", state);
   console.log("Current userInfo from store:", userInfo);
 
   useEffect(() => {
-    if (userInfo) {
-      console.log("User already logged in, redirecting to studio");
-      router.replace("/");
-      return;
-    }
     if (state.userInfo) {
       console.log("Login successful, updating store with:", state.userInfo);
       setUserInfo(state.userInfo);
-      router.replace("/");
     }
-    setIsValidation(true);
   }, [state, userInfo, router, setUserInfo]);
 
-  if (!isValidation) {
+  if (isPending) {
     return <div>Loading...</div>;
   }
 
+  if (userInfo) {
+    redirect("/");
+  }
+
   return (
-    <div className="bg-[url('/hero-pattern.svg')] h-full w-full bg-cover bg-center bg-no-repeat pt-16">
+    <div className="xl:bg-[url('/hero-pattern.svg')] h-full w-full bg-cover bg-center bg-no-repeat pt-16">
       <form
-        className="flex flex-col gap-4 max-w-md mt-16 ml-40"
+        className="flex flex-col gap-4 w-full px-4 sm:px-0 sm:max-w-sm xl:max-w-md mt-16 mx-auto xl:ml-40"
         action={formAction}
       >
         <h1 className="text-white text-6xl font-extralight mb-6">

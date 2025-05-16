@@ -64,14 +64,15 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
   }, [items]);
 
   return (
-    <div className={`flex flex-1 h-auto max-h-[90vh] flex-col`}>
+    <div className={`flex flex-1 h-auto max-h-[75vh] flex-col`}>
       <div className="flex-1 rounded-t-xl bg-chatBackground overflow-y-auto px-6 flex flex-col">
         <div className="mt-auto flex flex-col space-y-5 pt-4">
           {items.map((item, index) => (
             <React.Fragment key={index}>
               {item.type === "tool_call" ? (
-                <ToolCall toolCall={item} />
-              ) : item.type === "message" ? (
+                <></>
+              ) : // <ToolCall toolCall={item} />
+              item.type === "message" ? (
                 <div className="flex flex-col gap-1">
                   <Message message={item} onChoiceSelect={handleChoiceSelect} />
                   {item.content &&
@@ -89,7 +90,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
 
       <div className="p-4 px-6 bg-chatBackground flex flex-col items-center rounded-b-xl">
         <div className="flex items-center w-full flex-1">
-          <div className="flex w-full items-center pb-4 md:pb-1">
+          <div className="flex w-full items-center pb-4 md:pb-0">
             <div className="flex w-full flex-col gap-1.5 rounded-lg pr-2.5 pl-1.5 transition-colors bg-white border border-stone-200 shadow-sm">
               <div className="flex items-center gap-1.5 md:gap-2 pl-4">
                 <VoiceInput
