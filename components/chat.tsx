@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import ToolCall from "./tool-call";
 import Message from "./message";
 import Annotations from "./annotations";
 import VoiceInput, { VoiceInputRef } from "./voice-input";
 import { Item } from "@/lib/assistant";
+import ToolCall from "./tool-call";
 
 interface ChatProps {
   items: Item[];
@@ -20,13 +20,6 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
   // This state is used to provide better user experience for non-English IMEs such as Japanese
   const [isComposing, setIsComposing] = useState(false);
   const voiceInputRef = useRef<VoiceInputRef>(null);
-
-  const handleChoiceSelect = useCallback((choice: string) => {
-    if (textareaRef.current) {
-      textareaRef.current.value = choice;
-      textareaRef.current.focus();
-    }
-  }, []);
 
   const handleVoiceTranscript = useCallback((transcript: string) => {
     if (textareaRef.current) {
@@ -70,11 +63,10 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
           {items.map((item, index) => (
             <React.Fragment key={index}>
               {item.type === "tool_call" ? (
-                <></>
-              ) : // <ToolCall toolCall={item} />
-              item.type === "message" ? (
+                <ToolCall toolCall={item} />
+              ) : item.type === "message" ? (
                 <div className="flex flex-col gap-1">
-                  <Message message={item} onChoiceSelect={handleChoiceSelect} />
+                  <Message message={item} />
                   {item.content &&
                     item.content[0].annotations &&
                     item.content[0].annotations.length > 0 && (

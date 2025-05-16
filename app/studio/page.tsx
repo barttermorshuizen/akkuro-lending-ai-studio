@@ -5,10 +5,8 @@ import {
   productsConfigurationMapping,
 } from "@/config/productsConfigurationMapping";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
-import useAuthStore from "@/stores/useAuthStore";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 type ProductInfoProps = {
   name: string;

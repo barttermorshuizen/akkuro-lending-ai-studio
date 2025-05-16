@@ -334,7 +334,9 @@ export const stateInstructions: Record<string, string> = {
     - establishes monitoring requirements
     
     Use the store_go_live tool when you have collected all required information.
-    After storing, follow up with the user by asking if they would like to view a simulation or preview of the product. This is an opportunity to let the user explore how the configured product would work in real scenarios. 
+    After calling the store_go_live tool, ALWAYS call the store_all tool to store all the product information.
+    After calling, follow up with the user by asking if they would like to view a simulation or preview of the product. 
+    This is an opportunity to let the user explore how the configured product would work in real scenarios. 
     If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
 
     Format your responses in a clear, structured way:

@@ -11,7 +11,8 @@ import { transformProductModelToProductConfigurationDTO } from "./productsConfig
 import { sendProductUpdate } from "@/lib/productSyncChannel";
 import useConversationStore from "@/stores/useConversationStore";
 import { conversationStates } from "@/lib/stateMachine";
-
+import useSimulationProductPopupStore from "@/stores/useSimulationProductPopupStore";
+import { storeAll } from "@/services/storeAll";
 // Functions mapping to tool calls
 export const store_initial_setup = async (params: Partial<ProductModel>) => {
   console.log("store_initial_setup params", params);
@@ -97,10 +98,21 @@ export const product_simulation = async () => {
 
   const setProduct = useConfiguringProductStore.getState().setProduct;
   const product = transformProductModelToProductConfigurationDTO(res);
+
   setProduct(product);
   sendProductUpdate(product);
 
+  useSimulationProductPopupStore.getState().setIsOpen(true);
+
   console.log("executed product_simulation function", res);
+  return res;
+};
+
+export const store_all = async (params: ProductModel) => {
+  console.log("store_all params", params);
+  const res = await storeAll(params);
+
+  console.log("executed store_all function", res);
   return res;
 };
 
@@ -113,4 +125,5 @@ export const functionsMap = {
   store_go_live,
   read_product,
   product_simulation,
+  store_all,
 };

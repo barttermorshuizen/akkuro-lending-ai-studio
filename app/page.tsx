@@ -3,12 +3,13 @@
 import useAuthStore from "@/stores/useAuthStore";
 import {
   CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
   LucideGauge,
   MapPinMinus,
   SlidersVertical,
   TagIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { HTMLAttributes, useEffect, useState } from "react";
 import ChatIcon from "./assets/icons/ChatIcon";
 import {
@@ -22,6 +23,9 @@ import Chat from "@/components/chat";
 import { Item, processMessages } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
 import { redirect } from "next/navigation";
+import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
+import ToolsPanel from "@/components/tools-panel";
+
 interface InfoCardProps {
   title: string;
   description: string;
@@ -48,7 +52,7 @@ function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
 
 export default function Lending() {
   const [isHydrated, setIsHydrated] = useState(false);
-
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { userInfo } = useAuthStore();
 
   const { chatMessages, addConversationItem, addChatMessage } =
@@ -131,9 +135,12 @@ export default function Lending() {
         </div>
       </div>
       <div className="xl:w-[30vw] h-full bg-[url('/lending.svg')] bg-cover bg-center" />
+
+      <SimulateProductConfirmPopUp />
+
       <Dialog>
         <DialogTrigger asChild>
-          <button className="absolute shadow-xl bottom-8 rounded-full right-8 size-16 bg-white flex justify-center items-center hover:bg-gray-50 transition-colors">
+          <button className="absolute shadow-xl z-[99999] bottom-8 rounded-full right-8 size-16 bg-white flex justify-center items-center hover:bg-gray-50 transition-colors">
             <ChatIcon className="size-8" />
           </button>
         </DialogTrigger>
@@ -141,11 +148,37 @@ export default function Lending() {
           <DialogHeader className="hidden">
             <DialogTitle>Chat with Akkuro AI</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col h-[75vh]">
+          <div className="flex flex-col h-[75vh] bg-chatBackground rounded-xl">
             <Chat items={chatMessages} onSendMessage={handleSendMessage} />
           </div>
         </DialogContent>
       </Dialog>
+      {/* <div
+        className={`hidden md:flex h-full overflow-hidden ${isCollapsed ? "w-12" : "w-1/3"} relative`}
+      >
+        <div className="absolute top-2 right-2 z-10">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 bg-white rounded shadow"
+          >
+            {isCollapsed ? (
+              <ChevronRight size={20} />
+            ) : (
+              <ChevronLeft size={20} />
+            )}
+          </button>
+        </div>
+        <div
+          className={`h-full w-full bg-white border-l overflow-auto flex flex-col transition-transform duration-300 ease-in-out ${isCollapsed ? "transform translate-x-full" : "transform translate-x-0"}`}
+        >
+          {!isCollapsed && (
+            <div className="flex-grow overflow-auto p-4 pt-10">
+              {" "}
+              <ToolsPanel />
+            </div>
+          )}
+        </div>
+      </div> */}
     </div>
   );
 }

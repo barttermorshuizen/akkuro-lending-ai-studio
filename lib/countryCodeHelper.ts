@@ -1,6 +1,8 @@
-import { iso31661 } from "iso-3166";
+import { ISO_3166_ALPHA_2_CODES } from "@/components/country-selector";
 
 export const isValidISOCountryCode = (countryCode: string) => {
-  const isExist = iso31661.find((item) => item.alpha2 === countryCode);
+  const isExist = Array.from(ISO_3166_ALPHA_2_CODES).find(
+    (item) => item === countryCode,
+  );
   return isExist !== undefined;
 };

@@ -5,6 +5,11 @@ import { getTools } from "./tools/tools";
 import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
 import { stateInstructions } from "@/config/stateInstructions";
+import {
+  pushMessageFunctions,
+  getPushMessageForFunction,
+  PushMessageFunction,
+} from "./messages/custom-message";
 
 export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
@@ -187,6 +192,24 @@ export const processMessages = async () => {
           }
           case "function_call": {
             functionArguments += item.arguments || "";
+
+            // // Create an assistant message explaining what it's going to do
+            // const explanationMessage: MessageItem = {
+            //   type: "message",
+            //   role: "assistant",
+            //   id: `${item.id}_explanation`,
+            //   content: [
+            //     {
+            //       type: "output_text",
+            //       text: `I'll help you with that by calling the ${item.name} function.`,
+            //     },
+            //   ],
+            //   sendAt: new Date(),
+            // };
+            // chatMessages.push(explanationMessage);
+
+            // Add the tool call message
+            console.log("function_call item", item);
             chatMessages.push({
               type: "tool_call",
               tool_type: "function_call",
@@ -285,10 +308,51 @@ export const processMessages = async () => {
           // Record tool output
           toolCallMessage.output = JSON.stringify(toolResult);
           setChatMessages([...chatMessages]);
-          // Add tool result to conversation items
+
+          // Create a response message based on the tool result
+          let responseText = "";
+          if (typeof toolResult === "object") {
+            if ("status" in toolResult && toolResult.status === "success") {
+              responseText =
+                "message" in toolResult &&
+                typeof toolResult.message === "string"
+                  ? toolResult.message
+                  : "I've successfully completed that action for you.";
+            } else if ("error" in toolResult) {
+              responseText = `I encountered an error while trying to do that: ${toolResult.error}`;
+            }
+          }
+
+          // Add response message
+          if (
+            pushMessageFunctions.includes(
+              toolCallMessage.name as keyof typeof functionsMap,
+            )
+          ) {
+            const responseMessage: MessageItem = {
+              type: "message",
+              role: "assistant",
+              id: `${item_id}_response`,
+              content: [
+                {
+                  type: "output_text",
+                  text:
+                    responseText ||
+                    getPushMessageForFunction(
+                      toolCallMessage.name as PushMessageFunction,
+                    ),
+                },
+              ],
+              sendAt: new Date(),
+            };
+            chatMessages.push(responseMessage);
+            setChatMessages([...chatMessages]);
+          }
+
+          // Add to conversation items
           conversationItems.push({
             role: "assistant",
-            content: "Tool execution completed successfully.",
+            content: responseText || "Tool execution completed successfully.",
           });
 
           // Determine message based on the current tool

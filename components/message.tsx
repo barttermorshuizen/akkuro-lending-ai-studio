@@ -5,10 +5,9 @@ import TextToSpeech from "./text-to-speech";
 
 interface MessageProps {
   message: Item;
-  onChoiceSelect?: (choice: string) => void;
 }
 
-const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
+const Message: React.FC<MessageProps> = ({ message }) => {
   // Only process if it's a message item
   if (message.type !== "message") return null;
 

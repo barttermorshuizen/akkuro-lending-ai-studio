@@ -4,6 +4,7 @@ import { ToolCallItem } from "@/lib/assistant";
 import { BookOpenText, Clock, Globe, Zap } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Message from "./message";
 
 interface ToolCallProps {
   toolCall: ToolCallItem;
@@ -143,9 +144,11 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
       {(() => {
         switch (toolCall.tool_type) {
           case "function_call":
-            return <ApiCallCell toolCall={toolCall} />;
+            return <Message message={toolCall} />;
+          // return <ApiCallCell toolCall={toolCall} />;
           case "file_search_call":
-            return <FileSearchCell toolCall={toolCall} />;
+            return <Message message={toolCall} />;
+          // return <FileSearchCell toolCall={toolCall} />;
           case "web_search_call":
             return <WebSearchCell toolCall={toolCall} />;
           default:

@@ -6,7 +6,6 @@ import { Item, processMessages } from "@/lib/assistant";
 import ProductScreen from "./product-screen";
 import Header from "./header";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
-import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
 
 export default function Assistant() {

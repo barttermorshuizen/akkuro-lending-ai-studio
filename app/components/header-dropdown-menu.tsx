@@ -15,11 +15,15 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { LogOutIcon } from "lucide-react";
 import useAuthStore from "@/stores/useAuthStore";
 import Show from "@/components/condition/show";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 
 export default function HeaderDropdownMenu() {
   const { userInfo, setUserInfo } = useAuthStore();
+  const { resetProduct } = useConfiguringProductStore();
+
   const handleLogout = () => {
     setUserInfo(null);
+    resetProduct();
   };
   return (
     <Show when={!!userInfo}>
