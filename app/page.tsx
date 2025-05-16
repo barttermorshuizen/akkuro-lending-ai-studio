@@ -21,7 +21,7 @@ import {
 import Chat from "@/components/chat";
 import { Item, processMessages } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
-
+import { redirect } from "next/navigation";
 interface InfoCardProps {
   title: string;
   description: string;
@@ -36,8 +36,10 @@ function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
       className="flex hover:scale-105 hover:shadow-lendingCardHover transition-all duration-300 flex-row text-start justify-between gap-8 bg-chatBackground rounded-lg py-8 px-6 items-center w-[423px]"
     >
       <div className="flex flex-col gap-2">
-        <div className="text-3xl font-light line-clamp-1">{title}</div>
-        <div className="text-sm line-clamp-1">{description}</div>
+        <div className="text-xl lg:text-3xl font-light line-clamp-1">
+          {title}
+        </div>
+        <div className="text-xs lg:text-sm line-clamp-1">{description}</div>
       </div>
       {icon}
     </button>
@@ -46,7 +48,6 @@ function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
 
 export default function Lending() {
   const [isHydrated, setIsHydrated] = useState(false);
-  const router = useRouter();
 
   const { userInfo } = useAuthStore();
 
@@ -80,14 +81,12 @@ export default function Lending() {
     setIsHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (isHydrated && !userInfo) {
-      router.replace("/login");
-    }
-  }, [isHydrated, userInfo, router]);
-
-  if (!isHydrated || !userInfo) {
+  if (!isHydrated) {
     return null;
+  }
+
+  if (!userInfo) {
+    redirect("/login");
   }
 
   return (
@@ -103,17 +102,17 @@ export default function Lending() {
             <InfoCard
               title="Scheduled work"
               description="View scheduled work."
-              icon={<CalendarCheck className="size-8" />}
+              icon={<CalendarCheck className="size-6 lg:size-8" />}
             />
             <InfoCard
               title="Loan management"
               description="Manage existing loans and counterparties."
-              icon={<LucideGauge className="size-8" />}
+              icon={<LucideGauge className="size-6 lg:size-8" />}
             />
             <InfoCard
               title="Product configuration"
               description="Configure loan product"
-              icon={<SlidersVertical className="size-8" />}
+              icon={<SlidersVertical className="size-6 lg:size-8" />}
               onClick={() => {
                 window.open("/studio", "_blank");
               }}
@@ -121,12 +120,12 @@ export default function Lending() {
             <InfoCard
               title="Regional audit"
               description="Manage regional risk configuration for collaterals."
-              icon={<MapPinMinus className="size-8" />}
+              icon={<MapPinMinus className="size-6 lg:size-8" />}
             />
             <InfoCard
               title="Pricing"
               description="Manage interest rates and fees"
-              icon={<TagIcon className="size-8" />}
+              icon={<TagIcon className="size-6 lg:size-8" />}
             />
           </div>
         </div>
