@@ -1,6 +1,48 @@
-import { ProductModel } from "@/types/product";
+import { ProductModel, ProductState } from "@/types/product";
 
-export type ProductConfigurationDTO = ProductModel;
+export type ProductConfigurationDTO = {
+  productName: string;
+  targetCustomer: string;
+  intendedUse: string;
+  countryCode: string;
+  currentState: ProductState;
+
+  // Loan Parameters
+  loanAmountMin?: string;
+  loanAmountMax?: string;
+  interestRateType?: string;
+  repaymentTerm?: string;
+  repaymentFrequency?: string;
+  earlyRepaymentConditions?: string;
+
+  // Acceptance Criteria
+  collateralRequirements?: string;
+  guarantees?: string;
+  minCreditScore?: string;
+  financialRatios?: string;
+  industrySpecificCriteria?: string;
+
+  // Pricing
+  interestRateMin?: string;
+  interestRateMax?: string;
+  originationFee?: string;
+  servicingFee?: string;
+  latePaymentFee?: string;
+  greenInvestmentDiscount?: string;
+  earlyRepaymentPenalty?: string;
+
+  // Regulatory
+  regulatoryFramework?: string;
+  requiredDocumentation?: string;
+  complianceRequirements?: string;
+  riskDisclosure?: string;
+  reportingObligations?: string;
+
+  // Go Live
+  launchDate?: string;
+  distributionChannels?: string[];
+  monitoringRequirements?: string;
+};
 
 export const productsConfigurationMapping: Record<
   keyof ProductConfigurationDTO,
@@ -54,25 +96,33 @@ export const transformProductModelToProductConfigurationDTO = (
     countryCode: productModel.countryCode,
     currentState: productModel.currentState,
 
-    loanAmountMin: productModel.loanAmountMin,
-    loanAmountMax: productModel.loanAmountMax,
+    loanAmountMin: productModel.loanAmountMin?.toString().includes("€")
+      ? productModel.loanAmountMin?.toString()
+      : "€" + productModel.loanAmountMin?.toString(),
+    loanAmountMax: productModel.loanAmountMax?.toString().includes("€")
+      ? productModel.loanAmountMax?.toString()
+      : "€" + productModel.loanAmountMax?.toString(),
     interestRateType: productModel.interestRateType,
-    repaymentTerm: productModel.repaymentTerm,
+    repaymentTerm: productModel.repaymentTerm?.toString(),
     repaymentFrequency: productModel.repaymentFrequency,
     earlyRepaymentConditions: productModel.earlyRepaymentConditions,
 
     collateralRequirements: productModel.collateralRequirements,
     guarantees: productModel.guarantees,
-    minCreditScore: productModel.minCreditScore,
+    minCreditScore: productModel.minCreditScore?.toString(),
     financialRatios: productModel.financialRatios,
     industrySpecificCriteria: productModel.industrySpecificCriteria,
 
-    interestRateMin: productModel.interestRateMin,
-    interestRateMax: productModel.interestRateMax,
+    interestRateMin: productModel.interestRateMin?.toString().includes("%")
+      ? productModel.interestRateMin?.toString()
+      : productModel.interestRateMin?.toString() + "%",
+    interestRateMax: productModel.interestRateMax?.toString().includes("%")
+      ? productModel.interestRateMax?.toString()
+      : productModel.interestRateMax?.toString() + "%",
     originationFee: productModel.originationFee,
     servicingFee: productModel.servicingFee,
     latePaymentFee: productModel.latePaymentFee,
-    greenInvestmentDiscount: productModel.greenInvestmentDiscount,
+    greenInvestmentDiscount: productModel.greenInvestmentDiscount?.toString(),
     earlyRepaymentPenalty: productModel.earlyRepaymentPenalty,
 
     regulatoryFramework: productModel.regulatoryFramework,
