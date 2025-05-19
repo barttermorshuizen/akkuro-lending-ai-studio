@@ -1,42 +1,47 @@
 import { ProductModel } from "@/types/product";
 
-export type ProductConfigurationDTO = {
-  productName: string;
-  targetSegment: string;
-  intendedUse: string;
-  countryCode: string;
-  currentState: string;
-  loanAmountRange: string;
-  interestRateType: string;
-  repaymentTermOptions: string;
-  interestRates: string;
-  collateralRequirement: string;
-  minimumRevenue: string;
-  minimumOperatingHistory: string;
-  creditScoreThreshold: string;
-  sustainabilityIncentive: string;
-  earlyRepaymentBenefit: string;
-};
+export type ProductConfigurationDTO = ProductModel;
 
 export const productsConfigurationMapping: Record<
   keyof ProductConfigurationDTO,
   string
 > = {
   productName: "Loan product name",
-  targetSegment: "Target segment",
+  targetCustomer: "Target customer",
   intendedUse: "Intended use",
-  loanAmountRange: "Loan amount range",
-  interestRateType: "Interest rate (tired)",
-  repaymentTermOptions: "Repayment term options",
-  interestRates: "Interest rates",
-  collateralRequirement: "Collateral requirement",
-  minimumRevenue: "Minimum revenue",
-  minimumOperatingHistory: "Minimum operating history (months)",
-  creditScoreThreshold: "Credit score threshold",
-  sustainabilityIncentive: "Sustainability incentive",
-  earlyRepaymentBenefit: "Early repayment benefit",
-  countryCode: "Country code",
+  countryCode: "Country",
   currentState: "Current state",
+
+  loanAmountMin: "Min Loan Amount",
+  loanAmountMax: "Max Loan Amount",
+  interestRateType: "Interest rate type",
+  repaymentTerm: "Repayment term",
+  repaymentFrequency: "Repayment frequency",
+  earlyRepaymentConditions: "Early repayment conditions",
+
+  collateralRequirements: "Collateral requirement",
+  guarantees: "Guarantees",
+  minCreditScore: "Minimum credit score",
+  financialRatios: "Financial ratios",
+  industrySpecificCriteria: "Industry-specific criteria",
+
+  interestRateMin: "Min interest rate",
+  interestRateMax: "Max interest rate",
+  originationFee: "Origination fee",
+  servicingFee: "Servicing fee",
+  latePaymentFee: "Late payment fee",
+  greenInvestmentDiscount: "Green investment discount",
+  earlyRepaymentPenalty: "Early repayment penalty",
+
+  regulatoryFramework: "Regulatory framework",
+  requiredDocumentation: "Required documentation",
+  complianceRequirements: "Compliance requirements",
+  riskDisclosure: "Risk disclosure",
+  reportingObligations: "Reporting obligations",
+
+  launchDate: "Launch date",
+  distributionChannels: "Distribution channels",
+  monitoringRequirements: "Monitoring requirements",
 };
 
 export const transformProductModelToProductConfigurationDTO = (
@@ -44,24 +49,40 @@ export const transformProductModelToProductConfigurationDTO = (
 ): ProductConfigurationDTO => {
   return {
     productName: productModel.productName,
-    targetSegment: productModel.targetCustomer,
+    targetCustomer: productModel.targetCustomer,
     intendedUse: productModel.intendedUse,
     countryCode: productModel.countryCode,
     currentState: productModel.currentState,
-    loanAmountRange:
-      productModel.loanAmountMin + " - " + productModel.loanAmountMax,
-    interestRateType: productModel.interestRateType || "",
-    repaymentTermOptions: productModel.repaymentTerm?.toString() || "",
-    interestRates:
-      productModel.interestRateMin + " - " + productModel.interestRateMax,
-    collateralRequirement:
-      productModel.collateralRequirements?.toString() || "",
-    minimumRevenue: productModel.servicingFee?.toString() || "",
-    minimumOperatingHistory: productModel.minCreditScore?.toString() || "",
-    creditScoreThreshold: productModel.minCreditScore?.toString() || "",
-    sustainabilityIncentive:
-      productModel.greenInvestmentDiscount?.toString() || "",
-    earlyRepaymentBenefit:
-      productModel.earlyRepaymentConditions?.toString() || "",
+
+    loanAmountMin: productModel.loanAmountMin,
+    loanAmountMax: productModel.loanAmountMax,
+    interestRateType: productModel.interestRateType,
+    repaymentTerm: productModel.repaymentTerm,
+    repaymentFrequency: productModel.repaymentFrequency,
+    earlyRepaymentConditions: productModel.earlyRepaymentConditions,
+
+    collateralRequirements: productModel.collateralRequirements,
+    guarantees: productModel.guarantees,
+    minCreditScore: productModel.minCreditScore,
+    financialRatios: productModel.financialRatios,
+    industrySpecificCriteria: productModel.industrySpecificCriteria,
+
+    interestRateMin: productModel.interestRateMin,
+    interestRateMax: productModel.interestRateMax,
+    originationFee: productModel.originationFee,
+    servicingFee: productModel.servicingFee,
+    latePaymentFee: productModel.latePaymentFee,
+    greenInvestmentDiscount: productModel.greenInvestmentDiscount,
+    earlyRepaymentPenalty: productModel.earlyRepaymentPenalty,
+
+    regulatoryFramework: productModel.regulatoryFramework,
+    requiredDocumentation: productModel.requiredDocumentation,
+    complianceRequirements: productModel.complianceRequirements,
+    riskDisclosure: productModel.riskDisclosure,
+    reportingObligations: productModel.reportingObligations,
+
+    launchDate: productModel.launchDate,
+    distributionChannels: productModel.distributionChannels,
+    monitoringRequirements: productModel.monitoringRequirements,
   };
 };

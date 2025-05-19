@@ -1,4 +1,5 @@
 import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
+import { ProductState } from "@/types/product";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -10,24 +11,37 @@ interface ConfiguringProductState {
 
 const emptyProduct: ProductConfigurationDTO = {
   productName: "",
-  targetSegment: "",
+  targetCustomer: "",
   intendedUse: "",
   countryCode: "",
-  currentState: "",
-  loanAmountRange: "",
-  interestRateType: "",
-  repaymentTermOptions: "",
-  interestRates: "",
-  collateralRequirement: "",
-  minimumRevenue: "",
-  minimumOperatingHistory: "",
-  creditScoreThreshold: "",
-  sustainabilityIncentive: "",
-  earlyRepaymentBenefit: "",
+  currentState: "InitialSetup" as ProductState,
+  loanAmountMin: 0,
+  loanAmountMax: 0,
+  interestRateType: "fixed",
+  repaymentTerm: 0,
+  repaymentFrequency: "monthly",
+  earlyRepaymentConditions: "",
+  collateralRequirements: "",
+  guarantees: "",
+  minCreditScore: 0,
+  financialRatios: "",
+  industrySpecificCriteria: "",
+  interestRateMin: 0,
+  interestRateMax: 0,
+  originationFee: "",
+  servicingFee: "",
+  latePaymentFee: "",
+  greenInvestmentDiscount: 0,
+  earlyRepaymentPenalty: "",
+  regulatoryFramework: "",
+  requiredDocumentation: "",
+  complianceRequirements: "",
+  riskDisclosure: "",
+  reportingObligations: "",
+  launchDate: "",
+  distributionChannels: [],
+  monitoringRequirements: "",
 };
-
-const productChannel =
-  typeof window !== "undefined" ? new BroadcastChannel("product_sync") : null;
 
 const useConfiguringProductStore = create<ConfiguringProductState>()(
   persist(
@@ -35,10 +49,6 @@ const useConfiguringProductStore = create<ConfiguringProductState>()(
       product: emptyProduct,
       setProduct: (product) => {
         set({ product });
-        productChannel?.postMessage({
-          type: "PRODUCT_UPDATE",
-          product,
-        });
       },
       resetProduct: () => {
         set({ product: emptyProduct });
@@ -49,13 +59,5 @@ const useConfiguringProductStore = create<ConfiguringProductState>()(
     },
   ),
 );
-
-if (productChannel) {
-  productChannel.onmessage = (event) => {
-    if (event.data.type === "PRODUCT_UPDATE") {
-      useConfiguringProductStore.setState({ product: event.data.product });
-    }
-  };
-}
 
 export default useConfiguringProductStore;
