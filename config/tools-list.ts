@@ -296,4 +296,98 @@ export const toolsList = [
       },
     },
   },
+  {
+    name: "generate_iso_compliance_pdf",
+    description: "Generate an ISO declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
+      },
+      timestamp: {
+        type: "string",
+        description: "The timestamp of the ISO declaration",
+      },
+      companyName: {
+        type: "string",
+        description: "The name of the company",
+      },
+      signatureLine: {
+        type: "string",
+        description: "The signature line of the ISO declaration",
+      },
+      scopeOfCompliance: {
+        type: "string",
+        description: "Scope of compliance",
+      },
+      complianceDetails: {
+        type: "string",
+        description: "Specific compliance details",
+      },
+    },
+  },
+  {
+    name: "generate_eu_tax_compliance_pdf",
+    description: "Generate an EU tax compliance declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      eligibleEconomicActivity: {
+        type: "string",
+        description: "Eligible economic activity",
+      },
+      alignmentCriteria: {
+        type: "string",
+        description: "Alignment criteria",
+      },
+      assessmentSummary: {
+        type: "string",
+        description: "Assessment summary",
+      },
+    },
+  },
+  {
+    name: "generate_esg_declaration_pdf",
+    description: "Generate an ESG declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      signatureLine: {
+        type: "string",
+        description: "The signature line of the ESG declaration",
+      },
+      environmentalMeasures: {
+        type: "string",
+        description: "Environmental measures",
+      },
+      socialResponsibility: {
+        type: "string",
+        description: "Social responsibility",
+      },
+      governmancePractices: {
+        type: "string",
+        description: "Governance practices",
+      },
+    },
+  },
 ];

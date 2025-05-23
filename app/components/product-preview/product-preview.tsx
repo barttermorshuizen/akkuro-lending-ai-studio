@@ -12,6 +12,7 @@ import ProductReviewSection from "./product-review-section";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
+
 export default function ProductPreview() {
   const {
     productName,

@@ -12,6 +12,11 @@ import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import useSimulationProductPopupStore from "@/stores/useSimulationProductPopupStore";
+import {
+  EsgDeclarationPdfDataModel,
+  EuTaxCompliancePdfDataModel,
+  ISOCompliancePdfDataModel,
+} from "@/types/pdf-data-model";
 import { ProductModel } from "@/types/product";
 import { transformProductModelToProductConfigurationDTO } from "./productsConfigurationMapping";
 // Functions mapping to tool calls
@@ -169,6 +174,30 @@ export const product_simulation = async () => {
   return res;
 };
 
+export const generate_iso_compliance_pdf = async (
+  params: ISOCompliancePdfDataModel,
+) => {
+  console.log("generate_iso_compliance_pdf params", params);
+  console.log("executed generate_iso_compliance_pdf function");
+  return { status: "success", requiresFollowUp: false };
+};
+
+export const generate_eu_tax_compliance_pdf = async (
+  params: EuTaxCompliancePdfDataModel,
+) => {
+  console.log("generate_eu_tax_compliance_pdf params", params);
+  console.log("executed generate_eu_tax_compliance_pdf function");
+  return { status: "success", requiresFollowUp: false };
+};
+
+export const generate_esg_declaration_pdf = async (
+  params: EsgDeclarationPdfDataModel,
+) => {
+  console.log("generate_esg_declaration_pdf params", params);
+  console.log("executed generate_esg_declaration_pdf function");
+  return { status: "success", requiresFollowUp: false };
+};
+
 export const functionsMap = {
   store_initial_setup,
   store_is_regulatory_check_at_every_step,
@@ -179,5 +208,8 @@ export const functionsMap = {
   store_go_live,
   read_product,
   product_simulation,
+  generate_iso_compliance_pdf,
+  generate_eu_tax_compliance_pdf,
+  generate_esg_declaration_pdf,
   store_all,
 };

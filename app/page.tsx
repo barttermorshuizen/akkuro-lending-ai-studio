@@ -15,6 +15,7 @@ import { Item, processMessages } from "@/lib/assistant";
 import useAuthStore from "@/stores/useAuthStore";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import useConversationStore from "@/stores/useConversationStore";
+import { motion } from "framer-motion";
 import {
   CalendarCheck,
   LucideGauge,
@@ -52,11 +53,21 @@ function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
 export default function Lending() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
+
   const { userInfo } = useAuthStore();
 
   const { chatMessages, addConversationItem, addChatMessage } =
     useConversationStore();
   const { isDisplayProductPreview } = useConfiguringProductStore();
+
+  useEffect(() => {
+    if (showTooltip) {
+      setTimeout(() => {
+        setShowTooltip(false);
+      }, 5000);
+    }
+  }, [showTooltip]);
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -139,11 +150,30 @@ export default function Lending() {
       <SimulateProductConfirmPopUp />
 
       <Dialog>
-        <DialogTrigger asChild>
-          <button className="absolute z-[99999] bottom-8 right-8 cursor-pointer flex justify-center items-center ">
-            <ChatIcon className="size-[70px] text-white" />
-          </button>
-        </DialogTrigger>
+        <div className="absolute z-[99999] bottom-12 right-12 flex items-end flex-col gap-4">
+          <motion.div
+            className={`flex justify-center items-center bg-white rounded-md p-[10px] shadow-chatTooltip mr-4 ${
+              showTooltip ? "flex" : "hidden"
+            }`}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0, scale: 1.2 }}
+            transition={{
+              type: "spring",
+              stiffness: 600,
+              damping: 20,
+              delay: 0.5,
+            }}
+          >
+            <div className="text-gray-800 text-sm">
+              Hey, let&apos;s have a chat!
+            </div>
+          </motion.div>
+          <DialogTrigger asChild>
+            <button className="cursor-pointer flex justify-center items-center ">
+              <ChatIcon className="size-[70px] text-white" />
+            </button>
+          </DialogTrigger>
+        </div>
         <DialogContent
           className={`bg-transparent border-none p-0 ${
             isDisplayProductPreview

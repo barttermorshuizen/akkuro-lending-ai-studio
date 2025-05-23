@@ -1,5 +1,5 @@
-import { functionsMap } from "../../config/functions";
 import useToolsStore from "@/stores/useToolsStore";
+import { functionsMap } from "../../config/functions";
 
 type ToolName = keyof typeof functionsMap;
 

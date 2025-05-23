@@ -64,6 +64,7 @@ export default {
         lending: "10px 4px 10px 0 rgba(0, 0, 0, 0.25)",
         lendingCardHover: "0px 0px 32px 8px rgba(255, 255, 255, 0.40)",
         header: "0px 0px 10px 0px rgba(0, 0, 0, 0.15)",
+        chatTooltip: "0px 0px 32px 16px rgba(255, 255, 255, 0.4)",
       },
       fontFamily: {
         grotesk: ["AcidGrotesk", "sans-serif"],
