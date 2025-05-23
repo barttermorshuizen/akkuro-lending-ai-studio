@@ -21,7 +21,6 @@ interface WebSearchTool extends WebSearchConfig {
 
 export const getTools = () => {
   const {
-    webSearchEnabled,
     fileSearchEnabled,
     functionsEnabled,
     vectorStore,
