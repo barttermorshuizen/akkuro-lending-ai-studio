@@ -1,10 +1,6 @@
-export type ProductState =
-  | 'InitialSetup'
-  | 'LoanParameters'
-  | 'AcceptanceCriteria'
-  | 'Pricing'
-  | 'RegulatoryCheck'
-  | 'GoLive';
+import { ConversationState } from "@/lib/stateMachine";
+
+export type ProductState = ConversationState;
 
 export interface ProductModel {
   // Initial Setup
@@ -17,9 +13,9 @@ export interface ProductModel {
   // Loan Parameters
   loanAmountMin?: number;
   loanAmountMax?: number;
-  interestRateType?: 'fixed' | 'variable';
+  interestRateType?: "fixed" | "variable";
   repaymentTerm?: number;
-  repaymentFrequency?: 'monthly' | 'quarterly' | 'annually';
+  repaymentFrequency?: "monthly" | "quarterly" | "annually";
   earlyRepaymentConditions?: string;
 
   // Acceptance Criteria

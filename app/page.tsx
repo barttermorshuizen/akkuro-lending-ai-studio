@@ -1,17 +1,9 @@
 "use client";
 
-import useAuthStore from "@/stores/useAuthStore";
-import {
-  CalendarCheck,
-  ChevronLeft,
-  ChevronRight,
-  LucideGauge,
-  MapPinMinus,
-  SlidersVertical,
-  TagIcon,
-} from "lucide-react";
-import { HTMLAttributes, useEffect, useState } from "react";
-import ChatIcon from "./assets/icons/ChatIcon";
+import ProductPreview from "@/app/components/product-preview/product-preview";
+import Chat from "@/components/chat";
+import Show from "@/components/condition/show";
+import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
 import {
   Dialog,
   DialogContent,
@@ -19,13 +11,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Chat from "@/components/chat";
 import { Item, processMessages } from "@/lib/assistant";
+import useAuthStore from "@/stores/useAuthStore";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import useConversationStore from "@/stores/useConversationStore";
+import {
+  CalendarCheck,
+  LucideGauge,
+  MapPinMinus,
+  SlidersVertical,
+  TagIcon,
+} from "lucide-react";
 import { redirect } from "next/navigation";
-import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
-import ToolsPanel from "@/components/tools-panel";
-
+import { HTMLAttributes, useEffect, useState } from "react";
+import ChatIcon from "./assets/icons/ChatIcon";
 interface InfoCardProps {
   title: string;
   description: string;
@@ -57,6 +56,7 @@ export default function Lending() {
 
   const { chatMessages, addConversationItem, addChatMessage } =
     useConversationStore();
+  const { isDisplayProductPreview } = useConfiguringProductStore();
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -140,15 +140,26 @@ export default function Lending() {
 
       <Dialog>
         <DialogTrigger asChild>
-          <button className="absolute shadow-xl z-[99999] bottom-8 rounded-full right-8 size-16 bg-white flex justify-center items-center hover:bg-gray-50 transition-colors">
-            <ChatIcon className="size-8" />
+          <button className="absolute z-[99999] bottom-8 right-8 cursor-pointer flex justify-center items-center ">
+            <ChatIcon className="size-[70px] text-white" />
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-[700px] bg-transparent border-none p-0">
+        <DialogContent
+          className={`bg-transparent border-none p-0 ${
+            isDisplayProductPreview
+              ? "max-w-[90vw] xl:max-w-[75vw]"
+              : "max-w-[90vw] xl:max-w-[45vw]"
+          }`}
+        >
           <DialogHeader className="hidden">
             <DialogTitle>Chat with Akkuro AI</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col h-[75vh] bg-chatBackground rounded-xl">
+          <div
+            className={`flex flex-col lg:flex-row h-[95vh] overflow-y-auto lg:h-[90vh] divide-x-[1px] divide-solid divide-[#C5BFB9] py-4 bg-chatBackground rounded-xl`}
+          >
+            <Show when={isDisplayProductPreview}>
+              <ProductPreview />
+            </Show>
             <Chat items={chatMessages} onSendMessage={handleSendMessage} />
           </div>
         </DialogContent>
@@ -173,7 +184,6 @@ export default function Lending() {
         >
           {!isCollapsed && (
             <div className="flex-grow overflow-auto p-4 pt-10">
-              {" "}
               <ToolsPanel />
             </div>
           )}

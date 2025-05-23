@@ -16,14 +16,17 @@ import { LogOutIcon } from "lucide-react";
 import useAuthStore from "@/stores/useAuthStore";
 import Show from "@/components/condition/show";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
+import useConversationStore from "@/stores/useConversationStore";
 
 export default function HeaderDropdownMenu() {
   const { userInfo, setUserInfo } = useAuthStore();
   const { resetProduct } = useConfiguringProductStore();
+  const { resetConversation } = useConversationStore();
 
   const handleLogout = () => {
     setUserInfo(null);
     resetProduct();
+    resetConversation();
   };
   return (
     <Show when={!!userInfo}>

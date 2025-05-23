@@ -1,20 +1,23 @@
-import { parse } from "partial-json";
-import { handleTool } from "@/lib/tools/tools-handling";
-import useConversationStore from "@/stores/useConversationStore";
-import { getTools } from "./tools/tools";
 import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
+import { regulatoryInstructions } from "@/config/instruction/regulatory";
 import { stateInstructions } from "@/config/stateInstructions";
+import { handleTool } from "@/lib/tools/tools-handling";
+import useConversationStore from "@/stores/useConversationStore";
+import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
+import { parse } from "partial-json";
 import {
-  pushMessageFunctions,
   getPushMessageForFunction,
   PushMessageFunction,
+  pushMessageFunctions,
 } from "./messages/custom-message";
+import { getTools } from "./tools/tools";
 
 export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
   annotations?: Annotation[];
   text?: string;
+  choices?: string[];
 }
 
 // Message items for storing conversation history matching API shape
@@ -24,6 +27,7 @@ export interface MessageItem {
   id?: string;
   content: ContentItem[];
   sendAt?: Date;
+  isFinal?: boolean;
 }
 
 // Custom items to display in chat
@@ -73,9 +77,9 @@ export const handleTurn = async (
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      console.log("Received chunk:", chunkValue); // Log received chunk
+      // console.log("Received chunk:", chunkValue); // Log received chunk
       buffer += chunkValue;
-      console.log("Current buffer:", buffer); // Log current buffer
+      // console.log("Current buffer:", buffer); // Log current buffer
 
       const lines = buffer.split("\n\n");
       buffer = lines.pop() || "";
@@ -121,7 +125,11 @@ export const processMessages = async () => {
   } = useConversationStore.getState();
 
   // State-specific instruction lookup
-  const stateInstruction = stateInstructions[conversationState] ?? "";
+  const includeRegulatoryCheckFromInitialSetup =
+    useRegulatoryCheckStore.getState().includeRegulatoryCheckFromInitialSetup;
+  const stateInstruction = includeRegulatoryCheckFromInitialSetup
+    ? regulatoryInstructions[conversationState]
+    : stateInstructions[conversationState];
 
   const tools = getTools();
   const allConversationItems = [
@@ -254,6 +262,14 @@ export const processMessages = async () => {
         // After output item is done, adding tool call ID
         const { item } = data || {};
 
+        if (item.type === "message") {
+          const targetMessage = chatMessages.find((m) => m.id === item.id);
+          if (targetMessage && targetMessage.type === "message") {
+            (targetMessage as MessageItem).isFinal = true;
+            setChatMessages([...chatMessages]);
+          }
+        }
+
         const toolCallMessage = chatMessages.find((m) => m.id === item.id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
           toolCallMessage.call_id = item.call_id;
@@ -344,6 +360,7 @@ export const processMessages = async () => {
                 },
               ],
               sendAt: new Date(),
+              isFinal: true,
             };
             chatMessages.push(responseMessage);
             setChatMessages([...chatMessages]);
@@ -361,7 +378,11 @@ export const processMessages = async () => {
           switch (toolCallMessage.name) {
             case "store_initial_setup":
               confirmationText =
-                "Great! I've stored all the initial setup details. Would you like to move on to setting up the loan parameters? We'll need to define things like loan amounts, interest rates, and repayment terms.";
+                "Great! I've stored all the initial setup details. Please check the details and let me know if you'd like to move to the next step.";
+              break;
+            case "store_is_regulatory_check_at_every_step":
+              confirmationText =
+                "Perfect! I've remembered your choice. Should we move on to defining the loan parameters? This is where we'll set up who can qualify for this loan.";
               break;
             case "store_loan_parameters":
               confirmationText =
@@ -397,6 +418,7 @@ export const processMessages = async () => {
                 },
               ],
               sendAt: new Date(),
+              isFinal: true,
             };
 
             // Add to conversation items

@@ -66,7 +66,7 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
 
           <div className="bg-[#fafafa] max-w-[50vw] lg:max-w-[30vw] rounded-xl py-2 ml-4 mt-2">
             <div className="max-h-96 overflow-y-scroll text-xs border-b mx-6 p-2">
-              <SyntaxHighlighter
+              {/* <SyntaxHighlighter
                 customStyle={{
                   backgroundColor: "#fafafa",
                   padding: "8px",
@@ -78,25 +78,26 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
                 style={coy}
               >
                 {JSON.stringify(toolCall.parsedArguments, null, 2)}
-              </SyntaxHighlighter>
+              </SyntaxHighlighter> */}
             </div>
             <div className="max-h-96 overflow-y-scroll mx-6 p-2 text-xs">
               {toolCall.output ? (
                 <>
                   {getErrorMessage(toolCall.output) || (
-                    <SyntaxHighlighter
-                      customStyle={{
-                        backgroundColor: "#fafafa",
-                        padding: "8px",
-                        paddingLeft: "0px",
-                        marginTop: 0,
-                      }}
-                      language="json"
-                      style={coy}
-                      className={getErrorStyle(toolCall.output)}
-                    >
-                      {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
-                    </SyntaxHighlighter>
+                    <></>
+                    // <SyntaxHighlighter
+                    //   customStyle={{
+                    //     backgroundColor: "#fafafa",
+                    //     padding: "8px",
+                    //     paddingLeft: "0px",
+                    //     marginTop: 0,
+                    //   }}
+                    //   language="json"
+                    //   style={coy}
+                    //   className={getErrorStyle(toolCall.output)}
+                    // >
+                    //   {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
+                    // </SyntaxHighlighter>
                   )}
                 </>
               ) : (

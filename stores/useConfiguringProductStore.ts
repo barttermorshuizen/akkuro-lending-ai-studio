@@ -1,37 +1,38 @@
 import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
-import { ProductState } from "@/types/product";
+import { ProductModel, ProductState } from "@/types/product";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface ConfiguringProductState {
   product: ProductConfigurationDTO | null;
   setProduct: (product: ProductConfigurationDTO | null) => void;
   resetProduct: () => void;
+  isDisplayProductPreview: boolean;
+  setIsDisplayProductPreview: (isDisplayProductPreview: boolean) => void;
 }
 
-const emptyProduct: ProductConfigurationDTO = {
+export const emptyProductModel: ProductModel = {
   productName: "",
   targetCustomer: "",
   intendedUse: "",
   countryCode: "",
   currentState: "InitialSetup" as ProductState,
-  loanAmountMin: 0,
-  loanAmountMax: 0,
-  interestRateType: "fixed",
-  repaymentTerm: 0,
-  repaymentFrequency: "monthly",
+  loanAmountMin: undefined,
+  loanAmountMax: undefined,
+  interestRateType: undefined,
+  repaymentTerm: undefined,
+  repaymentFrequency: undefined,
   earlyRepaymentConditions: "",
   collateralRequirements: "",
   guarantees: "",
-  minCreditScore: 0,
+  minCreditScore: undefined,
   financialRatios: "",
   industrySpecificCriteria: "",
-  interestRateMin: 0,
-  interestRateMax: 0,
+  interestRateMin: undefined,
+  interestRateMax: undefined,
   originationFee: "",
   servicingFee: "",
   latePaymentFee: "",
-  greenInvestmentDiscount: 0,
+  greenInvestmentDiscount: undefined,
   earlyRepaymentPenalty: "",
   regulatoryFramework: "",
   requiredDocumentation: "",
@@ -43,21 +44,52 @@ const emptyProduct: ProductConfigurationDTO = {
   monitoringRequirements: "",
 };
 
-const useConfiguringProductStore = create<ConfiguringProductState>()(
-  persist(
-    (set) => ({
-      product: emptyProduct,
-      setProduct: (product) => {
-        set({ product });
-      },
-      resetProduct: () => {
-        set({ product: emptyProduct });
-      },
-    }),
-    {
-      name: "product",
-    },
-  ),
-);
+export const emptyProduct: ProductConfigurationDTO = {
+  productName: "",
+  targetCustomer: "",
+  intendedUse: "",
+  countryCode: "",
+  currentState: "InitialSetup" as ProductState,
+  loanAmountMin: "",
+  loanAmountMax: "",
+  interestRateType: "",
+  repaymentTerm: "",
+  repaymentFrequency: "",
+  earlyRepaymentConditions: "",
+  collateralRequirements: "",
+  guarantees: "",
+  minCreditScore: "",
+  financialRatios: "",
+  industrySpecificCriteria: "",
+  interestRateMin: "",
+  interestRateMax: "",
+  originationFee: "",
+  servicingFee: "",
+  latePaymentFee: "",
+  greenInvestmentDiscount: "",
+  earlyRepaymentPenalty: "",
+  regulatoryFramework: "",
+  requiredDocumentation: "",
+  complianceRequirements: "",
+  riskDisclosure: "",
+  reportingObligations: "",
+  launchDate: "",
+  distributionChannels: [],
+  monitoringRequirements: "",
+};
+
+const useConfiguringProductStore = create<ConfiguringProductState>()((set) => ({
+  product: emptyProduct,
+  setProduct: (product) => {
+    set({ product });
+  },
+  resetProduct: () => {
+    set({ product: emptyProduct });
+  },
+  isDisplayProductPreview: false,
+  setIsDisplayProductPreview: (isDisplayProductPreview) => {
+    set({ isDisplayProductPreview });
+  },
+}));
 
 export default useConfiguringProductStore;

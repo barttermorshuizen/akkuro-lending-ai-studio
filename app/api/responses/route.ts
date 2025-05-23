@@ -6,7 +6,7 @@ import { handleTool } from "@/lib/tools/tools-handling";
 export async function POST(request: Request) {
   try {
     const { messages, tools } = await request.json();
-    console.log("Received messages:", JSON.stringify(messages, null, 2));
+    // console.log("Received messages:", JSON.stringify(messages, null, 2));
     console.log("OpenAI request payload:", { model: MODEL, messages, tools });
     // Manual function_call handling
     const lastMsg = (messages as any[])[messages.length - 1];
@@ -14,19 +14,34 @@ export async function POST(request: Request) {
       const fc = (lastMsg as any).function_call;
       let params: any = {};
       try {
-        params = typeof fc.arguments === "string" ? JSON.parse(fc.arguments) : fc.arguments;
+        params =
+          typeof fc.arguments === "string"
+            ? JSON.parse(fc.arguments)
+            : fc.arguments;
       } catch {}
       const result = await handleTool(fc.name, params);
       const stream = new ReadableStream({
         start(controller) {
-          controller.enqueue(`data: ${JSON.stringify({
-            event: "assistant.function_call",
-            data: { name: fc.name, arguments: fc.arguments, call_id: fc.call_id },
-          })}\n\n`);
-          controller.enqueue(`data: ${JSON.stringify({
-            event: "tool",
-            data: { call_id: fc.call_id, output: JSON.stringify(result), role: "tool" },
-          })}\n\n`);
+          controller.enqueue(
+            `data: ${JSON.stringify({
+              event: "assistant.function_call",
+              data: {
+                name: fc.name,
+                arguments: fc.arguments,
+                call_id: fc.call_id,
+              },
+            })}\n\n`,
+          );
+          controller.enqueue(
+            `data: ${JSON.stringify({
+              event: "tool",
+              data: {
+                call_id: fc.call_id,
+                output: JSON.stringify(result),
+                role: "tool",
+              },
+            })}\n\n`,
+          );
           controller.close();
         },
       });
@@ -38,14 +53,14 @@ export async function POST(request: Request) {
         },
       });
     }
-    
-    
+
     const openai = new OpenAI();
 
     const events = await openai.responses.create({
       model: MODEL,
-      input: messages.filter((msg: any) =>
-        !msg.type || !["function_call", "tool"].includes(msg.type)
+      input: messages.filter(
+        (msg: any) =>
+          !msg.type || !["function_call", "tool"].includes(msg.type),
       ),
       tools,
       stream: true,
@@ -58,7 +73,10 @@ export async function POST(request: Request) {
         try {
           for await (const event of events) {
             // Echo assistant function_call when model invokes a tool
-            if (event.type === "response.output_item.added" && event.item?.type === "function_call") {
+            if (
+              event.type === "response.output_item.added" &&
+              event.item?.type === "function_call"
+            ) {
               const fc = event.item;
               const sseFc = {
                 event: "assistant.function_call",
@@ -72,7 +90,10 @@ export async function POST(request: Request) {
               controller.enqueue(`data: ${JSON.stringify(sseFc)}\n\n`);
             }
             // Invoke tool when function_call completes and emit result
-            if (event.type === "response.output_item.done" && event.item?.type === "function_call") {
+            if (
+              event.type === "response.output_item.done" &&
+              event.item?.type === "function_call"
+            ) {
               const fc = event.item;
               let params: any = {};
               try {
@@ -123,7 +144,7 @@ export async function POST(request: Request) {
       {
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

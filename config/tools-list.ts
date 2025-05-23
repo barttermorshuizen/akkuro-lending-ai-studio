@@ -171,6 +171,17 @@ export const toolsList = [
     parameters: {},
   },
   {
+    name: "store_is_regulatory_check_at_every_step",
+    description: "Set the regulatory check to be included at every step",
+    parameters: {
+      includeRegulatoryCheckFromInitialSetup: {
+        type: "boolean",
+        description:
+          "Whether regulatory checks should be included at each step or only at the end",
+      },
+    },
+  },
+  {
     name: "store_all",
     description: "Store all the product information",
     parameters: {

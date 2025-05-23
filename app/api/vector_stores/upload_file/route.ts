@@ -1,10 +1,10 @@
 import OpenAI from "openai";
-const openai = new OpenAI();
 
 export async function POST(request: Request) {
   const { fileObject } = await request.json();
 
   try {
+    const openai = new OpenAI();
     const fileBuffer = Buffer.from(fileObject.content, "base64");
     const fileBlob = new Blob([fileBuffer], {
       type: "application/octet-stream",

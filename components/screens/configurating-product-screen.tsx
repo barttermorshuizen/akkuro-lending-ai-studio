@@ -33,7 +33,9 @@ export default function ConfiguratingProductScreen() {
                 ]
               }
             </div>
-            <div className="text-sm text-center">{value}</div>
+            <div className="text-sm whitespace-pre-wrap text-center flex flex-wrap">
+              {value}
+            </div>
           </div>
         ))}
       </div>

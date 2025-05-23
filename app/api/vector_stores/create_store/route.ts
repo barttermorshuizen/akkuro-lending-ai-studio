@@ -1,10 +1,9 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI();
-
 export async function POST(request: Request) {
   const { name } = await request.json();
   try {
+    const openai = new OpenAI();
     const vectorStore = await openai.vectorStores.create({
       name,
     });

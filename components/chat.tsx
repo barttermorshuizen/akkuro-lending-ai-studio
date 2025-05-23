@@ -1,63 +1,47 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Message from "./message";
-import Annotations from "./annotations";
-import VoiceInput, { VoiceInputRef } from "./voice-input";
+import { useChat } from "@/hooks/useChat";
 import { Item } from "@/lib/assistant";
+import React from "react";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+import Annotations from "./annotations";
+import Message from "./message";
 import ToolCall from "./tool-call";
+import VoiceInput from "./voice-input";
 
 interface ChatProps {
   items: Item[];
   onSendMessage: (message: string) => void;
 }
 
-const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
-  const itemsEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  // const [inputMessageText, setinputMessageText] = useState<string>("");
-  const [isListening, setIsListening] = useState(false);
-  // This state is used to provide better user experience for non-English IMEs such as Japanese
-  const [isComposing, setIsComposing] = useState(false);
-  const voiceInputRef = useRef<VoiceInputRef>(null);
+const Chat = ({ items, onSendMessage }: ChatProps) => {
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable,
+  } = useSpeechRecognition();
 
-  const handleVoiceTranscript = useCallback((transcript: string) => {
-    if (textareaRef.current) {
-      textareaRef.current.value = transcript;
-      // Focus the textarea after setting the text
-      textareaRef.current.focus();
-    }
-  }, []);
-
-  const resetVoiceInput = useCallback(() => {
-    if (textareaRef.current) {
-      setIsListening(false);
-      voiceInputRef.current?.stop();
-      textareaRef.current.value = "";
-    }
-  }, []);
-
-  const scrollToBottom = () => {
-    itemsEndRef.current?.scrollIntoView({ behavior: "instant" });
-  };
-
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (event.key === "Enter" && !event.shiftKey && !isComposing) {
-        event.preventDefault();
-        onSendMessage(textareaRef.current?.value || "");
-        resetVoiceInput();
-      }
-    },
-    [onSendMessage, isComposing, resetVoiceInput],
-  );
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [items]);
+  const {
+    handleKeyDown,
+    setIsComposing,
+    itemsEndRef,
+    textareaRef,
+    resetMessage,
+    handleChoiceSelect,
+  } = useChat({
+    onSendMessage,
+    items,
+    listening,
+    resetTranscript,
+    transcript,
+  });
 
   return (
-    <div className={`flex flex-1 h-auto max-h-[75vh] flex-col`}>
+    <div className={`flex flex-1 h-full flex-col`}>
       <div className="flex-1 rounded-t-xl bg-chatBackground overflow-y-auto px-6 flex flex-col">
         <div className="mt-auto flex flex-col space-y-5 pt-4">
           {items.map((item, index) => (
@@ -66,7 +50,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                 <ToolCall toolCall={item} />
               ) : item.type === "message" ? (
                 <div className="flex flex-col gap-1">
-                  <Message message={item} />
+                  <Message message={item} onChoiceSelect={handleChoiceSelect} />
                   {item.content &&
                     item.content[0].annotations &&
                     item.content[0].annotations.length > 0 && (
@@ -86,23 +70,45 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
             <div className="flex w-full flex-col gap-1.5 rounded-lg pr-2.5 pl-1.5 transition-colors bg-white border border-stone-200 shadow-sm">
               <div className="flex items-center gap-1.5 md:gap-2 pl-4">
                 <VoiceInput
-                  onTranscript={handleVoiceTranscript}
-                  isListening={isListening}
-                  setIsListening={setIsListening}
-                  ref={voiceInputRef}
+                  listening={listening}
+                  onClick={() => {
+                    if (!browserSupportsSpeechRecognition) {
+                      alert(
+                        "Your browser does not support speech recognition.",
+                      );
+                      return;
+                    }
+                    if (!isMicrophoneAvailable) {
+                      alert(
+                        "Please enable microphone access in your browser settings.",
+                      );
+                      return;
+                    }
+                    if (listening) {
+                      SpeechRecognition.stopListening();
+                      resetTranscript();
+                    } else {
+                      SpeechRecognition.startListening({
+                        continuous: true,
+                      });
+                    }
+                  }}
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <textarea
-                    readOnly={isListening}
-                    onClick={() => {
-                      setIsListening(false);
-                    }}
+                    readOnly={listening}
                     ref={textareaRef}
+                    onClick={() => {
+                      if (listening) {
+                        SpeechRecognition.stopListening();
+                        resetTranscript();
+                      }
+                    }}
                     id="prompt-textarea"
                     tabIndex={0}
                     dir="auto"
                     rows={1}
-                    placeholder={isListening ? "Listening..." : "Message..."}
+                    placeholder={listening ? "Listening..." : "Message..."}
                     className="mb-2 resize-none border-0 focus:outline-none text-sm bg-transparent px-0 pb-6 pt-4"
                     onChange={(e) => {
                       if (textareaRef.current) {
@@ -118,10 +124,13 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
                   data-testid="send-button"
                   className="bg-primary text-white px-8 py-[10px] rounded-lg cursor-pointer"
                   onClick={() => {
-                    if (textareaRef.current) {
+                    if (listening) {
+                      onSendMessage(transcript || "");
+                      resetTranscript();
+                    } else {
                       onSendMessage(textareaRef.current?.value || "");
-                      resetVoiceInput();
                     }
+                    resetMessage();
                   }}
                 >
                   Send
@@ -133,6 +142,17 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
         <div className="text-[#9e9791] pt-2 text-sm">
           AI can make mistakes. Please check your response.
         </div>
+        {/* <button
+          className="bg-primary text-white px-8 py-[10px] rounded-lg cursor-pointer"
+          onClick={() => {
+            console.log(
+              "includeRegulatoryCheckFromInitialSetup",
+              includeRegulatoryCheckFromInitialSetup,
+            );
+          }}
+        >
+          Test
+        </button> */}
       </div>
     </div>
   );

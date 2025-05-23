@@ -14,10 +14,12 @@ interface ConversationState {
   addConversationItem: (message: ChatCompletionMessageParam) => void;
   setConversationState: (state: string) => void;
   rawSet: (state: any) => void;
+  resetConversation: () => void;
 }
 
 const CONVERSATION_STATES = [
   "InitialSetup",
+  "SetRegulatoryCheckAtEveryStep",
   "LoanParameters",
   "AcceptanceCriteria",
   "Pricing",
@@ -37,6 +39,7 @@ const useConversationStore = create<ConversationState>((set, get) => ({
         },
       ],
       sendAt: new Date(),
+      isFinal: true,
     },
   ],
   conversationItems: [],
@@ -50,6 +53,24 @@ const useConversationStore = create<ConversationState>((set, get) => ({
     set({ conversationItems: [...get().conversationItems, message] }),
   setConversationState: (state) => set({ conversationState: state }),
   rawSet: set,
+  resetConversation: () =>
+    set({
+      chatMessages: [
+        {
+          type: "message",
+          role: "system",
+          content: [
+            {
+              type: "output_text",
+              text: INITIAL_MESSAGE.trim(),
+            },
+          ],
+          isFinal: true,
+        },
+      ],
+      conversationItems: [],
+      conversationState: CONVERSATION_STATES[0],
+    }),
 }));
 
 export default useConversationStore;

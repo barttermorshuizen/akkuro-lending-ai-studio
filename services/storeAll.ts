@@ -43,7 +43,7 @@ const COLUMNS = {
   monitoringRequirements: 30,
 };
 
-export const storeAll = async (updates: ProductModel) => {
+export const storeAll = async (updates: Partial<ProductModel>) => {
   console.log("store_all input", updates);
 
   // Validate environment variables
@@ -61,7 +61,6 @@ export const storeAll = async (updates: ProductModel) => {
     // Merge updates with existing data
     const updatedProduct = {
       ...updates,
-      currentState: "GoLive",
     };
 
     const authClient = new google.auth.JWT({

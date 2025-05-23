@@ -1,13 +1,15 @@
+import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
+import { Item, MessageItem } from "@/lib/assistant";
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { Item, MessageItem } from "@/lib/assistant";
 import TextToSpeech from "./text-to-speech";
 
 interface MessageProps {
   message: Item;
+  onChoiceSelect?: (choice: string) => void;
 }
 
-const Message: React.FC<MessageProps> = ({ message }) => {
+const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
   // Only process if it's a message item
   if (message.type !== "message") return null;
 
@@ -16,7 +18,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
     messageItem.role === "assistant" || messageItem.role === "system";
   const content = messageItem.content[0];
   const text = content?.text || "";
-  // const choices = content?.choices || [];
+  const choices = content?.choices || [];
+  const isFinal = messageItem.isFinal || false;
 
   return (
     <div
@@ -25,7 +28,16 @@ const Message: React.FC<MessageProps> = ({ message }) => {
       <div
         className={`flex gap-2 items-center ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
       >
-        <div className="font-bold">{isAssistant ? "Kuro" : "You"}</div>
+        <div className={`font-bold ${isAssistant && "text-[#CE2673]"}`}>
+          {isAssistant ? (
+            <div className="flex gap-2 pb-1 items-center flex-row">
+              <KuroChatIcon />
+              <span className="text-[#BD00C4] font-bold">Kuro</span>
+            </div>
+          ) : (
+            "You"
+          )}
+        </div>
         <div className="text-xs text-gray-500" suppressHydrationWarning={true}>
           {messageItem.sendAt?.toLocaleTimeString("en-US", {
             hour: "2-digit",
@@ -45,12 +57,14 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           }`}
         >
           <div className="markdown-content [&>*]:block [&>*]:mb-2 last:[&>*]:mb-0">
-            <ReactMarkdown>{text}</ReactMarkdown>
+            <ReactMarkdown>
+              {text ? text : "Akkuro is thinking..."}
+            </ReactMarkdown>
           </div>
         </div>
-        {isAssistant && <TextToSpeech text={text} />}
+        {isAssistant && <TextToSpeech text={text} isFinal={isFinal} />}
       </div>
-      {/* {isAssistant && choices.length > 0 && (
+      {isAssistant && choices.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {choices.map((choice: string, index: number) => (
             <button
@@ -62,7 +76,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
             </button>
           ))}
         </div>
-      )} */}
+      )}
     </div>
   );
 };
