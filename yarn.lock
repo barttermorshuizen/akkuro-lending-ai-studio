@@ -1122,13 +1122,6 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/pdfkit@^0.13.9":
-  version "0.13.9"
-  resolved "https://registry.npmjs.org/@types/pdfkit/-/pdfkit-0.13.9.tgz"
-  integrity sha512-RDG8Yb1zT7I01FfpwK7nMSA433XWpblMqSCtA5vJlSyavWZb303HUYPCel6JTiDDFqwGLvtAnYbH8N/e0Cb89g==
-  dependencies:
-    "@types/node" "*"
-
 "@types/prop-types@*":
   version "15.7.14"
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.14.tgz"
