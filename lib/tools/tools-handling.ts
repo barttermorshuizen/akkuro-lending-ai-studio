@@ -1,5 +1,6 @@
 import useToolsStore from "@/stores/useToolsStore";
 import { functionsMap } from "../../config/functions";
+import { isValidISOCountryCode } from "../countryCodeHelper";
 
 type ToolName = keyof typeof functionsMap;
 
@@ -8,7 +9,11 @@ export const handleTool = async (toolName: ToolName, parameters: any) => {
   if (functionsMap[toolName]) {
     const result = await functionsMap[toolName](parameters);
     if (toolName === "store_initial_setup" && parameters.countryCode) {
-      useToolsStore.getState().setCountryCode(parameters.countryCode);
+      if (isValidISOCountryCode(parameters.countryCode)) {
+        useToolsStore.getState().setCountryCode(parameters.countryCode);
+      } else {
+        useToolsStore.getState().setCountryCode("NL");
+      }
     }
     return result;
   } else {
