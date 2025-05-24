@@ -13,11 +13,13 @@ export const toolsList = [
       },
       intendedUse: {
         type: "string",
-        description: "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
+        description:
+          "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
       },
       countryCode: {
         type: "string",
-        description: "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
+        description:
+          "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
       },
     },
   },
@@ -162,5 +164,230 @@ export const toolsList = [
     name: "read_product",
     description: "Read the stored loan product model from the Google Sheet",
     parameters: {},
+  },
+  {
+    name: "product_simulation",
+    description: "Simulate the product creation process",
+    parameters: {},
+  },
+  {
+    name: "store_is_regulatory_check_at_every_step",
+    description: "Set the regulatory check to be included at every step",
+    parameters: {
+      includeRegulatoryCheckFromInitialSetup: {
+        type: "boolean",
+        description:
+          "Whether regulatory checks should be included at each step or only at the end",
+      },
+    },
+  },
+  {
+    name: "store_all",
+    description: "Store all the product information",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      targetCustomer: {
+        type: "string",
+        description: "The type of customer the product targets",
+      },
+      intendedUse: {
+        type: "string",
+        description:
+          "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
+      },
+      countryCode: {
+        type: "string",
+        description:
+          "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
+      },
+      currentState: {
+        type: "string",
+        description: "The current state of the product",
+      },
+      loanAmountMin: {
+        type: "number",
+        description: "Minimum loan amount",
+      },
+      loanAmountMax: {
+        type: "number",
+        description: "Maximum loan amount",
+      },
+      interestRateType: {
+        type: "string",
+        description: "Type of interest rate (fixed or variable)",
+      },
+      repaymentTerm: {
+        type: "number",
+        description: "Loan repayment term in months",
+      },
+      repaymentFrequency: {
+        type: "string",
+        description: "Frequency of repayments (monthly, quarterly, annually)",
+      },
+      earlyRepaymentConditions: {
+        type: "string",
+        description: "Conditions for early repayment",
+      },
+      collateralRequirements: {
+        type: "string",
+        description: "Required collateral for the loan",
+      },
+      guarantees: {
+        type: "string",
+        description: "Required guarantees",
+      },
+      minCreditScore: {
+        type: "number",
+        description: "Minimum required credit score",
+      },
+      financialRatios: {
+        type: "string",
+        description: "Required financial ratios",
+      },
+      industrySpecificCriteria: {
+        type: "string",
+        description: "Industry-specific acceptance criteria",
+      },
+      interestRateMin: {
+        type: "number",
+        description: "Minimum interest rate",
+      },
+      interestRateMax: {
+        type: "number",
+        description: "Maximum interest rate",
+      },
+      originationFee: {
+        type: "string",
+        description: "Origination fee structure",
+      },
+      servicingFee: {
+        type: "string",
+        description: "Servicing fee structure",
+      },
+      latePaymentFee: {
+        type: "string",
+        description: "Late payment fee structure",
+      },
+      greenInvestmentDiscount: {
+        type: "number",
+        description: "Discount percentage for green investments",
+      },
+      earlyRepaymentPenalty: {
+        type: "string",
+        description: "Early repayment penalty structure",
+      },
+      launchDate: {
+        type: "string",
+        description: "Planned launch date",
+      },
+      distributionChannels: {
+        type: "array",
+        description: "Distribution channels for the product",
+        items: {
+          type: "string",
+        },
+      },
+      monitoringRequirements: {
+        type: "string",
+        description: "Product monitoring requirements",
+      },
+    },
+  },
+  {
+    name: "generate_iso_compliance_pdf",
+    description: "Generate an ISO declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
+      },
+      timestamp: {
+        type: "string",
+        description: "The timestamp of the ISO declaration",
+      },
+      companyName: {
+        type: "string",
+        description: "The name of the company",
+      },
+      signatureLine: {
+        type: "string",
+        description: "The signature line of the ISO declaration",
+      },
+      scopeOfCompliance: {
+        type: "string",
+        description: "Scope of compliance",
+      },
+      complianceDetails: {
+        type: "string",
+        description: "Specific compliance details",
+      },
+    },
+  },
+  {
+    name: "generate_eu_tax_compliance_pdf",
+    description: "Generate an EU tax compliance declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      eligibleEconomicActivity: {
+        type: "string",
+        description: "Eligible economic activity",
+      },
+      alignmentCriteria: {
+        type: "string",
+        description: "Alignment criteria",
+      },
+      assessmentSummary: {
+        type: "string",
+        description: "Assessment summary",
+      },
+    },
+  },
+  {
+    name: "generate_esg_declaration_pdf",
+    description: "Generate an ESG declaration for the product",
+    parameters: {
+      productName: {
+        type: "string",
+        description: "The name of the loan product",
+      },
+      countryName: {
+        type: "string",
+        description: "Name of the country",
+      },
+      signatureLine: {
+        type: "string",
+        description: "The signature line of the ESG declaration",
+      },
+      environmentalMeasures: {
+        type: "string",
+        description: "Environmental measures",
+      },
+      socialResponsibility: {
+        type: "string",
+        description: "Social responsibility",
+      },
+      governmancePractices: {
+        type: "string",
+        description: "Governance practices",
+      },
+    },
   },
 ];

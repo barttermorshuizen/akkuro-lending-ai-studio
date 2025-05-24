@@ -1,8 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Chat from "./chat";
 import useConversationStore from "@/stores/useConversationStore";
 import { Item, processMessages } from "@/lib/assistant";
+import ProductScreen from "./product-screen";
+import Header from "./header";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
+import { listenToProductUpdates } from "@/lib/productSyncChannel";
 
 export default function Assistant() {
   const { chatMessages, addConversationItem, addChatMessage } =
@@ -15,6 +19,7 @@ export default function Assistant() {
       type: "message",
       role: "user",
       content: [{ type: "input_text", text: message.trim() }],
+      sendAt: new Date(),
     };
     const userMessage: any = {
       role: "user",
@@ -30,9 +35,35 @@ export default function Assistant() {
     }
   };
 
+  const { product, setProduct } = useConfiguringProductStore();
+
+  useEffect(() => {
+    listenToProductUpdates((incomingProduct) => {
+      setProduct(incomingProduct);
+    });
+  }, [setProduct]);
+
   return (
-    <div className="h-full p-4 w-full bg-white">
-      <Chat items={chatMessages} onSendMessage={handleSendMessage} />
+    <div className="h-full flex p-4 w-full">
+      <div className="flex flex-row justify-center items-center size-full">
+        <div
+          className={`flex flex-col w-full flex-1 ${
+            !product
+              ? "lg:max-w-[70%] xl:max-w-[50%] h-full"
+              : "xl:max-w-[80vw]"
+          }`}
+        >
+          <Header />
+
+          {/* Main Container */}
+          <div className="flex  h-[90vh] flex-col flex-1 lg:flex-row gap-8 w-full justify-center">
+            {/* Chat Container */}
+            <Chat items={chatMessages} onSendMessage={handleSendMessage} />
+
+            <ProductScreen />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

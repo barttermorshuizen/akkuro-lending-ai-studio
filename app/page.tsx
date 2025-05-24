@@ -1,81 +1,224 @@
 "use client";
 
-import Assistant from "@/components/assistant";
-import ToolsPanel from "@/components/tools-panel";
-import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
-import useToolsStore from "@/stores/useToolsStore";
-import { useState, useEffect } from "react";
+import ProductPreview from "@/app/components/product-preview/product-preview";
+import Chat from "@/components/chat";
+import Show from "@/components/condition/show";
+import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Item, processMessages } from "@/lib/assistant";
+import useAuthStore from "@/stores/useAuthStore";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
+import useConversationStore from "@/stores/useConversationStore";
+import { motion } from "framer-motion";
+import {
+  CalendarCheck,
+  LucideGauge,
+  MapPinMinus,
+  SlidersVertical,
+  TagIcon,
+} from "lucide-react";
+import { redirect } from "next/navigation";
+import { HTMLAttributes, useEffect, useState } from "react";
+import ChatIcon from "./assets/icons/ChatIcon";
+interface InfoCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  onClick?: HTMLAttributes<HTMLButtonElement>["onClick"];
+}
 
-export default function Main() {
-  const [isToolsPanelOpen, setIsToolsPanelOpen] = useState(false);
+function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex hover:scale-105 hover:shadow-lendingCardHover transition-all duration-300 flex-row text-start justify-between gap-8 bg-chatBackground rounded-lg py-8 px-6 items-center w-[423px]"
+    >
+      <div className="flex flex-col gap-2">
+        <div className="text-xl lg:text-3xl font-light line-clamp-1">
+          {title}
+        </div>
+        <div className="text-xs lg:text-sm line-clamp-1">{description}</div>
+      </div>
+      {icon}
+    </button>
+  );
+}
+
+export default function Lending() {
+  const [isHydrated, setIsHydrated] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const setCountryCode = useToolsStore((state) => state.setCountryCode);
+  const [showTooltip, setShowTooltip] = useState(true);
+
+  const { userInfo } = useAuthStore();
+
+  const { chatMessages, addConversationItem, addChatMessage } =
+    useConversationStore();
+  const { isDisplayProductPreview } = useConfiguringProductStore();
 
   useEffect(() => {
-    async function initCountry() {
-      try {
-        const res = await fetch("/api/functions/read_product");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.countryCode) {
-            setCountryCode(data.countryCode);
-          }
-        }
-      } catch (error) {
-        console.error("Error initializing country code:", error);
-      }
+    if (showTooltip) {
+      setTimeout(() => {
+        setShowTooltip(false);
+      }, 5000);
     }
-    initCountry();
-  }, [setCountryCode]);
+  }, [showTooltip]);
+
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim()) return;
+
+    const userItem: Item = {
+      type: "message",
+      role: "user",
+      content: [{ type: "input_text", text: message.trim() }],
+      sendAt: new Date(),
+    };
+    const userMessage: any = {
+      role: "user",
+      content: message.trim(),
+    };
+
+    try {
+      addConversationItem(userMessage);
+      addChatMessage(userItem);
+      await processMessages();
+    } catch (error) {
+      console.error("Error processing message:", error);
+    }
+  };
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  if (!isHydrated) {
+    return null;
+  }
+
+  if (!userInfo) {
+    redirect("/login");
+  }
 
   return (
-    <div className="flex h-screen relative">
-      {/* Main content */}
-      <div className={`${isCollapsed ? "w-full" : "md:w-2/3 w-full"} h-full`}>
-        <Assistant />
+    <div className="h-full w-full flex flex-row mx-auto bg-chatBackground">
+      <div className="flex-1 flex-col justify-center items-center h-full hidden xl:flex"></div>
+      <div className="flex flex-1 flex-col justify-center xl:absolute top-16 left-0 xl:w-[70vw] shadow-lending bg-background xl:h-[calc(100vh-64px)] items-center">
+        <div className="flex flex-col gap-16">
+          <div className=" text-2xl xl:text-6xl xl:leading-normal text-white font-light px-4 xl:px-0">
+            Welcome to Akkuro, <br />
+            {userInfo.displayName}!
+          </div>
+          <div className="xl:grid flex flex-col xl:grid-cols-2 items-center justify-center gap-8">
+            <InfoCard
+              title="Scheduled work"
+              description="View scheduled work."
+              icon={<CalendarCheck className="size-6 lg:size-8" />}
+            />
+            <InfoCard
+              title="Loan management"
+              description="Manage existing loans and counterparties."
+              icon={<LucideGauge className="size-6 lg:size-8" />}
+            />
+            <InfoCard
+              title="Product configuration"
+              description="Configure loan product"
+              icon={<SlidersVertical className="size-6 lg:size-8" />}
+              onClick={() => {
+                window.open("/studio", "_blank");
+              }}
+            />
+            <InfoCard
+              title="Regional audit"
+              description="Manage regional risk configuration for collaterals."
+              icon={<MapPinMinus className="size-6 lg:size-8" />}
+            />
+            <InfoCard
+              title="Pricing"
+              description="Manage interest rates and fees"
+              icon={<TagIcon className="size-6 lg:size-8" />}
+            />
+          </div>
+        </div>
       </div>
+      <div className="xl:w-[30vw] h-full bg-[url('/lending.svg')] bg-cover bg-center" />
 
-      <div className={`hidden md:flex h-full overflow-hidden ${isCollapsed ? 'w-12' : 'w-1/3'} relative`}>
-        {/* Collapse button */}
+      <SimulateProductConfirmPopUp />
+
+      <Dialog>
+        <div className="absolute z-[99999] bottom-12 right-12 flex items-end flex-col gap-4">
+          <motion.div
+            className={`flex justify-center items-center bg-white rounded-md p-[10px] shadow-chatTooltip mr-4 ${
+              showTooltip ? "flex" : "hidden"
+            }`}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0, scale: 1.2 }}
+            transition={{
+              type: "spring",
+              stiffness: 600,
+              damping: 20,
+              delay: 0.5,
+            }}
+          >
+            <div className="text-gray-800 text-sm">
+              Hey, let&apos;s have a chat!
+            </div>
+          </motion.div>
+          <DialogTrigger asChild>
+            <button className="cursor-pointer flex justify-center items-center ">
+              <ChatIcon className="size-[70px] text-white" />
+            </button>
+          </DialogTrigger>
+        </div>
+        <DialogContent
+          className={`bg-transparent border-none p-0 ${
+            isDisplayProductPreview
+              ? "max-w-[90vw] xl:max-w-[75vw]"
+              : "max-w-[90vw] xl:max-w-[45vw]"
+          }`}
+        >
+          <DialogHeader className="hidden">
+            <DialogTitle>Chat with Akkuro AI</DialogTitle>
+          </DialogHeader>
+          <div
+            className={`flex flex-col lg:flex-row h-[95vh] overflow-y-auto lg:h-[90vh] divide-x-[1px] divide-solid divide-[#C5BFB9] py-4 bg-chatBackground rounded-xl`}
+          >
+            <Show when={isDisplayProductPreview}>
+              <ProductPreview />
+            </Show>
+            <Chat items={chatMessages} onSendMessage={handleSendMessage} />
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* <div
+        className={`hidden md:flex h-full overflow-hidden ${isCollapsed ? "w-12" : "w-1/3"} relative`}
+      >
         <div className="absolute top-2 right-2 z-10">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1 bg-white rounded shadow"
           >
-            {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            {isCollapsed ? (
+              <ChevronRight size={20} />
+            ) : (
+              <ChevronLeft size={20} />
+            )}
           </button>
         </div>
-        {/* Panel content */}
-        <div className={`h-full w-full bg-white border-l overflow-auto flex flex-col transition-transform duration-300 ease-in-out ${isCollapsed ? 'transform translate-x-full' : 'transform translate-x-0'}`}>
+        <div
+          className={`h-full w-full bg-white border-l overflow-auto flex flex-col transition-transform duration-300 ease-in-out ${isCollapsed ? "transform translate-x-full" : "transform translate-x-0"}`}
+        >
           {!isCollapsed && (
-            <div className="flex-grow overflow-auto p-4 pt-10"> {/* Added padding top to account for button */}
+            <div className="flex-grow overflow-auto p-4 pt-10">
               <ToolsPanel />
             </div>
           )}
         </div>
-      </div>
-
-      {/* Mobile hamburger */}
-      <div className="absolute top-4 right-4 md:hidden">
-        <button onClick={() => setIsToolsPanelOpen(true)}>
-          <Menu size={24} />
-        </button>
-      </div>
-
-      {/* Mobile overlay */}
-      {isToolsPanelOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-30">
-          <div className="w-full md:w-1/3 bg-white h-full p-4">
-            <button
-              onClick={() => setIsToolsPanelOpen(false)}
-              className="mb-4 p-2 bg-white rounded shadow"
-            >
-              <X size={20} />
-            </button>
-            <ToolsPanel />
-          </div>
-        </div>
-      )}
+      </div> */}
     </div>
   );
 }

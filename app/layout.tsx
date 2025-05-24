@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "./components/header";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,10 +15,10 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Akkuro Lending Studio",
+  title: "Akkuro",
   description: "Starter app for the OpenAI Responses API",
   icons: {
-    icon: "/openai_logo.svg",
+    icon: "/app-logo.png",
   },
 };
 
@@ -31,8 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen bg-gray-200 w-full flex-col  text-stone-900">
-          <main>{children}</main>
+        <div className="w-screen h-screen bg-background overflow-x-hidden overflow-y-auto">
+          <Header />
+          <main className="h-full pt-16">{children}</main>
         </div>
       </body>
     </html>
