@@ -1,7 +1,6 @@
 import { FORMAT_INSTRUCTIONS } from "./instruction/format";
 import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
-import { WEB_SEARCH_INSTRUCTIONS } from "./instruction/webSearch";
 
 export const stateInstructions: Record<string, string> = {
   InitialSetup: `${GLOBAL_INSTRUCTIONS}
@@ -94,8 +93,6 @@ export const stateInstructions: Record<string, string> = {
   `,
   LoanParameters: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the LoanParameters state of the conversation.
-
-    ${WEB_SEARCH_INSTRUCTIONS}
      
     The LoanParameters state identifies:
     - loan amount range (minimum and maximum amounts)
@@ -168,8 +165,6 @@ export const stateInstructions: Record<string, string> = {
 
   AcceptanceCriteria: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the AcceptanceCriteria state of the conversation.
-
-    ${WEB_SEARCH_INSTRUCTIONS}
 
     The AcceptanceCriteria state identifies:
     - collateral requirements
@@ -246,8 +241,6 @@ export const stateInstructions: Record<string, string> = {
   Pricing: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the Pricing state of the conversation.
 
-    ${WEB_SEARCH_INSTRUCTIONS}
-     
     The Pricing state identifies:
     - interest rate ranges
     - fee structure (origination, servicing, late payment)
@@ -344,9 +337,7 @@ export const stateInstructions: Record<string, string> = {
 
   RegulatoryCheck: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the RegulatoryCheck state of the conversation.
-
-    ${WEB_SEARCH_INSTRUCTIONS}
-     
+  
     The RegulatoryCheck state identifies:
     These instructions cover the RegulatoryCheck state of the conversation.
     The RegulatoryCheck state identifies:

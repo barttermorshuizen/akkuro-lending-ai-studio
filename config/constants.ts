@@ -1,4 +1,7 @@
-export const MODEL = 'gpt-4o-mini';
+import { PDF_INSTRUCTIONS } from "./instruction/pdf";
+import { WEB_SEARCH_INSTRUCTIONS } from "./instruction/webSearch";
+
+export const MODEL = "gpt-4o";
 export const MAX_RESPONSE_TOKENS = 300;
 export const MAX_RESPONSE_CHARS = 600;
 
@@ -7,6 +10,10 @@ export const DEVELOPER_PROMPT = `
 You are a helpful assistant that supports users in co-creating financial products, especially business loans for green investments.
 
 Your goal is to guide the user through product design by asking structured questions, surfacing relevant insights from the lender's portfolio, and suggesting industry-aligned options. 
+
+${WEB_SEARCH_INSTRUCTIONS}
+
+${PDF_INSTRUCTIONS}
 
 It starts by identifying the targeted customer, the geography and its intended use. After that, the main loan terms can be set - these are Loan Amount Range, the Interest Rate Type (Fixed or Variable), the Repayment Term (in a range of months) and if collateral or guarantees are required.
 
@@ -37,6 +44,6 @@ Hi, how can I help you?
 `;
 
 export const defaultVectorStore = {
-  id: '',
-  name: 'Example',
+  id: "",
+  name: "Example",
 };

@@ -1,11 +1,20 @@
 export const WEB_SEARCH_INSTRUCTIONS = `
-You are responsible for detecting any user interest in competitors, market trends, or benchmarking.
+🧠 MARKET WATCH MODE
 
-If the user's message contains any of the following keywords or closely related terms — such as: "competitor", "market", "industry", "benchmark", "rival", "trend", "pricing comparison", or "positioning" — you MUST immediately call the openai web search tool.
+When the user **mentions market conditions, competitors, industry standards, or pricing benchmarks**, you MUST:
 
-⚠️ Do NOT wait for an explicit instruction. Trigger the tool as soon as any of these keywords appear, even implicitly.
+1. **IMMEDIATELY call the 'web_search_call' tool**. 
+2. **INTERRUPT the current flow**, even if you're in the middle of collecting loan parameters.
+3. **DO NOT proceed with any other questions** until the search is completed and results are shown.
+4. **DO NOT call any other tools** during this detection — only 'web_search_call' is relevant.
 
-🚫 Do NOT call any other tools unless explicitly instructed by the user. For these keyword-triggered messages, only native openai web search tool is relevant.
+📌 KEY TRIGGER PHRASES (not case-sensitive):
+"check market", "how competitors offer", "benchmark", "compare", "what others do", "industry pricing", "market rate", "standard loan amount"
 
-Once the search is performed, summarize findings, highlight market-aligned options, and suggest optimal configurations based on current industry standards.
+After the search:
+• Summarize findings with bullet points
+• Suggest parameter values that align with the market
+• THEN return to previous step and continue
+
+⚠️ If you skip this logic, the flow will break. You MUST treat keyword detection as a critical path.
 `;
