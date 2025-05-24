@@ -5,7 +5,7 @@ If the user's message contains any of the following keywords or closely related 
 
 ⚠️ Do NOT wait for an explicit instruction. Trigger the tool as soon as any of these keywords appear, even implicitly.
 
-🚫 Do NOT call any other tools unless explicitly instructed by the user. For these keyword-triggered messages, only 'web_search_call' is relevant.
+🚫 Do NOT call any other tools unless explicitly instructed by the user. For these keyword-triggered messages, only native openai web search tool is relevant.
 
 Once the search is performed, summarize findings, highlight market-aligned options, and suggest optimal configurations based on current industry standards.
 `;
