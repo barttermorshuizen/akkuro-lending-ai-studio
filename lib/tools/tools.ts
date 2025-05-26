@@ -20,7 +20,8 @@ interface WebSearchTool extends WebSearchConfig {
 }
 
 export const getTools = () => {
-  const { webSearchConfig, countryCode } = useToolsStore.getState();
+  const { webSearchConfig, countryCode, vectorStore } =
+    useToolsStore.getState();
 
   const tools: any[] = [];
 
@@ -39,6 +40,14 @@ export const getTools = () => {
       city: webSearchConfig.user_location?.city || "",
     },
   };
+  if (vectorStore && vectorStore.id) {
+    const fileSearchTool = {
+      type: "file_search",
+      vector_store_ids: [vectorStore.id],
+    };
+    tools.push(fileSearchTool);
+  }
+
   tools.push(webSearchTool);
   tools.push(
     ...toolsList.map((tool) => {

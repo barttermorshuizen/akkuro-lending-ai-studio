@@ -4,6 +4,7 @@ import ProductPreview from "@/app/components/product-preview/product-preview";
 import Chat from "@/components/chat";
 import Show from "@/components/condition/show";
 import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
+import ToolsPanel from "@/components/tools-panel";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,8 @@ import useConversationStore from "@/stores/useConversationStore";
 import { motion } from "framer-motion";
 import {
   CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
   LucideGauge,
   MapPinMinus,
   SlidersVertical,
@@ -57,8 +60,12 @@ export default function Lending() {
 
   const { userInfo } = useAuthStore();
 
-  const { chatMessages, addConversationItem, addChatMessage } =
-    useConversationStore();
+  const {
+    chatMessages,
+    addConversationItem,
+    addChatMessage,
+    setIsProcessingNewMessage,
+  } = useConversationStore();
   const { isDisplayProductPreview } = useConfiguringProductStore();
 
   useEffect(() => {
@@ -86,9 +93,12 @@ export default function Lending() {
     try {
       addConversationItem(userMessage);
       addChatMessage(userItem);
+      setIsProcessingNewMessage(true);
       await processMessages();
     } catch (error) {
       console.error("Error processing message:", error);
+    } finally {
+      setIsProcessingNewMessage(false);
     }
   };
 
@@ -194,7 +204,7 @@ export default function Lending() {
           </div>
         </DialogContent>
       </Dialog>
-      {/* <div
+      <div
         className={`hidden md:flex h-full overflow-hidden ${isCollapsed ? "w-12" : "w-1/3"} relative`}
       >
         <div className="absolute top-2 right-2 z-10">
@@ -218,7 +228,7 @@ export default function Lending() {
             </div>
           )}
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }

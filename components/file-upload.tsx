@@ -1,5 +1,4 @@
 "use client";
-import React, { useCallback, useState, FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +7,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
-import { FilePlus2, Plus, Trash2, CircleX } from "lucide-react";
+import { CircleX, FilePlus2, Plus, Trash2 } from "lucide-react";
+import { FormEvent, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
   Tooltip,
@@ -179,7 +179,7 @@ export default function FileUpload({
           Upload
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] md:max-w-[600px] max-h-[80vh] overflow-y-scrollfrtdtd">
+      <DialogContent className="sm:max-w-[500px] bg-white md:max-w-[600px] max-h-[80vh] overflow-y-scrollfrtdtd">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add files to your vector store</DialogTitle>

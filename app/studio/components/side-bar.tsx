@@ -65,9 +65,12 @@ export default function SideBar() {
           className={`flex flex-row gap-2  p-4 ${activeItem === item.code ? "bg-white text-primary" : "text-white"}`}
           onClick={() => setActiveItem(item.code)}
         >
-          {React.cloneElement(item.icon as React.ReactElement, {
-            className: `w-full ${activeItem === item.code ? "text-primary" : "text-white"}`,
-          })}
+          {React.cloneElement(
+            item.icon as React.ReactElement<{ className: string }>,
+            {
+              className: `w-full ${activeItem === item.code ? "text-primary" : "text-white"}`,
+            },
+          )}
         </button>
       ))}
     </div>

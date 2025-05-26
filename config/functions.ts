@@ -44,11 +44,9 @@ export const store_initial_setup = async (params: Partial<ProductModel>) => {
 
   await set_product();
 
-  useConversationStore
-    .getState()
-    .setConversationState("SetRegulatoryCheckAtEveryStep");
+  useConversationStore.getState().setConversationState(conversationStates[1]);
 
-  console.log("set conversation state to", "SetRegulatoryCheckAtEveryStep");
+  console.log("set conversation state to", conversationStates[1]);
 
   return { status: "success", requiresFollowUp: false };
 };

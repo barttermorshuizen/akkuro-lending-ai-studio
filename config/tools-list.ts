@@ -312,10 +312,6 @@ export const toolsList = [
         type: "string",
         description: "Applicable regulatory framework",
       },
-      timestamp: {
-        type: "string",
-        description: "The timestamp of the ISO declaration",
-      },
       companyName: {
         type: "string",
         description: "The name of the company",
@@ -358,6 +354,18 @@ export const toolsList = [
         type: "string",
         description: "Assessment summary",
       },
+      companyName: {
+        type: "string",
+        description: "The name of the company",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
+      },
+      signatureLine: {
+        type: "string",
+        description: "The signature line of the EU tax compliance declaration",
+      },
     },
   },
   {
@@ -387,6 +395,14 @@ export const toolsList = [
       governmancePractices: {
         type: "string",
         description: "Governance practices",
+      },
+      companyName: {
+        type: "string",
+        description: "The name of the company",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
       },
     },
   },

@@ -1,12 +1,12 @@
 "use client";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
-import { motion } from "framer-motion";
+import { Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Button } from "./ui/button";
-import { useRef } from "react";
 
 interface CarouselScreensProps {
   screens: {

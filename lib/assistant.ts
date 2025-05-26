@@ -148,6 +148,8 @@ export const processMessages = async () => {
   await handleTurn(allConversationItems, tools, async ({ event, data }) => {
     switch (event) {
       case "response.output_text.delta":
+        useConversationStore.getState().setIsProcessingNewMessage(false);
+
       case "response.output_text.annotation.added": {
         const { delta, item_id, annotation } = data;
 
@@ -259,6 +261,8 @@ export const processMessages = async () => {
       }
 
       case "response.output_item.done": {
+        useConversationStore.getState().setIsProcessingNewMessage(false);
+
         // After output item is done, adding tool call ID
         const { item } = data || {};
 
@@ -445,6 +449,7 @@ export const processMessages = async () => {
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
+
         break;
       }
 
@@ -456,10 +461,12 @@ export const processMessages = async () => {
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
+
         break;
       }
       case "response.completed": {
         console.log("response.completed", data);
+        useConversationStore.getState().setIsProcessingNewMessage(false);
         break;
       }
       // Handle other events as needed

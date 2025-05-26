@@ -68,7 +68,7 @@ const useToolsStore = create<StoreState>()(
       countryCode: "",
       setCountryCode: (code) =>
         set({ countryCode: normalizeCountryCode(code) }),
-      fileSearchEnabled: false,
+      fileSearchEnabled: true,
       previousFileSearchEnabled: false,
       setFileSearchEnabled: (enabled) => {
         set({ fileSearchEnabled: enabled });

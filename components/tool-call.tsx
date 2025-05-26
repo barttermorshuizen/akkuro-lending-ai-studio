@@ -116,6 +116,10 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
   );
 }
 
+function ProcessingCell() {
+  return <div className="text-sm font-medium text-blue-500">Processing...</div>;
+}
+
 function FileSearchCell({ toolCall }: ToolCallProps) {
   return (
     <div className="flex gap-2 items-center text-blue-500 mb-[-16px] ml-[-8px]">
@@ -251,8 +255,8 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
             return <Message message={toolCall} />;
           // return <ApiCallCell toolCall={toolCall} />;
           case "file_search_call":
-            return <Message message={toolCall} />;
-          // return <FileSearchCell toolCall={toolCall} />;
+            // return <Message message={toolCall} />;
+            return <FileSearchCell toolCall={toolCall} />;
           case "web_search_call":
             return <WebSearchCell toolCall={toolCall} />;
           default:

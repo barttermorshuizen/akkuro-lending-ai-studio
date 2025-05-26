@@ -1,7 +1,9 @@
 "use client";
 
+import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
 import { useChat } from "@/hooks/useChat";
 import { Item } from "@/lib/assistant";
+import useConversationStore from "@/stores/useConversationStore";
 import React from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -40,6 +42,8 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
     transcript,
   });
 
+  const { isProcessingNewMessage } = useConversationStore();
+
   return (
     <div className={`flex flex-1 h-full flex-col`}>
       <div className="flex-1 rounded-t-xl bg-chatBackground overflow-y-auto px-6 flex flex-col">
@@ -60,6 +64,21 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
               ) : null}
             </React.Fragment>
           ))}
+          {isProcessingNewMessage && (
+            <div className="flex text-[15px] flex-col gap-1 items-start">
+              <div className="flex gap-2 pb-1 items-center flex-row">
+                <KuroChatIcon />
+                <span className="text-[#BD00C4] font-bold">Kuro</span>
+              </div>
+              <div className={`flex items-center max-w-[85%] gap-2 flex-row`}>
+                <div
+                  className={`rounded-md flex shadow-messageChat px-4 py-3 w-fit bg-white rounded-tl-none text-black`}
+                >
+                  <div className="sound-loader" />
+                </div>
+              </div>
+            </div>
+          )}
           <div ref={itemsEndRef} />
         </div>
       </div>

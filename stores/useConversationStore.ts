@@ -1,7 +1,7 @@
-import { create } from "zustand";
+import { INITIAL_MESSAGE } from "@/config/constants";
 import { Item } from "@/lib/assistant";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { INITIAL_MESSAGE } from "@/config/constants";
+import { create } from "zustand";
 
 interface ConversationState {
   chatMessages: Item[];
@@ -15,6 +15,8 @@ interface ConversationState {
   setConversationState: (state: string) => void;
   rawSet: (state: any) => void;
   resetConversation: () => void;
+  isProcessingNewMessage: boolean;
+  setIsProcessingNewMessage: (isProcessing: boolean) => void;
 }
 
 const CONVERSATION_STATES = [
@@ -70,7 +72,11 @@ const useConversationStore = create<ConversationState>((set, get) => ({
       ],
       conversationItems: [],
       conversationState: CONVERSATION_STATES[0],
+      isProcessingNewMessage: false,
     }),
+  isProcessingNewMessage: false,
+  setIsProcessingNewMessage: (isProcessing) =>
+    set({ isProcessingNewMessage: isProcessing }),
 }));
 
 export default useConversationStore;
