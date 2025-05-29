@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Item, processMessages } from "@/lib/assistant";
+import { resetProduct } from "@/services/resetProduct";
 import useAuthStore from "@/stores/useAuthStore";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import useConversationStore from "@/stores/useConversationStore";
@@ -27,7 +28,7 @@ import {
   TagIcon,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { HTMLAttributes, useEffect, useState } from "react";
+import { HTMLAttributes, useEffect, useRef, useState } from "react";
 import ChatIcon from "./assets/icons/ChatIcon";
 interface InfoCardProps {
   title: string;
@@ -57,6 +58,8 @@ export default function Lending() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+
+  const hasReset = useRef(false);
 
   const { userInfo } = useAuthStore();
 
@@ -104,6 +107,13 @@ export default function Lending() {
 
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasReset.current) {
+      resetProduct();
+      hasReset.current = true;
+    }
   }, []);
 
   if (!isHydrated) {
