@@ -7,6 +7,10 @@ import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import { parse } from "partial-json";
 import {
+  formatPlainTextForMarkdown,
+  parseStreamingJson,
+} from "./json/parseStreamingJson";
+import {
   getPushMessageForFunction,
   PushMessageFunction,
   pushMessageFunctions,
@@ -148,40 +152,60 @@ export const processMessages = async () => {
   await handleTurn(allConversationItems, tools, async ({ event, data }) => {
     switch (event) {
       case "response.output_text.delta":
-        useConversationStore.getState().setIsProcessingNewMessage(false);
-
       case "response.output_text.annotation.added": {
+        useConversationStore.getState().setIsProcessingNewMessage(false);
         const { delta, item_id, annotation } = data;
-
+        let partial = "";
         if (typeof delta === "string") {
-          assistantMessageBuffer += delta;
+          partial = delta;
         }
+        assistantMessageBuffer += partial;
 
-        // Create or update message with plain text
-        if (!currentMessageItem || currentMessageItem.id !== item_id) {
-          currentMessageItem = {
-            type: "message",
-            role: "assistant",
-            id: item_id,
-            content: [
-              {
-                type: "output_text",
-                text: assistantMessageBuffer,
-              },
-            ],
-            sendAt: new Date(),
-          };
-          chatMessages.push(currentMessageItem);
+        // If the last message isn't an assistant message, create a new one
+        const lastItem = chatMessages[chatMessages.length - 1];
+        if (
+          !lastItem ||
+          lastItem.type !== "message" ||
+          lastItem.role !== "assistant" ||
+          (lastItem.id && lastItem.id !== item_id)
+        ) {
+          try {
+            const parsed = parseStreamingJson(assistantMessageBuffer);
+            console.log("parsed push message add", parsed);
+            chatMessages.push({
+              type: "message",
+              role: "assistant",
+              id: item_id,
+              content: [
+                {
+                  type: "output_text",
+                  text: formatPlainTextForMarkdown(parsed.text || ""),
+                  choices: parsed.choices,
+                  annotations: annotation ? [annotation] : [],
+                },
+              ],
+            } as MessageItem);
+          } catch {
+            console.error("Failed to parse JSON");
+          }
         } else {
-          const contentItem = currentMessageItem.content[0];
+          const contentItem = lastItem.content[0];
           if (contentItem && contentItem.type === "output_text") {
-            contentItem.text = assistantMessageBuffer;
-            if (annotation) {
-              contentItem.annotations = [
-                ...(contentItem.annotations ?? []),
-                annotation,
-              ];
+            try {
+              const parsed = parseStreamingJson(assistantMessageBuffer);
+              console.log("parsed push message update", parsed);
+
+              contentItem.text = formatPlainTextForMarkdown(parsed.text || "");
+              contentItem.choices = parsed.choices;
+            } catch {
+              console.error("Failed to parse JSON");
             }
+          }
+          if (annotation) {
+            contentItem.annotations = [
+              ...(contentItem.annotations ?? []),
+              annotation,
+            ];
           }
         }
         setChatMessages([...chatMessages]);
@@ -197,29 +221,38 @@ export const processMessages = async () => {
         // Handle differently depending on the item type
         switch (item.type) {
           case "message": {
-            // Skip message handling here as it's already handled in response.output_text.delta
+            try {
+              if (
+                !item ||
+                !item.content ||
+                !Array.isArray(item.content) ||
+                item.content.length === 0
+              ) {
+                currentMessageItem = {
+                  type: "message",
+                  role: "assistant",
+                  id: item.id,
+                  content: [
+                    {
+                      type: "output_text",
+                      text: "",
+                      choices: [],
+                    },
+                  ],
+                  sendAt: new Date(),
+                };
+                chatMessages.push(currentMessageItem);
+
+                setChatMessages([...chatMessages]);
+              }
+            } catch {
+              console.error("Failed to parse JSON");
+              // Continue accumulating if not valid JSON yet
+            }
             break;
           }
           case "function_call": {
             functionArguments += item.arguments || "";
-
-            // // Create an assistant message explaining what it's going to do
-            // const explanationMessage: MessageItem = {
-            //   type: "message",
-            //   role: "assistant",
-            //   id: `${item.id}_explanation`,
-            //   content: [
-            //     {
-            //       type: "output_text",
-            //       text: `I'll help you with that by calling the ${item.name} function.`,
-            //     },
-            //   ],
-            //   sendAt: new Date(),
-            // };
-            // chatMessages.push(explanationMessage);
-
-            // Add the tool call message
-            console.log("function_call item", item);
             chatMessages.push({
               type: "tool_call",
               tool_type: "function_call",
@@ -269,7 +302,7 @@ export const processMessages = async () => {
         if (item.type === "message") {
           const targetMessage = chatMessages.find((m) => m.id === item.id);
           if (targetMessage && targetMessage.type === "message") {
-            (targetMessage as MessageItem).isFinal = true;
+            targetMessage.isFinal = true;
             setChatMessages([...chatMessages]);
           }
         }
@@ -279,8 +312,34 @@ export const processMessages = async () => {
           toolCallMessage.call_id = item.call_id;
           setChatMessages([...chatMessages]);
         }
-        conversationItems.push(item);
-        setConversationItems([...conversationItems]);
+
+        if (
+          item.type === "message" &&
+          item.content &&
+          item.content.length > 0
+        ) {
+          try {
+            const parsed = parseStreamingJson(item.content[0].text);
+            const itemDone = {
+              ...item,
+              content: [
+                {
+                  ...item.content[0],
+                  text: parsed.text
+                    ? formatPlainTextForMarkdown(parsed.text || "")
+                    : parsed,
+                  choices: parsed.choices,
+                },
+              ],
+            };
+            conversationItems.push(itemDone);
+            setConversationItems([...conversationItems]);
+          } catch {
+            // partial JSON can fail parse; ignore
+          }
+        }
+
+        assistantMessageBuffer = "";
         break;
       }
 
@@ -378,39 +437,47 @@ export const processMessages = async () => {
 
           // Determine message based on the current tool
           let confirmationText = "";
+          let choices: string[] = [];
 
           switch (toolCallMessage.name) {
             case "store_initial_setup":
               confirmationText =
                 "Great! I've stored all the initial setup details. Please check the details and let me know if you'd like to move to the next step.";
+              choices = ["Move to next step"];
               break;
             case "store_is_regulatory_check_at_every_step":
               confirmationText =
                 "Perfect! I've remembered your choice. Should we move on to defining the loan parameters? This is where we'll set up who can qualify for this loan.";
+              choices = ["Yes", "No"];
               break;
             case "store_loan_parameters":
               confirmationText =
                 "Perfect! I've saved all the loan parameters. Should we move on to defining the acceptance criteria? This is where we'll set up who can qualify for this loan.";
+              choices = ["Yes", "No"];
               break;
             case "store_acceptance_criteria":
               confirmationText =
                 "Excellent! The acceptance criteria are all set. Ready to move on to pricing? We'll need to determine interest rates, fees, and any special discounts.";
+              choices = ["Yes", "No"];
               break;
             case "store_pricing":
               confirmationText =
                 "I've stored all the pricing details. Should we proceed with the regulatory check? This will ensure our product complies with all necessary regulations.";
+              choices = ["Yes", "No"];
               break;
             case "store_regulatory_check":
               confirmationText =
                 "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
+              choices = ["Yes", "No"];
               break;
             case "store_go_live":
               confirmationText =
-                "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, take a look at how it appears in the mobile app, or start fresh with a new product?";
+                "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, or generate the pdf compliance document?";
+              choices = ["Check product model", "Generate pdf compliance"];
               break;
           }
 
-          // Create confirmation message if we have text
+          // Create confirmation message if we have text and choices
           if (confirmationText) {
             const confirmationMessage: MessageItem = {
               type: "message",
@@ -419,6 +486,7 @@ export const processMessages = async () => {
                 {
                   type: "output_text",
                   text: confirmationText,
+                  choices: choices,
                 },
               ],
               sendAt: new Date(),

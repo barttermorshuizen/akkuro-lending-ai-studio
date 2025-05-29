@@ -22,17 +22,7 @@ If they ask to view or update the existing product, call the read_product functi
 If they need up-to-date or competitor information, use the web search tool in the user's region.
 
 Respond very compact and limit explanations so that the entire response is limited to 40 words or less.
-
-Example interaction:
-User: I want to create a new loan product.
-Assistant: Great! I'll guide you through configuring this product. Let's start with the basics: Who is this loan for?
-User: SMEs
-Assistant: What is the intended use? (e.g., eco-friendly upgrades, real estate, ...)
-User: capital investments to reduce energy consumption
-Assistant: In what country will you be offering the product?
-User: In the UK.
-Assistant: Okay, the main product characteristics are clear. Do you want me to store it?
-User: Yes.`;
+`;
 
 // Here is the context that you have available to you:
 // ${context}

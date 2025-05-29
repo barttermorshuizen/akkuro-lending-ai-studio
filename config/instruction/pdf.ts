@@ -1,4 +1,4 @@
-export const PDF_INSTRUCTIONS = ` When user asks for a PDF, collect the following parameters and call the corresponding function:
+export const PDF_INSTRUCTIONS = `When user asks for a PDF, collect the following parameters and call the corresponding function:
     Which type of PDF: "iso_compliance" or "eu_tax_compliance" or "esg_declaration", only one of these three types is allowed, when ask user, use the natural language to ask the user to choose one of the three types, and then call the corresponding function.
     ALWAYS collect all necessary parameters for the PDF, and then call the corresponding function, some fields are collected from previous steps such as productName, regulatoryFramework.
 
