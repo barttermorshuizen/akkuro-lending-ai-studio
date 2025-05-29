@@ -5,12 +5,26 @@ import { stateInstructions } from "@/config/stateInstructions";
 import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
+import {
+  ResponseFileSearchCallCompletedEvent,
+  ResponseFunctionCallArgumentsDeltaEvent,
+  ResponseFunctionCallArgumentsDoneEvent,
+  ResponseInput,
+  ResponseOutputItemAddedEvent,
+  ResponseOutputItemDoneEvent,
+  ResponseOutputTextAnnotationAddedEvent,
+  ResponseStreamEvent,
+  ResponseTextDeltaEvent,
+  ResponseWebSearchCallCompletedEvent,
+  Tool,
+} from "openai/resources/responses/responses.mjs";
 import { parse } from "partial-json";
 import {
   getPushMessageForFunction,
   PushMessageFunction,
   pushMessageFunctions,
 } from "./messages/custom-message";
+import { safeObject } from "./safeHelper";
 import { getTools } from "./tools/tools";
 
 export interface ContentItem {
@@ -34,7 +48,7 @@ export interface MessageItem {
 export interface ToolCallItem {
   type: "tool_call";
   tool_type: "file_search_call" | "web_search_call" | "function_call";
-  status: "in_progress" | "completed" | "failed" | "searching";
+  status: "in_progress" | "completed" | "failed" | "searching" | "incomplete";
   id: string;
   name?: string | null;
   call_id?: string;
@@ -46,10 +60,28 @@ export interface ToolCallItem {
 
 export type Item = MessageItem | ToolCallItem;
 
+export type StreamEventType =
+  | "response.output_text.delta"
+  | "response.output_text_annotation.added"
+  | "response.output_text.annotation.added"
+  | "response.output_item.added"
+  | "response.output_item.done"
+  | "response.function_call_arguments.delta"
+  | "response.function_call_arguments.done"
+  | "response.web_search_call.completed"
+  | "response.file_search_call.completed"
+  | "response.completed";
+
 export const handleTurn = async (
-  messages: any[],
-  tools: any[],
-  onMessage: (data: any) => void,
+  messages: ResponseInput,
+  tools: Array<Tool>,
+  onEventHandler: ({
+    event,
+    data,
+  }: {
+    event: StreamEventType;
+    data: ResponseStreamEvent;
+  }) => void,
 ) => {
   try {
     // Get response from the API (defined in app/api/turn_response/route.ts)
@@ -94,7 +126,7 @@ export const handleTurn = async (
           try {
             const data = JSON.parse(dataStr);
             console.log("Parsed SSE data:", data); // Log parsed data
-            onMessage(data);
+            onEventHandler(data);
           } catch (e) {
             console.error("Failed to parse SSE data:", dataStr, e); // Log parsing errors
           }
@@ -107,7 +139,7 @@ export const handleTurn = async (
       const dataStr = buffer.slice(6);
       if (dataStr !== "[DONE]") {
         const data = JSON.parse(dataStr);
-        onMessage(data);
+        onEventHandler(data);
       }
     }
   } catch (error) {
@@ -132,7 +164,7 @@ export const processMessages = async () => {
     : stateInstructions[conversationState];
 
   const tools = getTools();
-  const allConversationItems = [
+  const allConversationItems: ResponseInput = [
     // Adding state-specific system instruction
     {
       role: "system",
@@ -142,54 +174,71 @@ export const processMessages = async () => {
   ];
 
   let assistantMessageBuffer = "";
-  let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
 
-  await handleTurn(allConversationItems, tools, async ({ event, data }) => {
+  const onEventHandler = async ({
+    event,
+    data,
+  }: {
+    event: StreamEventType;
+    data: ResponseStreamEvent;
+  }) => {
     switch (event) {
-      case "response.output_text.delta":
+      case "response.output_text.delta": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
 
-      case "response.output_text.annotation.added": {
-        const { delta, item_id, annotation } = data;
-
+        const { delta, item_id } = safeObject(data) as ResponseTextDeltaEvent;
         if (typeof delta === "string") {
           assistantMessageBuffer += delta;
         }
 
-        // Create or update message with plain text
-        if (!currentMessageItem || currentMessageItem.id !== item_id) {
-          currentMessageItem = {
-            type: "message",
-            role: "assistant",
-            id: item_id,
-            content: [
-              {
-                type: "output_text",
-                text: assistantMessageBuffer,
-              },
-            ],
-            sendAt: new Date(),
-          };
-          chatMessages.push(currentMessageItem);
-        } else {
-          const contentItem = currentMessageItem.content[0];
+        const lastItem = chatMessages[chatMessages.length - 1];
+        const isCreateNewMessage =
+          !lastItem ||
+          lastItem.type !== "message" ||
+          lastItem.role !== "assistant" ||
+          (lastItem.id && lastItem.id !== item_id);
+
+        if (!isCreateNewMessage) {
+          const contentItem = lastItem.content[0];
           if (contentItem && contentItem.type === "output_text") {
             contentItem.text = assistantMessageBuffer;
-            if (annotation) {
-              contentItem.annotations = [
-                ...(contentItem.annotations ?? []),
-                annotation,
-              ];
-            }
           }
         }
         setChatMessages([...chatMessages]);
         break;
       }
 
+      case "response.output_text_annotation.added":
+      case "response.output_text.annotation.added": {
+        useConversationStore.getState().setIsProcessingNewMessage(false);
+        const { annotation, item_id } = safeObject(
+          data,
+        ) as ResponseOutputTextAnnotationAddedEvent;
+
+        const lastItem = chatMessages[chatMessages.length - 1];
+        const isCreateNewMessage =
+          !lastItem ||
+          lastItem.type !== "message" ||
+          lastItem.role !== "assistant" ||
+          (lastItem.id && lastItem.id !== item_id);
+
+        if (!isCreateNewMessage) {
+          const contentItem = lastItem.content[0];
+          if (contentItem && contentItem.type === "output_text") {
+            contentItem.annotations = [
+              ...(contentItem.annotations ?? []),
+              annotation as Annotation,
+            ];
+          }
+        }
+
+        setChatMessages([...chatMessages]);
+        break;
+      }
+
       case "response.output_item.added": {
-        const { item } = data || {};
+        const { item } = safeObject(data) as ResponseOutputItemAddedEvent;
         // New item coming in
         if (!item || !item.type) {
           break;
@@ -197,7 +246,29 @@ export const processMessages = async () => {
         // Handle differently depending on the item type
         switch (item.type) {
           case "message": {
-            // Skip message handling here as it's already handled in response.output_text.delta
+            const lastItem = chatMessages[chatMessages.length - 1];
+            const isCreateNewMessage =
+              !lastItem ||
+              lastItem.type !== "message" ||
+              lastItem.role !== "assistant" ||
+              (lastItem.id && lastItem.id !== item.id);
+
+            if (isCreateNewMessage) {
+              const newMessageItem: MessageItem = {
+                type: "message",
+                role: "assistant",
+                id: item.id,
+                content: [
+                  {
+                    type: "output_text",
+                    text: assistantMessageBuffer,
+                  },
+                ],
+                sendAt: new Date(),
+              };
+              chatMessages.push(newMessageItem);
+            }
+            setChatMessages([...chatMessages]);
             break;
           }
           case "function_call": {
@@ -224,7 +295,7 @@ export const processMessages = async () => {
               type: "tool_call",
               tool_type: "function_call",
               status: "in_progress",
-              id: item.id,
+              id: item.id || "",
               name: item.name,
               arguments: item.arguments || "",
               parsedArguments: {},
@@ -264,7 +335,7 @@ export const processMessages = async () => {
         useConversationStore.getState().setIsProcessingNewMessage(false);
 
         // After output item is done, adding tool call ID
-        const { item } = data || {};
+        const { item } = safeObject(data) as ResponseOutputItemDoneEvent;
 
         if (item.type === "message") {
           const targetMessage = chatMessages.find((m) => m.id === item.id);
@@ -276,7 +347,7 @@ export const processMessages = async () => {
 
         const toolCallMessage = chatMessages.find((m) => m.id === item.id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.call_id = item.call_id;
+          toolCallMessage.call_id = item.id || "";
           setChatMessages([...chatMessages]);
         }
         conversationItems.push(item);
@@ -286,13 +357,16 @@ export const processMessages = async () => {
 
       case "response.function_call_arguments.delta": {
         // Streaming arguments delta to show in the chat
-        functionArguments += data.delta || "";
+        const { delta, item_id } = safeObject(
+          data,
+        ) as ResponseFunctionCallArgumentsDeltaEvent;
+        functionArguments += delta || "";
         let parsedFunctionArguments = {};
         if (functionArguments.length > 0) {
           parsedFunctionArguments = parse(functionArguments);
         }
 
-        const toolCallMessage = chatMessages.find((m) => m.id === data.item_id);
+        const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
           toolCallMessage.arguments = functionArguments;
           try {
@@ -307,7 +381,9 @@ export const processMessages = async () => {
 
       case "response.function_call_arguments.done": {
         // This has the full final arguments string
-        const { item_id, arguments: finalArgs } = data;
+        const { item_id, arguments: finalArgs } = safeObject(
+          data,
+        ) as ResponseFunctionCallArgumentsDoneEvent;
 
         functionArguments = finalArgs;
 
@@ -428,7 +504,7 @@ export const processMessages = async () => {
             // Add to conversation items
             conversationItems.push({
               role: "assistant",
-              content: confirmationMessage.content[0].text,
+              content: confirmationMessage.content[0].text || "",
             });
 
             setConversationItems([...conversationItems]);
@@ -442,10 +518,12 @@ export const processMessages = async () => {
       }
 
       case "response.web_search_call.completed": {
-        const { item_id, output } = data;
+        const { item_id } = safeObject(
+          data,
+        ) as ResponseWebSearchCallCompletedEvent;
         const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.output = output;
+          toolCallMessage.output = "Web search completed";
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
@@ -454,10 +532,12 @@ export const processMessages = async () => {
       }
 
       case "response.file_search_call.completed": {
-        const { item_id, output } = data;
+        const { item_id } = safeObject(
+          data,
+        ) as ResponseFileSearchCallCompletedEvent;
         const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.output = output;
+          toolCallMessage.output = "File search completed";
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
@@ -471,5 +551,7 @@ export const processMessages = async () => {
       }
       // Handle other events as needed
     }
-  });
+  };
+
+  await handleTurn(allConversationItems, tools, onEventHandler);
 };
