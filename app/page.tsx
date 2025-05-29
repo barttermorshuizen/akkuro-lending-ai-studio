@@ -65,6 +65,7 @@ export default function Lending() {
 
   const {
     chatMessages,
+    // conversationItems,
     addConversationItem,
     addChatMessage,
     setIsProcessingNewMessage,
@@ -104,6 +105,14 @@ export default function Lending() {
       setIsProcessingNewMessage(false);
     }
   };
+
+  // useEffect(() => {
+  //   console.log("conversationItems", conversationItems);
+  // }, [conversationItems]);
+
+  // useEffect(() => {
+  //   console.log("chatMessages", chatMessages);
+  // }, [chatMessages]);
 
   useEffect(() => {
     setIsHydrated(true);
