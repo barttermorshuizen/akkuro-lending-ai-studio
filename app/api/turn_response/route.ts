@@ -1,7 +1,7 @@
 import { MODEL } from "@/config/constants";
+import { handleTool } from "@/lib/tools/tools-handling";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { handleTool } from "@/lib/tools/tools-handling";
 
 // Validate and normalize country code in message content
 // Normalize country codes in any string content
@@ -88,6 +88,7 @@ export async function POST(request: Request) {
     }
 
     const openai = new OpenAI();
+    console.log("messages", messages);
 
     const events = await openai.responses.create({
       model: MODEL,

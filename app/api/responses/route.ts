@@ -1,7 +1,7 @@
 import { MODEL } from "@/config/constants";
+import { handleTool } from "@/lib/tools/tools-handling";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { handleTool } from "@/lib/tools/tools-handling";
 
 export async function POST(request: Request) {
   try {

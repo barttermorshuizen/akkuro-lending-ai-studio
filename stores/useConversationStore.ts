@@ -1,17 +1,20 @@
 import { INITIAL_MESSAGE } from "@/config/constants";
 import { Item } from "@/lib/assistant";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import {
+  ResponseInput,
+  ResponseInputItem,
+} from "openai/resources/responses/responses.mjs";
 import { create } from "zustand";
 
 interface ConversationState {
   chatMessages: Item[];
-  conversationItems: ChatCompletionMessageParam[];
+  conversationItems: ResponseInput;
   conversationStates: string[];
   conversationState: string;
   setChatMessages: (items: Item[]) => void;
-  setConversationItems: (messages: ChatCompletionMessageParam[]) => void;
+  setConversationItems: (messages: ResponseInput) => void;
   addChatMessage: (item: Item) => void;
-  addConversationItem: (message: ChatCompletionMessageParam) => void;
+  addConversationItem: (message: ResponseInputItem) => void;
   setConversationState: (state: string) => void;
   rawSet: (state: any) => void;
   resetConversation: () => void;

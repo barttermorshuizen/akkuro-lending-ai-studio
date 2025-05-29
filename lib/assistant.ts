@@ -5,6 +5,20 @@ import { stateInstructions } from "@/config/stateInstructions";
 import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
+import {
+  ResponseFileSearchCallCompletedEvent,
+  ResponseFunctionCallArgumentsDeltaEvent,
+  ResponseFunctionCallArgumentsDoneEvent,
+  ResponseInput,
+  ResponseInputItem,
+  ResponseOutputItemAddedEvent,
+  ResponseOutputItemDoneEvent,
+  ResponseOutputTextAnnotationAddedEvent,
+  ResponseStreamEvent,
+  ResponseTextDeltaEvent,
+  ResponseWebSearchCallCompletedEvent,
+  Tool,
+} from "openai/resources/responses/responses.mjs";
 import { parse } from "partial-json";
 import {
   formatPlainTextForMarkdown,
@@ -15,6 +29,7 @@ import {
   PushMessageFunction,
   pushMessageFunctions,
 } from "./messages/custom-message";
+import { safeObject } from "./safeObject";
 import { getTools } from "./tools/tools";
 
 export interface ContentItem {
@@ -38,7 +53,7 @@ export interface MessageItem {
 export interface ToolCallItem {
   type: "tool_call";
   tool_type: "file_search_call" | "web_search_call" | "function_call";
-  status: "in_progress" | "completed" | "failed" | "searching";
+  status: "in_progress" | "completed" | "failed" | "searching" | "incomplete";
   id: string;
   name?: string | null;
   call_id?: string;
@@ -50,10 +65,27 @@ export interface ToolCallItem {
 
 export type Item = MessageItem | ToolCallItem;
 
+type StreamEventType =
+  | "response.output_text.delta"
+  | "response.output_text_annotation.added"
+  | "response.output_item.added"
+  | "response.output_item.done"
+  | "response.function_call_arguments.delta"
+  | "response.function_call_arguments.done"
+  | "response.web_search_call.completed"
+  | "response.file_search_call.completed"
+  | "response.completed";
+
 export const handleTurn = async (
-  messages: any[],
-  tools: any[],
-  onMessage: (data: any) => void,
+  messages: ResponseInput,
+  tools: Array<Tool>,
+  onEventHandler: ({
+    event,
+    data,
+  }: {
+    event: StreamEventType;
+    data: ResponseStreamEvent;
+  }) => Promise<void>,
 ) => {
   try {
     // Get response from the API (defined in app/api/turn_response/route.ts)
@@ -98,7 +130,7 @@ export const handleTurn = async (
           try {
             const data = JSON.parse(dataStr);
             console.log("Parsed SSE data:", data); // Log parsed data
-            onMessage(data);
+            await onEventHandler(data);
           } catch (e) {
             console.error("Failed to parse SSE data:", dataStr, e); // Log parsing errors
           }
@@ -111,7 +143,7 @@ export const handleTurn = async (
       const dataStr = buffer.slice(6);
       if (dataStr !== "[DONE]") {
         const data = JSON.parse(dataStr);
-        onMessage(data);
+        onEventHandler(data);
       }
     }
   } catch (error) {
@@ -136,7 +168,7 @@ export const processMessages = async () => {
     : stateInstructions[conversationState];
 
   const tools = getTools();
-  const allConversationItems = [
+  const allConversationItems: ResponseInput = [
     // Adding state-specific system instruction
     {
       role: "system",
@@ -149,26 +181,33 @@ export const processMessages = async () => {
   let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
 
-  await handleTurn(allConversationItems, tools, async ({ event, data }) => {
+  const onEventHandler = async ({
+    event,
+    data,
+  }: {
+    event: StreamEventType;
+    data: ResponseStreamEvent;
+  }) => {
+    console.log("onEventHandler event", event);
+    console.log("onEventHandler data", data);
     switch (event) {
-      case "response.output_text.delta":
-      case "response.output_text.annotation.added": {
+      case "response.output_text.delta": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
-        const { delta, item_id, annotation } = data;
+        const { delta, item_id } = safeObject(data) as ResponseTextDeltaEvent;
         let partial = "";
         if (typeof delta === "string") {
-          partial = delta;
+          partial += delta;
         }
         assistantMessageBuffer += partial;
 
-        // If the last message isn't an assistant message, create a new one
         const lastItem = chatMessages[chatMessages.length - 1];
-        if (
+        const isNeedToCreateNewMessage =
           !lastItem ||
           lastItem.type !== "message" ||
           lastItem.role !== "assistant" ||
-          (lastItem.id && lastItem.id !== item_id)
-        ) {
+          (lastItem.id && lastItem.id !== item_id);
+
+        if (isNeedToCreateNewMessage) {
           try {
             const parsed = parseStreamingJson(assistantMessageBuffer);
             console.log("parsed push message add", parsed);
@@ -181,7 +220,6 @@ export const processMessages = async () => {
                   type: "output_text",
                   text: formatPlainTextForMarkdown(parsed.text || ""),
                   choices: parsed.choices,
-                  annotations: annotation ? [annotation] : [],
                 },
               ],
             } as MessageItem);
@@ -193,18 +231,35 @@ export const processMessages = async () => {
           if (contentItem && contentItem.type === "output_text") {
             try {
               const parsed = parseStreamingJson(assistantMessageBuffer);
-              console.log("parsed push message update", parsed);
-
               contentItem.text = formatPlainTextForMarkdown(parsed.text || "");
               contentItem.choices = parsed.choices;
             } catch {
               console.error("Failed to parse JSON");
             }
           }
-          if (annotation) {
-            contentItem.annotations = [
-              ...(contentItem.annotations ?? []),
-              annotation,
+        }
+        setChatMessages([...chatMessages]);
+        break;
+      }
+
+      case "response.output_text_annotation.added": {
+        useConversationStore.getState().setIsProcessingNewMessage(false);
+        const { item_id, annotation } = safeObject(
+          data,
+        ) as ResponseOutputTextAnnotationAddedEvent;
+        const lastItem = chatMessages[chatMessages.length - 1];
+        const isNeedToCreateNewMessage =
+          !lastItem ||
+          lastItem.type !== "message" ||
+          lastItem.role !== "assistant" ||
+          (lastItem.id && lastItem.id !== item_id);
+
+        if (!isNeedToCreateNewMessage) {
+          const lastItemContent = lastItem.content[0];
+          if (lastItemContent && lastItemContent.type === "output_text") {
+            lastItemContent.annotations = [
+              ...(lastItemContent.annotations ?? []),
+              annotation as Annotation,
             ];
           }
         }
@@ -213,8 +268,10 @@ export const processMessages = async () => {
       }
 
       case "response.output_item.added": {
-        const { item } = data || {};
+        const { item } = safeObject(data) as ResponseOutputItemAddedEvent;
         // New item coming in
+
+        console.log("item added", item);
         if (!item || !item.type) {
           break;
         }
@@ -257,7 +314,7 @@ export const processMessages = async () => {
               type: "tool_call",
               tool_type: "function_call",
               status: "in_progress",
-              id: item.id,
+              id: item.id || "",
               name: item.name,
               arguments: item.arguments || "",
               parsedArguments: {},
@@ -297,7 +354,7 @@ export const processMessages = async () => {
         useConversationStore.getState().setIsProcessingNewMessage(false);
 
         // After output item is done, adding tool call ID
-        const { item } = data || {};
+        const { item } = safeObject(data) as ResponseOutputItemDoneEvent;
 
         if (item.type === "message") {
           const targetMessage = chatMessages.find((m) => m.id === item.id);
@@ -309,7 +366,7 @@ export const processMessages = async () => {
 
         const toolCallMessage = chatMessages.find((m) => m.id === item.id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.call_id = item.call_id;
+          toolCallMessage.call_id = item.id;
           setChatMessages([...chatMessages]);
         }
 
@@ -319,7 +376,11 @@ export const processMessages = async () => {
           item.content.length > 0
         ) {
           try {
-            const parsed = parseStreamingJson(item.content[0].text);
+            const parsed = parseStreamingJson(
+              item.content[0].type === "output_text"
+                ? item.content[0].text
+                : item.content[0].refusal,
+            );
             const itemDone = {
               ...item,
               content: [
@@ -332,7 +393,7 @@ export const processMessages = async () => {
                 },
               ],
             };
-            conversationItems.push(itemDone);
+            conversationItems.push(itemDone as ResponseInputItem);
             setConversationItems([...conversationItems]);
           } catch {
             // partial JSON can fail parse; ignore
@@ -345,13 +406,16 @@ export const processMessages = async () => {
 
       case "response.function_call_arguments.delta": {
         // Streaming arguments delta to show in the chat
-        functionArguments += data.delta || "";
+        const { delta, item_id } = safeObject(
+          data,
+        ) as ResponseFunctionCallArgumentsDeltaEvent;
+        functionArguments += delta || "";
         let parsedFunctionArguments = {};
         if (functionArguments.length > 0) {
           parsedFunctionArguments = parse(functionArguments);
         }
 
-        const toolCallMessage = chatMessages.find((m) => m.id === data.item_id);
+        const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
           toolCallMessage.arguments = functionArguments;
           try {
@@ -366,7 +430,9 @@ export const processMessages = async () => {
 
       case "response.function_call_arguments.done": {
         // This has the full final arguments string
-        const { item_id, arguments: finalArgs } = data;
+        const { item_id, arguments: finalArgs } = safeObject(
+          data,
+        ) as ResponseFunctionCallArgumentsDoneEvent;
 
         functionArguments = finalArgs;
 
@@ -496,7 +562,7 @@ export const processMessages = async () => {
             // Add to conversation items
             conversationItems.push({
               role: "assistant",
-              content: confirmationMessage.content[0].text,
+              content: confirmationMessage.content[0].text || "",
             });
 
             setConversationItems([...conversationItems]);
@@ -510,10 +576,11 @@ export const processMessages = async () => {
       }
 
       case "response.web_search_call.completed": {
-        const { item_id, output } = data;
+        const { item_id } = safeObject(
+          data,
+        ) as ResponseWebSearchCallCompletedEvent;
         const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.output = output;
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
@@ -522,16 +589,18 @@ export const processMessages = async () => {
       }
 
       case "response.file_search_call.completed": {
-        const { item_id, output } = data;
+        const { item_id } = safeObject(
+          data,
+        ) as ResponseFileSearchCallCompletedEvent;
         const toolCallMessage = chatMessages.find((m) => m.id === item_id);
         if (toolCallMessage && toolCallMessage.type === "tool_call") {
-          toolCallMessage.output = output;
           toolCallMessage.status = "completed";
           setChatMessages([...chatMessages]);
         }
 
         break;
       }
+
       case "response.completed": {
         console.log("response.completed", data);
         useConversationStore.getState().setIsProcessingNewMessage(false);
@@ -539,5 +608,7 @@ export const processMessages = async () => {
       }
       // Handle other events as needed
     }
-  });
+  };
+
+  await handleTurn(allConversationItems, tools, onEventHandler);
 };
