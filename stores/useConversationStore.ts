@@ -71,6 +71,7 @@ const useConversationStore = create<ConversationState>((set, get) => ({
             },
           ],
           isFinal: true,
+          sendAt: new Date(),
         },
       ],
       conversationItems: [],

@@ -9,6 +9,7 @@ import {
   ResponseFileSearchCallCompletedEvent,
   ResponseFunctionCallArgumentsDeltaEvent,
   ResponseFunctionCallArgumentsDoneEvent,
+  ResponseFunctionToolCall,
   ResponseInput,
   ResponseInputItem,
   ResponseOutputItemAddedEvent,
@@ -68,6 +69,7 @@ export type Item = MessageItem | ToolCallItem;
 type StreamEventType =
   | "response.output_text.delta"
   | "response.output_text_annotation.added"
+  | "response.output_text.annotation.added"
   | "response.output_item.added"
   | "response.output_item.done"
   | "response.function_call_arguments.delta"
@@ -76,16 +78,18 @@ type StreamEventType =
   | "response.file_search_call.completed"
   | "response.completed";
 
+type OnEventHandlerType = ({
+  event,
+  data,
+}: {
+  event: StreamEventType;
+  data: ResponseStreamEvent;
+}) => Promise<void>;
+
 export const handleTurn = async (
   messages: ResponseInput,
   tools: Array<Tool>,
-  onEventHandler: ({
-    event,
-    data,
-  }: {
-    event: StreamEventType;
-    data: ResponseStreamEvent;
-  }) => Promise<void>,
+  onEventHandler: OnEventHandlerType,
 ) => {
   try {
     // Get response from the API (defined in app/api/turn_response/route.ts)
@@ -178,7 +182,6 @@ export const processMessages = async () => {
   ];
 
   let assistantMessageBuffer = "";
-  let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
 
   const onEventHandler = async ({
@@ -193,40 +196,15 @@ export const processMessages = async () => {
     switch (event) {
       case "response.output_text.delta": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
-        const { delta, item_id } = safeObject(data) as ResponseTextDeltaEvent;
-        let partial = "";
+        const { delta } = safeObject(data) as ResponseTextDeltaEvent;
+        console.log("delta", typeof delta);
         if (typeof delta === "string") {
-          partial += delta;
+          assistantMessageBuffer += delta;
         }
-        assistantMessageBuffer += partial;
 
         const lastItem = chatMessages[chatMessages.length - 1];
-        const isNeedToCreateNewMessage =
-          !lastItem ||
-          lastItem.type !== "message" ||
-          lastItem.role !== "assistant" ||
-          (lastItem.id && lastItem.id !== item_id);
-
-        if (isNeedToCreateNewMessage) {
-          try {
-            const parsed = parseStreamingJson(assistantMessageBuffer);
-            console.log("parsed push message add", parsed);
-            chatMessages.push({
-              type: "message",
-              role: "assistant",
-              id: item_id,
-              content: [
-                {
-                  type: "output_text",
-                  text: formatPlainTextForMarkdown(parsed.text || ""),
-                  choices: parsed.choices,
-                },
-              ],
-            } as MessageItem);
-          } catch {
-            console.error("Failed to parse JSON");
-          }
-        } else {
+        console.log("lastItem", lastItem);
+        if (lastItem.type === "message") {
           const contentItem = lastItem.content[0];
           if (contentItem && contentItem.type === "output_text") {
             try {
@@ -237,14 +215,14 @@ export const processMessages = async () => {
               console.error("Failed to parse JSON");
             }
           }
+          setChatMessages([...chatMessages]);
         }
-        setChatMessages([...chatMessages]);
         break;
       }
-
-      case "response.output_text_annotation.added": {
+      case "response.output_text_annotation.added":
+      case "response.output_text.annotation.added": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
-        const { item_id, annotation } = safeObject(
+        const { annotation, item_id } = safeObject(
           data,
         ) as ResponseOutputTextAnnotationAddedEvent;
         const lastItem = chatMessages[chatMessages.length - 1];
@@ -275,48 +253,56 @@ export const processMessages = async () => {
         if (!item || !item.type) {
           break;
         }
+        console.log(
+          "assistantMessageBuffer output_item.added",
+          assistantMessageBuffer,
+        );
         // Handle differently depending on the item type
         switch (item.type) {
           case "message": {
-            try {
-              if (
-                !item ||
-                !item.content ||
-                !Array.isArray(item.content) ||
-                item.content.length === 0
-              ) {
-                currentMessageItem = {
+            const lastItem = chatMessages[chatMessages.length - 1];
+            const isNeedToCreateNewMessage =
+              !lastItem ||
+              lastItem.type !== "message" ||
+              lastItem.role !== "assistant" ||
+              (lastItem.id && lastItem.id !== item.id);
+
+            if (isNeedToCreateNewMessage) {
+              try {
+                const parsed = parseStreamingJson(assistantMessageBuffer);
+                console.log("parsed push message add", parsed);
+                chatMessages.push({
                   type: "message",
                   role: "assistant",
                   id: item.id,
                   content: [
                     {
                       type: "output_text",
-                      text: "",
-                      choices: [],
+                      text: formatPlainTextForMarkdown(parsed.text || ""),
+                      choices: parsed.choices,
                     },
                   ],
-                  sendAt: new Date(),
-                };
-                chatMessages.push(currentMessageItem);
-
-                setChatMessages([...chatMessages]);
+                } as MessageItem);
+              } catch {
+                console.error("Failed to parse JSON");
               }
-            } catch {
-              console.error("Failed to parse JSON");
-              // Continue accumulating if not valid JSON yet
-            }
+            } else break;
             break;
           }
           case "function_call": {
-            functionArguments += item.arguments || "";
+            const {
+              arguments: itemArgs,
+              name,
+              id,
+            } = safeObject(item) as ResponseFunctionToolCall;
+            functionArguments += itemArgs || "";
             chatMessages.push({
               type: "tool_call",
               tool_type: "function_call",
               status: "in_progress",
-              id: item.id || "",
-              name: item.name,
-              arguments: item.arguments || "",
+              id: id || "",
+              name: name,
+              arguments: itemArgs || "",
               parsedArguments: {},
               output: null,
               sendAt: new Date(),
@@ -329,7 +315,7 @@ export const processMessages = async () => {
               type: "tool_call",
               tool_type: "web_search_call",
               status: item.status || "in_progress",
-              id: item.id,
+              id: item.id || "",
               sendAt: new Date(),
             });
             setChatMessages([...chatMessages]);
@@ -340,7 +326,7 @@ export const processMessages = async () => {
               type: "tool_call",
               tool_type: "file_search_call",
               status: item.status || "in_progress",
-              id: item.id,
+              id: item.id || "",
               sendAt: new Date(),
             });
             setChatMessages([...chatMessages]);
