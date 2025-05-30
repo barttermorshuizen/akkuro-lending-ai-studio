@@ -26,7 +26,8 @@ const REGULATORY_EXTENSIONS = {
     - Repayment Term (in months; warn if > 48 months)
     - Early Repayment Conditions (check if penalties apply or not)
 
-    Proceed step by step and confirm each input before continuing.`,
+    Proceed step by step and confirm each input before continuing.
+    `,
 
   AcceptanceCriteria: `\n\n    
     You're now collecting acceptance criteria for the green loan product.

@@ -17,7 +17,7 @@ export default function ProductReviewSection({
       <div className="text-2xl font-light">{title}</div>
       <div className="flex flex-row flex-wrap gap-x-16 gap-y-4">
         {Object.entries(data).map(([key, value]) => (
-          <div className={` flex-col flex`} key={key}>
+          <div className={`flex-col flex`} key={key}>
             <div className="text-sm text-primary-darkForest">
               {
                 productsConfigurationMapping[

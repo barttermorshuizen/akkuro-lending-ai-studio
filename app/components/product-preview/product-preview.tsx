@@ -9,9 +9,12 @@ import useConfiguringProductStore, {
 import useConversationStore from "@/stores/useConversationStore";
 import ProductReviewSection from "./product-review-section";
 
+import Show from "@/components/condition/show";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useComplianceCheckStore } from "@/stores/useComplianceCheckStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
+import { useMemo } from "react";
 
 export default function ProductPreview() {
   const {
@@ -35,12 +38,25 @@ export default function ProductPreview() {
     setConversationState(conversationStates[0]);
     resetConversation();
     setIncludeRegulatoryCheckFromInitialSetup(false);
+    useComplianceCheckStore.getState().setComplianceCheck(null);
     await resetProduct();
   };
 
   const handleApplyToConfig = () => {
     window.open("/studio", "_blank");
   };
+
+  const { complianceCheck } = useComplianceCheckStore();
+
+  const compliancePercentage = useMemo(() => {
+    if (!complianceCheck) return 0;
+    const compliantCount = complianceCheck.parametersToCheck.filter(
+      (check) => check.isCompliant,
+    ).length;
+    return Math.round(
+      (compliantCount / complianceCheck.parametersToCheck.length) * 100,
+    );
+  }, [complianceCheck]);
 
   return (
     <div className="flex-1 h-full w-full px-6 py-4">
@@ -72,6 +88,46 @@ export default function ProductPreview() {
             <ProductReviewSection data={pricing} title="Pricing" />
             <ProductReviewSection data={regulatory} title="Regulatory" />
             <ProductReviewSection data={goLive} title="Go Live" />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <Show when={!!complianceCheck}>
+              <div className="flex flex-row justify-between py-3">
+                <div className="font-semibold">
+                  Regulatory Compliance Check ({compliancePercentage}%
+                  compliant)
+                </div>
+                <div className="font-semibold">
+                  Compliant: {compliancePercentage}%
+                </div>
+              </div>
+            </Show>
+            <div className="flex flex-col max-h-[120px] overflow-y-auto gap-2">
+              {complianceCheck?.parametersToCheck.map((check, index) => (
+                <div
+                  className={`flex flex-row justify-between gap-2 border rounded-xl py-2 px-4 ${
+                    check.isCompliant
+                      ? "bg-green-50 border-green-500 text-green-700"
+                      : "bg-red-50 border-red-500 text-red-700"
+                  }`}
+                  key={index}
+                >
+                  <div>
+                    {check.productParamDescription} {check.expectedRange}
+                  </div>
+                  <div className="text-right">
+                    {check.isCompliant ? (
+                      <span className="flex flex-row gap-2">
+                        Compliant ({check.paramValue})
+                      </span>
+                    ) : (
+                      <span className="flex flex-row gap-2 text-wrap">
+                        {check.notes}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="flex flex-row items-center gap-2 py-4">
             <Switch

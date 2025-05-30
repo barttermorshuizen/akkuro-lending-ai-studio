@@ -116,10 +116,6 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
   );
 }
 
-function ProcessingCell() {
-  return <div className="text-sm font-medium text-blue-500">Processing...</div>;
-}
-
 function FileSearchCell({ toolCall }: ToolCallProps) {
   return (
     <div className="flex gap-2 items-center text-blue-500 mb-[-16px] ml-[-8px]">

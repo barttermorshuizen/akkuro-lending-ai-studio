@@ -8,6 +8,7 @@ export const handleTool = async (toolName: ToolName, parameters: any) => {
   console.log("Handle tool", toolName, parameters);
   if (functionsMap[toolName]) {
     const result = await functionsMap[toolName](parameters);
+    console.log("handleTool result", result);
     if (toolName === "store_initial_setup" && parameters.countryCode) {
       if (isValidISOCountryCode(parameters.countryCode)) {
         useToolsStore.getState().setCountryCode(parameters.countryCode);

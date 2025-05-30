@@ -182,121 +182,6 @@ export const toolsList = [
     },
   },
   {
-    name: "store_all",
-    description: "Store all the product information",
-    parameters: {
-      productName: {
-        type: "string",
-        description: "The name of the loan product",
-      },
-      targetCustomer: {
-        type: "string",
-        description: "The type of customer the product targets",
-      },
-      intendedUse: {
-        type: "string",
-        description:
-          "The intended use of the loan product (e.g. renewable energy, eco-upgrades)",
-      },
-      countryCode: {
-        type: "string",
-        description:
-          "The 2-letter ISO 3166-1 country code (e.g. 'GB' for United Kingdom, 'US' for United States)",
-      },
-      currentState: {
-        type: "string",
-        description: "The current state of the product",
-      },
-      loanAmountMin: {
-        type: "number",
-        description: "Minimum loan amount",
-      },
-      loanAmountMax: {
-        type: "number",
-        description: "Maximum loan amount",
-      },
-      interestRateType: {
-        type: "string",
-        description: "Type of interest rate (fixed or variable)",
-      },
-      repaymentTerm: {
-        type: "number",
-        description: "Loan repayment term in months",
-      },
-      repaymentFrequency: {
-        type: "string",
-        description: "Frequency of repayments (monthly, quarterly, annually)",
-      },
-      earlyRepaymentConditions: {
-        type: "string",
-        description: "Conditions for early repayment",
-      },
-      collateralRequirements: {
-        type: "string",
-        description: "Required collateral for the loan",
-      },
-      guarantees: {
-        type: "string",
-        description: "Required guarantees",
-      },
-      minCreditScore: {
-        type: "number",
-        description: "Minimum required credit score",
-      },
-      financialRatios: {
-        type: "string",
-        description: "Required financial ratios",
-      },
-      industrySpecificCriteria: {
-        type: "string",
-        description: "Industry-specific acceptance criteria",
-      },
-      interestRateMin: {
-        type: "number",
-        description: "Minimum interest rate",
-      },
-      interestRateMax: {
-        type: "number",
-        description: "Maximum interest rate",
-      },
-      originationFee: {
-        type: "string",
-        description: "Origination fee structure",
-      },
-      servicingFee: {
-        type: "string",
-        description: "Servicing fee structure",
-      },
-      latePaymentFee: {
-        type: "string",
-        description: "Late payment fee structure",
-      },
-      greenInvestmentDiscount: {
-        type: "number",
-        description: "Discount percentage for green investments",
-      },
-      earlyRepaymentPenalty: {
-        type: "string",
-        description: "Early repayment penalty structure",
-      },
-      launchDate: {
-        type: "string",
-        description: "Planned launch date",
-      },
-      distributionChannels: {
-        type: "array",
-        description: "Distribution channels for the product",
-        items: {
-          type: "string",
-        },
-      },
-      monitoringRequirements: {
-        type: "string",
-        description: "Product monitoring requirements",
-      },
-    },
-  },
-  {
     name: "generate_iso_compliance_pdf",
     description: "Generate an ISO declaration for the product",
     parameters: {
@@ -405,5 +290,67 @@ export const toolsList = [
         description: "Applicable regulatory framework",
       },
     },
+  },
+  {
+    name: "check_compliance_for_product_parameters",
+    description:
+      "Check if product parameters (loan parameters, acceptance criteria, pricing) comply with relevant regulations, returning details per parameter",
+    parameters: {
+      countryCode: {
+        type: "string",
+        description:
+          "The 2-letter ISO country code (e.g. 'NL', 'US') to determine the applicable regulations",
+      },
+      parametersToCheck: {
+        type: "array",
+        description: "List of loan parameters to check against regulations",
+        items: {
+          type: "object",
+          properties: {
+            productParam: {
+              type: "string",
+              description:
+                "The loan parameter name (e.g. loanAmountMax, interestRateType)",
+            },
+            productParamDescription: {
+              type: "string",
+              description: "Description of the loan parameter",
+            },
+            paramValue: {
+              type: "string",
+              description: "The current value of the product parameter",
+            },
+            regulationDescription: {
+              type: "string",
+              description: "Short description of the regulation that applies",
+            },
+            expectedRange: {
+              type: "string",
+              description:
+                "Expected value or range according to the regulation",
+            },
+            isCompliant: {
+              type: "boolean",
+              description:
+                "Whether the parameter value complies with the regulation",
+            },
+            notes: {
+              type: "string",
+              description: "Optional explanation of compliance or failure",
+            },
+          },
+          required: [
+            "productParam",
+            "productParamDescription",
+            "paramValue",
+            "regulationDescription",
+            "expectedRange",
+            "isCompliant",
+            "notes",
+          ],
+        },
+      },
+    },
+    required: ["countryCode", "parametersToCheck"],
   },
 ];
