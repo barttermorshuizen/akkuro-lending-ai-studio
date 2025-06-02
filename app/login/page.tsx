@@ -2,15 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { login } from "@/lib/actions";
-import { useActionState } from "react";
-import { useRouter } from "next/navigation";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import useAuthStore from "@/stores/useAuthStore";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
 
 export default function Login() {
   const router = useRouter();
   const { userInfo, setUserInfo } = useAuthStore();
+
+  const [isValidating, setIsValidating] = useState(true);
   const [state, formAction, isPending] = useActionState(login, {
     userInfo: null,
   });
@@ -25,12 +26,28 @@ export default function Login() {
     }
   }, [state, userInfo, router, setUserInfo]);
 
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    // run after render to display loading before userInfo is set
+    if (isValidating) {
+      setIsValidating(false);
+    }
+  }, [isValidating]);
 
-  if (userInfo) {
-    redirect("/");
+  useEffect(() => {
+    // run after render to avoid inifinite loading case userInfo exist
+    if (userInfo) {
+      router.replace("/");
+    }
+  }, [userInfo, router]);
+
+  if (isValidating || isPending || userInfo) {
+    return (
+      <div className="h-full w-full flex justify-center items-center bg-background">
+        <div className="text-2xl text-white">
+          <Loader2 className="size-10 animate-spin" />
+        </div>
+      </div>
+    );
   }
 
   return (

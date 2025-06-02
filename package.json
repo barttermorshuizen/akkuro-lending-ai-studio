@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "node server.js",
+    "build": "next build && cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static",
+    "start": "cross-env NODE_ENV=production node .next/standalone/server.js",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
@@ -58,6 +58,7 @@
     "@types/react-dom": "^18",
     "@types/react-speech-recognition": "^3.9.6",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "cross-env": "^7.0.3",
     "eslint": "^9.13.0",
     "eslint-config-next": "^15.0.1",
     "postcss": "^8",

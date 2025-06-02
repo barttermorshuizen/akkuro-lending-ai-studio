@@ -23,25 +23,44 @@ import { transformProductModelToProductConfigurationDTO } from "./productsConfig
 // Functions mapping to tool calls
 
 export const set_product = async () => {
-  const product = await readProduct();
-  const productDTO = transformProductModelToProductConfigurationDTO(product);
-  const setProduct = useConfiguringProductStore.getState().setProduct;
-  setProduct(productDTO);
-  useConfiguringProductStore.getState().setIsDisplayProductPreview(true);
+  try {
+    const product = await readProduct();
+    const productDTO = transformProductModelToProductConfigurationDTO(product);
+    const setProduct = useConfiguringProductStore.getState().setProduct;
+    setProduct(productDTO);
+    useConfiguringProductStore.getState().setIsDisplayProductPreview(true);
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in set_product:", error);
+    return {
+      status: "error",
+    };
+  }
 };
 
 export const store_initial_setup = async (params: Partial<ProductModel>) => {
-  console.log("store_initial_setup params", params);
-  const res = await storeInitialSetup(params);
-  console.log("executed store_initial_setup function", res);
+  try {
+    console.log("store_initial_setup params", params);
+    const res = await storeInitialSetup(params);
+    console.log("executed store_initial_setup function", res);
 
-  await set_product();
+    await set_product();
 
-  useConversationStore.getState().setConversationState(conversationStates[1]);
+    useConversationStore.getState().setConversationState(conversationStates[1]);
 
-  console.log("set conversation state to", conversationStates[1]);
+    console.log("set conversation state to", conversationStates[1]);
 
-  return { status: "success", requiresFollowUp: false };
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in store_initial_setup:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_is_regulatory_check_at_every_step = async ({
@@ -49,79 +68,124 @@ export const store_is_regulatory_check_at_every_step = async ({
 }: {
   includeRegulatoryCheckFromInitialSetup: boolean;
 }) => {
-  console.log(
-    "store_is_regulatory_check_at_every_step params",
-    includeRegulatoryCheckFromInitialSetup,
-  );
-
-  useRegulatoryCheckStore
-    .getState()
-    .setIncludeRegulatoryCheckFromInitialSetup(
+  try {
+    console.log(
+      "store_is_regulatory_check_at_every_step params",
       includeRegulatoryCheckFromInitialSetup,
     );
 
-  useConversationStore.getState().setConversationState(conversationStates[2]);
-  console.log("set conversation state to", conversationStates[2]);
-  console.log("executed store_is_regulatory_check_at_every_step function");
+    useRegulatoryCheckStore
+      .getState()
+      .setIncludeRegulatoryCheckFromInitialSetup(
+        includeRegulatoryCheckFromInitialSetup,
+      );
+
+    useConversationStore.getState().setConversationState(conversationStates[2]);
+    console.log("set conversation state to", conversationStates[2]);
+    console.log("executed store_is_regulatory_check_at_every_step function");
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in store_is_regulatory_check_at_every_step:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_loan_parameters = async (params: Partial<ProductModel>) => {
-  console.log("store_loan_parameters params", params);
-  const res = await storeLoanParameters(params);
-  console.log("executed store_loan_parameters function", res);
+  try {
+    console.log("store_loan_parameters params", params);
+    const res = await storeLoanParameters(params);
+    console.log("executed store_loan_parameters function", res);
 
-  await set_product();
+    await set_product();
 
-  useConversationStore.getState().setConversationState(conversationStates[3]);
-  console.log("set conversation state to", conversationStates[3]);
+    useConversationStore.getState().setConversationState(conversationStates[3]);
+    console.log("set conversation state to", conversationStates[3]);
 
-  return { status: "success", requiresFollowUp: false };
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in store_loan_parameters:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_acceptance_criteria = async (
   params: Partial<ProductModel>,
 ) => {
-  console.log("store_acceptance_criteria params", params);
-  const res = await storeAcceptanceCriteria(params);
-  console.log("executed store_acceptance_criteria function", res);
+  try {
+    console.log("store_acceptance_criteria params", params);
+    const res = await storeAcceptanceCriteria(params);
+    console.log("executed store_acceptance_criteria function", res);
 
-  await set_product();
+    await set_product();
 
-  useConversationStore.getState().setConversationState(conversationStates[4]);
-  console.log("set conversation state to", conversationStates[4]);
+    useConversationStore.getState().setConversationState(conversationStates[4]);
+    console.log("set conversation state to", conversationStates[4]);
 
-  return { status: "success", requiresFollowUp: false };
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in store_acceptance_criteria:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_pricing = async (params: Partial<ProductModel>) => {
-  console.log("store_pricing params", params);
-  const res = await storePricing(params);
-  console.log("executed store_pricing function", res);
+  try {
+    console.log("store_pricing params", params);
+    const res = await storePricing(params);
+    console.log("executed store_pricing function", res);
 
-  await set_product();
+    await set_product();
 
-  useConversationStore.getState().setConversationState(conversationStates[5]);
-  console.log("set conversation state to", conversationStates[5]);
+    useConversationStore.getState().setConversationState(conversationStates[5]);
+    console.log("set conversation state to", conversationStates[5]);
 
-  return { status: "success", requiresFollowUp: false };
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in store_pricing:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_regulatory_check = async (params: Partial<ProductModel>) => {
-  console.log("store_regulatory_check params", params);
-  const res = await storeRegulatoryCheck(params);
-  console.log("executed store_regulatory_check function", res);
+  try {
+    console.log("store_regulatory_check params", params);
+    const res = await storeRegulatoryCheck(params);
+    console.log("executed store_regulatory_check function", res);
 
-  await set_product();
+    await set_product();
 
-  useConversationStore.getState().setConversationState(conversationStates[6]);
-  console.log("set conversation state to", conversationStates[6]);
+    useConversationStore.getState().setConversationState(conversationStates[6]);
+    console.log("set conversation state to", conversationStates[6]);
 
-  return { status: "success", requiresFollowUp: false };
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in store_regulatory_check:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const store_go_live = async (params: Partial<ProductModel>) => {
-  console.log("store_go_live params", params);
   try {
+    console.log("store_go_live params", params);
     const res = await storeGoLive(params);
     console.log("executed store_go_live function", res);
 
@@ -135,64 +199,317 @@ export const store_go_live = async (params: Partial<ProductModel>) => {
 };
 
 export const read_product = async () => {
-  console.log("read_product called");
-  const res = await readProduct();
+  try {
+    console.log("read_product called");
+    const res = await readProduct();
 
-  await set_product();
+    await set_product();
 
-  console.log("executed read_product function", res);
-  return res;
+    console.log("executed read_product function", res);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in read_product:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const product_simulation = async () => {
-  console.log("product_simulation called");
-  const res = await readProduct();
+  try {
+    console.log("product_simulation called");
+    const res = await readProduct();
 
-  const setProduct = useConfiguringProductStore.getState().setProduct;
-  const product = transformProductModelToProductConfigurationDTO(res);
+    const setProduct = useConfiguringProductStore.getState().setProduct;
+    const product = transformProductModelToProductConfigurationDTO(res);
 
-  setProduct(product);
-  sendProductUpdate(product);
+    setProduct(product);
+    sendProductUpdate(product);
 
-  useSimulationProductPopupStore.getState().setIsOpen(true);
+    useSimulationProductPopupStore.getState().setIsOpen(true);
 
-  console.log("executed product_simulation function", res);
-  return res;
+    console.log("executed product_simulation function", res);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in product_simulation:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const generate_iso_compliance_pdf = async (
   params: ISOCompliancePdfDataModel,
 ) => {
-  console.log("generate_iso_compliance_pdf params", params);
-  console.log("executed generate_iso_compliance_pdf function");
-  return { status: "success", requiresFollowUp: false };
+  try {
+    console.log("generate_iso_compliance_pdf params", params);
+    console.log("executed generate_iso_compliance_pdf function");
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in generate_iso_compliance_pdf:", error);
+    return { status: "error", requiresFollowUp: false };
+  }
 };
 
 export const generate_eu_tax_compliance_pdf = async (
   params: EuTaxCompliancePdfDataModel,
 ) => {
-  console.log("generate_eu_tax_compliance_pdf params", params);
-  console.log("executed generate_eu_tax_compliance_pdf function");
-  return { status: "success", requiresFollowUp: false };
+  try {
+    console.log("generate_eu_tax_compliance_pdf params", params);
+    console.log("executed generate_eu_tax_compliance_pdf function");
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in generate_eu_tax_compliance_pdf:", error);
+    return { status: "error", requiresFollowUp: false };
+  }
 };
 
 export const generate_esg_declaration_pdf = async (
   params: EsgDeclarationPdfDataModel,
 ) => {
-  console.log("generate_esg_declaration_pdf params", params);
-  console.log("executed generate_esg_declaration_pdf function");
-  return { status: "success", requiresFollowUp: false };
+  try {
+    console.log("generate_esg_declaration_pdf params", params);
+    console.log("executed generate_esg_declaration_pdf function");
+    return { status: "success", requiresFollowUp: false };
+  } catch (error) {
+    console.error("Error in generate_esg_declaration_pdf:", error);
+    return { status: "error", requiresFollowUp: false };
+  }
+};
+
+export const update_compliance_check = async (
+  params: ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log("update_compliance_check params", params);
+
+    const previousComplianceCheck =
+      useComplianceCheckStore.getState().complianceCheck;
+
+    // avoid removing old check
+    if (previousComplianceCheck) {
+      useComplianceCheckStore.getState().setComplianceCheck({
+        countryCode: previousComplianceCheck.countryCode,
+        parametersToCheck: [
+          ...previousComplianceCheck.parametersToCheck,
+          ...params.parametersToCheck,
+        ],
+      });
+    } else {
+      useComplianceCheckStore.getState().setComplianceCheck(params);
+    }
+
+    console.log("executed update_compliance_check function");
+  } catch (error) {
+    console.error("Error in update_compliance_check:", error);
+  }
 };
 
 export const check_compliance_for_product_parameters = async (
   params: ComplianceCheckProductParametersModel,
 ) => {
-  console.log("check_compliance_for_product_parameters params", params);
-  console.log("executed check_compliance_for_product_parameters function");
-  useComplianceCheckStore.getState().setComplianceCheck({
-    countryCode: params.countryCode,
-    parametersToCheck: params.parametersToCheck,
-  });
+  try {
+    console.log("check_compliance_for_product_parameters params", params);
+    console.log("executed check_compliance_for_product_parameters function");
+
+    update_compliance_check(params);
+  } catch (error) {
+    console.error("Error in check_compliance_for_product_parameters:", error);
+  }
+};
+
+export const store_loan_parameters_and_check_compliance = async (
+  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log("store_loan_parameters_and_check_compliance params", params);
+
+    const { countryCode, parametersToCheck, ...rest } = params;
+
+    await store_loan_parameters(rest);
+
+    const paramsToCheck = {
+      countryCode,
+      parametersToCheck,
+    };
+
+    await check_compliance_for_product_parameters(paramsToCheck);
+    console.log("executed store_loan_parameters_and_check_compliance function");
+
+    useConversationStore.getState().setConversationState(conversationStates[3]);
+    console.log("set conversation state to", conversationStates[3]);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error(
+      "Error in store_loan_parameters_and_check_compliance:",
+      error,
+    );
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
+};
+
+export const store_acceptance_criteria_and_check_compliance = async (
+  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log(
+      "store_acceptance_criteria_and_check_compliance params",
+      params,
+    );
+
+    const { countryCode, parametersToCheck, ...rest } = params;
+
+    await store_acceptance_criteria(rest);
+
+    const paramsToCheck = {
+      countryCode,
+      parametersToCheck,
+    };
+
+    await check_compliance_for_product_parameters(paramsToCheck);
+    console.log(
+      "executed store_acceptance_criteria_and_check_compliance function",
+    );
+
+    useConversationStore.getState().setConversationState(conversationStates[4]);
+    console.log("set conversation state to", conversationStates[4]);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error(
+      "Error in store_acceptance_criteria_and_check_compliance:",
+      error,
+    );
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
+};
+
+export const store_pricing_and_check_compliance = async (
+  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log("store_pricing_and_check_compliance params", params);
+
+    const { countryCode, parametersToCheck, ...rest } = params;
+
+    await store_pricing(rest);
+
+    const paramsToCheck = {
+      countryCode,
+      parametersToCheck,
+    };
+
+    await check_compliance_for_product_parameters(paramsToCheck);
+    console.log("executed store_pricing_and_check_compliance function");
+
+    useConversationStore.getState().setConversationState(conversationStates[5]);
+    console.log("set conversation state to", conversationStates[5]);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in store_pricing_and_check_compliance:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
+};
+
+export const store_regulatory_check_and_check_compliance = async (
+  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log("store_regulatory_check_and_check_compliance params", params);
+
+    const { countryCode, parametersToCheck, ...rest } = params;
+
+    await store_regulatory_check(rest);
+
+    const paramsToCheck = {
+      countryCode,
+      parametersToCheck,
+    };
+
+    await check_compliance_for_product_parameters(paramsToCheck);
+    console.log(
+      "executed store_regulatory_check_and_check_compliance function",
+    );
+
+    useConversationStore.getState().setConversationState(conversationStates[6]);
+    console.log("set conversation state to", conversationStates[6]);
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error(
+      "Error in store_regulatory_check_and_check_compliance:",
+      error,
+    );
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
+};
+
+export const store_go_live_and_check_compliance = async (
+  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
+) => {
+  try {
+    console.log("store_go_live_and_check_compliance params", params);
+
+    const { countryCode, parametersToCheck, ...rest } = params;
+
+    await store_go_live(rest);
+
+    const paramsToCheck = {
+      countryCode,
+      parametersToCheck,
+    };
+
+    await check_compliance_for_product_parameters(paramsToCheck);
+
+    console.log("executed store_go_live_and_check_compliance function");
+
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
+  } catch (error) {
+    console.error("Error in store_go_live_and_check_compliance:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
+  }
 };
 
 export const functionsMap = {
@@ -209,4 +526,9 @@ export const functionsMap = {
   generate_eu_tax_compliance_pdf,
   generate_esg_declaration_pdf,
   check_compliance_for_product_parameters,
+  store_loan_parameters_and_check_compliance,
+  store_acceptance_criteria_and_check_compliance,
+  store_pricing_and_check_compliance,
+  store_regulatory_check_and_check_compliance,
+  store_go_live_and_check_compliance,
 };

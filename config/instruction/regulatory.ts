@@ -57,7 +57,7 @@ const REGULATORY_EXTENSIONS = {
 
     - Collateral Requirements (required above certain loan amounts)
     - Guarantees Needed (e.g. personal guarantee for loans over €50,000)
-    - Minimum Credit Score (typically 650–680+)
+    - Minimum Credit Score (typically 650 - 680+)
     - Financial Ratios (e.g. DSCR ≥ 1.2)
     - Industry-Specific Criteria (e.g. renewable energy IRR ≥ 8%, permits in place)
 

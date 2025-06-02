@@ -1,10 +1,10 @@
 "use client";
 
+import MenuIcon from "@/app/assets/icons/MenuIcon";
+import HeaderDropdownMenu from "@/app/components/header-dropdown-menu";
+import { Z_INDEX } from "@/config/zIndex";
 import AkkuroDarkLogo from "@/public/akkuro-dark.svg";
 import Image from "next/image";
-import MenuIcon from "@/app/assets/icons/MenuIcon";
-import { Z_INDEX } from "@/config/zIndex";
-import HeaderDropdownMenu from "@/app/components/header-dropdown-menu";
 
 export default function Header() {
   return (
@@ -14,11 +14,9 @@ export default function Header() {
       <div className="flex flex-row gap-[10.5px] items-center">
         <MenuIcon className="size-[18px] text-[#999999] mr-4" />
         <Image
+          className="object-contain w-[120px] h-[21.14px]"
           src={AkkuroDarkLogo}
           alt="Akkuro Logo"
-          width={120}
-          height={21.14}
-          objectFit="contain"
         />
         <span className="text-[#999999] text-2xl">/</span>
         <span className="text-[#999999] text-2xl">Studio</span>

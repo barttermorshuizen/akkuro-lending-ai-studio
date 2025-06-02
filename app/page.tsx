@@ -7,6 +7,7 @@ import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-p
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,9 +25,9 @@ import {
   SlidersVertical,
   TagIcon,
 } from "lucide-react";
-import { redirect } from "next/navigation";
 import { HTMLAttributes, useEffect, useRef, useState } from "react";
 import ChatIcon from "./assets/icons/ChatIcon";
+import { WithAuthProtectionPage } from "./components/protected-page";
 interface InfoCardProps {
   title: string;
   description: string;
@@ -51,8 +52,7 @@ function InfoCard({ title, description, icon, onClick }: InfoCardProps) {
   );
 }
 
-export default function Lending() {
-  const [isHydrated, setIsHydrated] = useState(false);
+const Lending = WithAuthProtectionPage(function Lending() {
   const [showTooltip, setShowTooltip] = useState(true);
 
   const hasReset = useRef(false);
@@ -74,6 +74,13 @@ export default function Lending() {
       }, 5000);
     }
   }, [showTooltip]);
+
+  useEffect(() => {
+    if (!hasReset.current) {
+      resetProduct();
+      hasReset.current = true;
+    }
+  }, []);
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -101,33 +108,14 @@ export default function Lending() {
     }
   };
 
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasReset.current) {
-      resetProduct();
-      hasReset.current = true;
-    }
-  }, []);
-
-  if (!isHydrated) {
-    return null;
-  }
-
-  if (!userInfo) {
-    redirect("/login");
-  }
-
   return (
-    <div className="h-full w-full flex flex-row mx-auto bg-chatBackground">
+    <div className="h-full w-full flex flex-row mx-auto">
       <div className="flex-1 flex-col justify-center items-center h-full hidden xl:flex"></div>
       <div className="flex flex-1 flex-col justify-center xl:absolute top-16 left-0 xl:w-[70vw] shadow-lending bg-background xl:h-[calc(100vh-64px)] items-center">
         <div className="flex flex-col gap-16">
           <div className=" text-2xl xl:text-6xl xl:leading-normal text-white font-light px-4 xl:px-0">
             Welcome to Akkuro, <br />
-            {userInfo.displayName}!
+            {userInfo?.displayName}!
           </div>
           <div className="xl:grid flex flex-col xl:grid-cols-2 items-center justify-center gap-8">
             <InfoCard
@@ -191,6 +179,7 @@ export default function Lending() {
           </DialogTrigger>
         </div>
         <DialogContent
+          aria-describedby="chat-with-akkuro-ai"
           className={`bg-transparent border-none p-0 ${
             isDisplayProductPreview
               ? "max-w-[90vw] xl:max-w-[75vw]"
@@ -199,6 +188,7 @@ export default function Lending() {
         >
           <DialogHeader className="hidden">
             <DialogTitle>Chat with Akkuro AI</DialogTitle>
+            <DialogDescription>Chat with Akkuro AI</DialogDescription>
           </DialogHeader>
           <div
             className={`flex flex-col lg:flex-row h-[95vh] overflow-y-auto lg:h-[90vh] divide-x-[1px] divide-solid divide-[#C5BFB9] py-4 bg-chatBackground rounded-xl`}
@@ -213,4 +203,6 @@ export default function Lending() {
       {/* <ToolsPanel /> */}
     </div>
   );
-}
+});
+
+export default Lending;

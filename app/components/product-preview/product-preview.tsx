@@ -12,6 +12,7 @@ import ProductReviewSection from "./product-review-section";
 import Show from "@/components/condition/show";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { formatNumber } from "@/lib/formatNumber";
 import { useComplianceCheckStore } from "@/stores/useComplianceCheckStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import { useMemo } from "react";
@@ -106,8 +107,8 @@ export default function ProductPreview() {
                 <div
                   className={`flex flex-row justify-between gap-2 border rounded-xl py-2 px-4 ${
                     check.isCompliant
-                      ? "bg-green-50 border-green-500 text-green-700"
-                      : "bg-red-50 border-red-500 text-red-700"
+                      ? "bg-[#EBFAEC] border-[#B8E4BB] text-[#1C6A2B]"
+                      : "bg-[#FFEEEE] border-[#EDC0C0] text-[#B13635]"
                   }`}
                   key={index}
                 >
@@ -117,11 +118,11 @@ export default function ProductPreview() {
                   <div className="text-right">
                     {check.isCompliant ? (
                       <span className="flex flex-row gap-2">
-                        Compliant ({check.paramValue})
+                        Compliant ({formatNumber(check.paramValue)})
                       </span>
                     ) : (
                       <span className="flex flex-row gap-2 text-wrap">
-                        {check.notes}
+                        {check.notes} ({formatNumber(check.paramValue)})
                       </span>
                     )}
                   </div>

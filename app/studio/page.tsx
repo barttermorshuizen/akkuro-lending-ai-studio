@@ -9,6 +9,7 @@ import { noValueFallback } from "@/lib/fallback";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import { useEffect } from "react";
+import { WithAuthProtectionPage } from "../components/protected-page";
 
 type ProductInfoProps = {
   name: string;
@@ -27,9 +28,8 @@ function ProductInfo({ name, description }: ProductInfoProps) {
   );
 }
 
-export default function Studio() {
+const Studio = WithAuthProtectionPage(function Studio() {
   const { product, setProduct } = useConfiguringProductStore();
-
   useEffect(() => {
     read_product();
   }, []);
@@ -54,4 +54,6 @@ export default function Studio() {
       </div>
     </div>
   );
-}
+});
+
+export default Studio;

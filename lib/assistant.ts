@@ -6,11 +6,6 @@ import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import { parse } from "partial-json";
-import {
-  getPushMessageForFunction,
-  PushMessageFunction,
-  pushMessageFunctions,
-} from "./messages/custom-message";
 import { getTools } from "./tools/tools";
 
 export interface ContentItem {
@@ -111,7 +106,8 @@ export const handleTurn = async (
       }
     }
   } catch (error) {
-    console.error("Error handling turn:", error);
+    console.error("Error handling turn:", JSON.stringify(error, null, 2));
+    throw error;
   }
 };
 
@@ -144,35 +140,22 @@ export const processMessages = async () => {
   let assistantMessageBuffer = "";
   let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
+  let isWaitingOutputIndexNext = false;
 
   await handleTurn(allConversationItems, tools, async ({ event, data }) => {
     switch (event) {
       case "response.output_text.delta":
+      case "response.output_text.annotation.added": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
 
-      case "response.output_text.annotation.added": {
-        const { delta, item_id, annotation } = data;
+        const { delta, annotation } = data;
 
         if (typeof delta === "string") {
           assistantMessageBuffer += delta;
         }
 
         // Create or update message with plain text
-        if (!currentMessageItem || currentMessageItem.id !== item_id) {
-          currentMessageItem = {
-            type: "message",
-            role: "assistant",
-            id: item_id,
-            content: [
-              {
-                type: "output_text",
-                text: assistantMessageBuffer,
-              },
-            ],
-            sendAt: new Date(),
-          };
-          chatMessages.push(currentMessageItem);
-        } else {
+        if (currentMessageItem) {
           const contentItem = currentMessageItem.content[0];
           if (contentItem && contentItem.type === "output_text") {
             contentItem.text = assistantMessageBuffer;
@@ -189,7 +172,35 @@ export const processMessages = async () => {
       }
 
       case "response.output_item.added": {
-        const { item } = data || {};
+        const { item, output_index } = data || {};
+
+        console.log("output_item.added output_index", output_index);
+        console.log(
+          "output_item.added type of output_index",
+          typeof output_index,
+        );
+        console.log("output_item.added item", item);
+
+        if (output_index === 0 && item.type === "web_search_call") {
+          isWaitingOutputIndexNext = true;
+        }
+
+        if (output_index === 0 && item.type !== "web_search_call") {
+          isWaitingOutputIndexNext = false;
+        }
+        if (
+          output_index > 0 &&
+          item.type === "message" &&
+          !isWaitingOutputIndexNext
+        ) {
+          console.log(
+            "output_item.added output_index > 0 and item.type === message break",
+          );
+          break;
+        }
+        console.log(
+          "output_item.added output_index > 0 and item.type === message break end",
+        );
         // New item coming in
         if (!item || !item.type) {
           break;
@@ -197,8 +208,21 @@ export const processMessages = async () => {
         // Handle differently depending on the item type
         switch (item.type) {
           case "message": {
-            // Skip message handling here as it's already handled in response.output_text.delta
-            break;
+            if (!currentMessageItem || currentMessageItem.id !== item.id) {
+              currentMessageItem = {
+                type: "message",
+                role: "assistant",
+                id: item.id,
+                content: [
+                  {
+                    type: "output_text",
+                    text: assistantMessageBuffer,
+                  },
+                ],
+                sendAt: new Date(),
+              };
+              chatMessages.push(currentMessageItem);
+            } else break;
           }
           case "function_call": {
             functionArguments += item.arguments || "";
@@ -344,31 +368,31 @@ export const processMessages = async () => {
           }
 
           // Add response message
-          if (
-            pushMessageFunctions.includes(
-              toolCallMessage.name as keyof typeof functionsMap,
-            )
-          ) {
-            const responseMessage: MessageItem = {
-              type: "message",
-              role: "assistant",
-              id: `${item_id}_response`,
-              content: [
-                {
-                  type: "output_text",
-                  text:
-                    responseText ||
-                    getPushMessageForFunction(
-                      toolCallMessage.name as PushMessageFunction,
-                    ),
-                },
-              ],
-              sendAt: new Date(),
-              isFinal: true,
-            };
-            chatMessages.push(responseMessage);
-            setChatMessages([...chatMessages]);
-          }
+          // if (
+          //   pushMessageFunctions.includes(
+          //     toolCallMessage.name as keyof typeof functionsMap,
+          //   )
+          // ) {
+          //   const responseMessage: MessageItem = {
+          //     type: "message",
+          //     role: "assistant",
+          //     id: `${item_id}_response`,
+          //     content: [
+          //       {
+          //         type: "output_text",
+          //         text:
+          //           responseText ||
+          //           getPushMessageForFunction(
+          //             toolCallMessage.name as PushMessageFunction,
+          //           ),
+          //       },
+          //     ],
+          //     sendAt: new Date(),
+          //     isFinal: true,
+          //   };
+          //   chatMessages.push(responseMessage);
+          //   setChatMessages([...chatMessages]);
+          // }
 
           // Add to conversation items
           conversationItems.push({
@@ -405,8 +429,40 @@ export const processMessages = async () => {
                 "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
               break;
             case "store_go_live":
+            case "store_go_live_and_check_compliance":
               confirmationText =
                 "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, take a look at how it appears in the mobile app, or start fresh with a new product?";
+              break;
+            case "store_loan_parameters_and_check_compliance":
+              confirmationText =
+                "Great! I've stored all the loan parameters and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or do you want to move on to the next step?";
+              break;
+            case "read_product":
+              confirmationText =
+                "I've fetched the product details. Is there anything else you'd like me to do?";
+              break;
+            case "product_simulation":
+              confirmationText =
+                "I've simulated the product. Is there anything else you'd like me to do?";
+              break;
+            case "check_compliance_for_product_parameters":
+              confirmationText =
+                "I've checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+              break;
+            case "store_acceptance_criteria_and_check_compliance":
+              confirmationText =
+                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+              break;
+            case "store_pricing_and_check_compliance":
+              confirmationText =
+                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+              break;
+            case "store_regulatory_check_and_check_compliance":
+              confirmationText =
+                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+              break;
+            default:
+              confirmationText = "";
               break;
           }
 

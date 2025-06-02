@@ -2,6 +2,7 @@ import { productsConfigurationMapping } from "@/config/productsConfigurationMapp
 
 import { ProductConfigurationDTO } from "@/config/productsConfigurationMapping";
 import { noValueFallback } from "@/lib/fallback";
+import { formatNumber } from "@/lib/formatNumber";
 
 interface ProductReviewSectionProps {
   data: Partial<ProductConfigurationDTO>;
@@ -28,7 +29,7 @@ export default function ProductReviewSection({
             <div
               className={`${value ? "text-[#008071] font-bold text-lg" : "text-gray-500 text-base"}`}
             >
-              {value ? value : noValueFallback(value)}
+              {value ? formatNumber(value) : noValueFallback(value)}
             </div>
           </div>
         ))}

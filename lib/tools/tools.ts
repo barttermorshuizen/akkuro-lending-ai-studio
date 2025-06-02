@@ -1,5 +1,6 @@
+import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import useToolsStore, { WebSearchConfig } from "@/stores/useToolsStore";
-import { toolsList } from "../../config/tools-list";
+import { toolsList, toolsListCompatableCheck } from "../../config/tools-list";
 import { isValidISOCountryCode } from "../countryCodeHelper";
 
 // ISO 3166-1 country code mapping
@@ -49,8 +50,13 @@ export const getTools = () => {
   }
 
   tools.push(webSearchTool);
+  const isRegulatoryCheckAtEveryStep =
+    useRegulatoryCheckStore.getState().includeRegulatoryCheckFromInitialSetup;
+  const toolsToPush = isRegulatoryCheckAtEveryStep
+    ? toolsListCompatableCheck
+    : toolsList;
   tools.push(
-    ...toolsList.map((tool) => {
+    ...toolsToPush.map((tool) => {
       return {
         type: "function",
         name: tool.name,

@@ -1,3 +1,7 @@
+"use client";
+
+import React from "react";
+
 import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
 import PDFIcon from "@/app/assets/icons/PDFIcon";
 import { ToolCallItem } from "@/lib/assistant";
@@ -7,12 +11,16 @@ import {
   ISOCompliancePdfDataModel,
 } from "@/types/pdf-data-model";
 import { BookOpenText, Clock, DownloadIcon, Globe, Zap } from "lucide-react";
+import { Prism, SyntaxHighlighterProps } from "react-syntax-highlighter";
+import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Message from "./message";
 
 interface ToolCallProps {
   toolCall: ToolCallItem;
 }
 
+const SyntaxHighlighter =
+  Prism as unknown as typeof React.Component<SyntaxHighlighterProps>;
 function ApiCallCell({ toolCall }: ToolCallProps) {
   const getErrorStyle = (output: string) => {
     try {
@@ -69,7 +77,7 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
 
           <div className="bg-[#fafafa] max-w-[50vw] lg:max-w-[30vw] rounded-xl py-2 ml-4 mt-2">
             <div className="max-h-96 overflow-y-scroll text-xs border-b mx-6 p-2">
-              {/* <SyntaxHighlighter
+              <SyntaxHighlighter
                 customStyle={{
                   backgroundColor: "#fafafa",
                   padding: "8px",
@@ -81,26 +89,27 @@ function ApiCallCell({ toolCall }: ToolCallProps) {
                 style={coy}
               >
                 {JSON.stringify(toolCall.parsedArguments, null, 2)}
-              </SyntaxHighlighter> */}
+              </SyntaxHighlighter>
             </div>
             <div className="max-h-96 overflow-y-scroll mx-6 p-2 text-xs">
               {toolCall.output ? (
                 <>
                   {getErrorMessage(toolCall.output) || (
-                    <></>
-                    // <SyntaxHighlighter
-                    //   customStyle={{
-                    //     backgroundColor: "#fafafa",
-                    //     padding: "8px",
-                    //     paddingLeft: "0px",
-                    //     marginTop: 0,
-                    //   }}
-                    //   language="json"
-                    //   style={coy}
-                    //   className={getErrorStyle(toolCall.output)}
-                    // >
-                    //   {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
-                    // </SyntaxHighlighter>
+                    <>
+                      <SyntaxHighlighter
+                        customStyle={{
+                          backgroundColor: "#fafafa",
+                          padding: "8px",
+                          paddingLeft: "0px",
+                          marginTop: 0,
+                        }}
+                        language="json"
+                        style={coy}
+                        className={getErrorStyle(toolCall.output)}
+                      >
+                        {JSON.stringify(JSON.parse(toolCall.output), null, 2)}
+                      </SyntaxHighlighter>
+                    </>
                   )}
                 </>
               ) : (
@@ -212,7 +221,7 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
                         </div>
                       </div>
                       <button
-                        className="flex gap-4 border rounded-lg bg-white border-gray-200 px-4 py-3 hover:bg-gray-100 transition-colors"
+                        className="flex gap-4 border text-start rounded-lg bg-white border-gray-200 px-4 py-3 hover:bg-gray-100 transition-colors"
                         onClick={() =>
                           handleDownloadPdf(
                             toolCall.parsedArguments,
@@ -248,10 +257,11 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
                 </div>
               );
             }
+            if (process.env.NODE_ENV === "development" && toolCall.name) {
+              return <ApiCallCell toolCall={toolCall} />;
+            }
             return <Message message={toolCall} />;
-          // return <ApiCallCell toolCall={toolCall} />;
           case "file_search_call":
-            // return <Message message={toolCall} />;
             return <FileSearchCell toolCall={toolCall} />;
           case "web_search_call":
             return <WebSearchCell toolCall={toolCall} />;
