@@ -1,10 +1,3 @@
-import { ACCEPTANCE_CRITERIA_EXAMPLE } from "./example/acceptance-criteria";
-import { GO_LIVE_EXAMPLE } from "./example/go-live";
-import { INTIAL_STATE_EXAMPLE } from "./example/intial-state";
-import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
-import { PRICING_EXAMPLE } from "./example/pricing";
-import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
-import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
 import { FORMAT_INSTRUCTIONS } from "./instruction/format";
 import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
@@ -16,7 +9,7 @@ export const regulatoryInstructions: Record<string, string> = {
     The InitialSetup state identifies:
     - the targeted customer (e.g. SMEs, large enterprises, startups)
     - the country code (follow the ISO 3166-1 alpha-2 standard)
-    - its intended use (e.g. green investments, working capital, equipment financing)
+    - its intended use (e.g. green investments, general, working capital, equipment financing, etc.)
     - a fitting product name (e.g. Green Business Loan, Working Capital Loan, Equipment Financing)
     
     Use the store_initial_setup tool when you have collected all required information.
@@ -27,9 +20,6 @@ export const regulatoryInstructions: Record<string, string> = {
     ${FORMAT_INSTRUCTIONS}
     
     ${VALIDATION_INSTRUCTIONS.InitialSetup}
-    
-    Example interaction:
-    ${INTIAL_STATE_EXAMPLE}
     `,
   SetRegulatoryCheckAtEveryStep: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the SetRegulatoryCheckAtEveryStep state of the conversation.
@@ -47,10 +37,7 @@ export const regulatoryInstructions: Record<string, string> = {
     IMPORTANT: After the user confirms their choice, you MUST call the store_is_regulatory_check_at_every_step tool with the correct parameter before moving to the next step. Do not skip this tool call. 
 
     After calling the tool, move to the LoanParameters state.
-    
-    Example interaction:
-    ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}
-  `,
+      `,
   LoanParameters: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the LoanParameters state of the conversation.
     
@@ -69,9 +56,6 @@ export const regulatoryInstructions: Record<string, string> = {
     ${FORMAT_INSTRUCTIONS}
     
     ${VALIDATION_INSTRUCTIONS.LoanParameters}
-
-    Example interaction:
-    ${LOAN_PARAMETER_EXAMPLE}
     `,
 
   AcceptanceCriteria: `${GLOBAL_INSTRUCTIONS}
@@ -91,9 +75,6 @@ export const regulatoryInstructions: Record<string, string> = {
     ${FORMAT_INSTRUCTIONS}
 
     ${VALIDATION_INSTRUCTIONS.AcceptanceCriteria}
-    
-    Example interaction:
-    ${ACCEPTANCE_CRITERIA_EXAMPLE}
     `,
 
   Pricing: `${GLOBAL_INSTRUCTIONS}
@@ -113,9 +94,7 @@ export const regulatoryInstructions: Record<string, string> = {
     ${FORMAT_INSTRUCTIONS}
 
     ${VALIDATION_INSTRUCTIONS.Pricing}
-    
-    Example interaction:
-    ${PRICING_EXAMPLE}`,
+    `,
 
   RegulatoryCheck: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the RegulatoryCheck state of the conversation.
@@ -135,10 +114,7 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
 
-    ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
-    
-    Example interaction:
-    ${REGULATORY_CHECK_EXAMPLE}`,
+    ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}`,
 
   GoLive: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the GoLive state of the conversation.
@@ -157,8 +133,5 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
     
-    ${VALIDATION_INSTRUCTIONS.GoLive}
-
-    Example interaction:
-    ${GO_LIVE_EXAMPLE}`,
+    ${VALIDATION_INSTRUCTIONS.GoLive}`,
 };

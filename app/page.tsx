@@ -61,6 +61,7 @@ const Lending = WithAuthProtectionPage(function Lending() {
 
   const {
     chatMessages,
+    conversationItems,
     addConversationItem,
     addChatMessage,
     setIsProcessingNewMessage,
@@ -107,6 +108,10 @@ const Lending = WithAuthProtectionPage(function Lending() {
       setIsProcessingNewMessage(false);
     }
   };
+
+  useEffect(() => {
+    console.log("conversationItems", conversationItems);
+  }, [conversationItems]);
 
   return (
     <div className="h-full w-full flex flex-row mx-auto">

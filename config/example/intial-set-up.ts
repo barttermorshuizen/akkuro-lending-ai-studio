@@ -1,5 +1,6 @@
-export const INTIAL_STATE_EXAMPLE = `
-    User: I want to create a new business loan product for green investments.
+export const INTIAL_SET_UP_EXAMPLE = `
+    Example interaction:
+    User: I want to create a new business loan product.
 
     Assistant: Sounds like a great idea! 🌱  
     Let's get it started. I'll just ask you a few quick questions so we can set up the basics.

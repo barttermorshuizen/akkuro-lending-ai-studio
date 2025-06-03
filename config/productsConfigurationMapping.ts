@@ -72,7 +72,7 @@ export const productsConfigurationMapping: Record<
   originationFee: "Origination fee",
   servicingFee: "Servicing fee",
   latePaymentFee: "Late payment fee",
-  greenInvestmentDiscount: "Green investment discount",
+  greenInvestmentDiscount: "Discount",
   earlyRepaymentPenalty: "Early repayment penalty",
 
   regulatoryFramework: "Regulatory framework",

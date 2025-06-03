@@ -1,4 +1,5 @@
 export const REGULATORY_CHECK_EXAMPLE = `
+    Example interaction:
     Assistant: Let's set the regulatory framework. I'll ask you a few questions to shape the regulatory structure.
     Which regulatory framework governs this loan product? (e.g., Basel III, MiFID II)
 

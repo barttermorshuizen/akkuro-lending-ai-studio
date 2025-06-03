@@ -1,4 +1,5 @@
 export const PRICING_EXAMPLE = `
+    Example interaction:
     Assistant: Let's set the pricing parameters. I'll ask you a few questions to shape the pricing structure.
     • Interest rate range
     • Fee structure

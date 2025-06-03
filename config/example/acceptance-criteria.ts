@@ -1,4 +1,5 @@
 export const ACCEPTANCE_CRITERIA_EXAMPLE = `
+    Example interaction:
     Assistant: Let's define eligibility criteria. I'll ask you a few questions to shape the borrower profile.
 
     First, should borrowers provide **collateral**?

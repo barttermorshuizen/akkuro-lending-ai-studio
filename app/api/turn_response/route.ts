@@ -1,7 +1,8 @@
 import { MODEL } from "@/config/constants";
+import { handleTool } from "@/lib/tools/tools-handling";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { handleTool } from "@/lib/tools/tools-handling";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 // Validate and normalize country code in message content
 // Normalize country codes in any string content
@@ -89,12 +90,26 @@ export async function POST(request: Request) {
 
     const openai = new OpenAI();
 
+    const filteredMessages = messages.filter((msg: any) => {
+      console.log("msg", msg);
+      return !msg.type || !["function_call", "tool"].includes(msg.type);
+    });
+
+    const validatedMessages = filteredMessages.map(
+      (msg: ChatCompletionMessageParam) => {
+        if (msg && !("content" in msg)) {
+          return {
+            ...msg,
+            content: "",
+          };
+        }
+        return msg;
+      },
+    );
+
     const events = await openai.responses.create({
       model: MODEL,
-      input: messages.filter(
-        (msg: any) =>
-          !msg.type || !["function_call", "tool"].includes(msg.type),
-      ),
+      input: validatedMessages,
       tools,
       stream: true,
       parallel_tool_calls: false,

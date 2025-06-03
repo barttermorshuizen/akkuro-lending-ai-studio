@@ -296,13 +296,36 @@ export const update_compliance_check = async (
     const previousComplianceCheck =
       useComplianceCheckStore.getState().complianceCheck;
 
+    const previousParametersToCheck =
+      previousComplianceCheck?.parametersToCheck;
+
+    previousParametersToCheck?.forEach((param) => {
+      const paramToUpdate = params.parametersToCheck.find(
+        (p) => p.productParam === param.productParam,
+      );
+      if (paramToUpdate) {
+        const { productParam, ...rest } = paramToUpdate;
+        param = {
+          productParam: productParam,
+          ...rest,
+        };
+      }
+    });
+
+    const newParametersToCheck = params.parametersToCheck.filter(
+      (p) =>
+        !previousParametersToCheck?.some(
+          (pp) => pp.productParam === p.productParam,
+        ),
+    );
+
     // avoid removing old check
     if (previousComplianceCheck) {
       useComplianceCheckStore.getState().setComplianceCheck({
         countryCode: previousComplianceCheck.countryCode,
         parametersToCheck: [
           ...previousComplianceCheck.parametersToCheck,
-          ...params.parametersToCheck,
+          ...newParametersToCheck,
         ],
       });
     } else {
@@ -315,16 +338,21 @@ export const update_compliance_check = async (
   }
 };
 
-export const check_compliance_for_product_parameters = async (
+export const current_collected_parameters_compliance_check = async (
   params: ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("check_compliance_for_product_parameters params", params);
-    console.log("executed check_compliance_for_product_parameters function");
+    console.log("current_collected_parameters_compliance_check params", params);
+    console.log(
+      "executed current_collected_parameters_compliance_check function",
+    );
 
     update_compliance_check(params);
   } catch (error) {
-    console.error("Error in check_compliance_for_product_parameters:", error);
+    console.error(
+      "Error in current_collected_parameters_compliance_check:",
+      error,
+    );
   }
 };
 
@@ -343,7 +371,7 @@ export const store_loan_parameters_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await check_compliance_for_product_parameters(paramsToCheck);
+    await current_collected_parameters_compliance_check(paramsToCheck);
     console.log("executed store_loan_parameters_and_check_compliance function");
 
     useConversationStore.getState().setConversationState(conversationStates[3]);
@@ -383,7 +411,7 @@ export const store_acceptance_criteria_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await check_compliance_for_product_parameters(paramsToCheck);
+    await current_collected_parameters_compliance_check(paramsToCheck);
     console.log(
       "executed store_acceptance_criteria_and_check_compliance function",
     );
@@ -422,7 +450,7 @@ export const store_pricing_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await check_compliance_for_product_parameters(paramsToCheck);
+    await current_collected_parameters_compliance_check(paramsToCheck);
     console.log("executed store_pricing_and_check_compliance function");
 
     useConversationStore.getState().setConversationState(conversationStates[5]);
@@ -456,7 +484,7 @@ export const store_regulatory_check_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await check_compliance_for_product_parameters(paramsToCheck);
+    await current_collected_parameters_compliance_check(paramsToCheck);
     console.log(
       "executed store_regulatory_check_and_check_compliance function",
     );
@@ -495,7 +523,7 @@ export const store_go_live_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await check_compliance_for_product_parameters(paramsToCheck);
+    await current_collected_parameters_compliance_check(paramsToCheck);
 
     console.log("executed store_go_live_and_check_compliance function");
 
@@ -525,7 +553,7 @@ export const functionsMap = {
   generate_iso_compliance_pdf,
   generate_eu_tax_compliance_pdf,
   generate_esg_declaration_pdf,
-  check_compliance_for_product_parameters,
+  current_collected_parameters_compliance_check,
   store_loan_parameters_and_check_compliance,
   store_acceptance_criteria_and_check_compliance,
   store_pricing_and_check_compliance,

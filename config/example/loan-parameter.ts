@@ -1,4 +1,5 @@
 export const LOAN_PARAMETER_EXAMPLE = `
+    Example interaction:
     User: I'm ready to define the loan parameters for our Green Business Loan.
 
     Assistant: Fantastic! We'll tackle this step by step. First, here are the four key fields we need:

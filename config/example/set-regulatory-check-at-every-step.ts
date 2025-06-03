@@ -1,4 +1,5 @@
 export const SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE = `
+    Example interaction:
     Assistant: Before we move on — just one more thing:  
     Would you like me to check for regulatory compliance **after each step**,  
     or should we **do all the checks at the very end**?

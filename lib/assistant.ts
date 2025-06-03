@@ -445,9 +445,9 @@ export const processMessages = async () => {
               confirmationText =
                 "I've simulated the product. Is there anything else you'd like me to do?";
               break;
-            case "check_compliance_for_product_parameters":
+            case "current_collected_parameters_compliance_check":
               confirmationText =
-                "I've checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+                "I've checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or should we back to the product configuration?";
               break;
             case "store_acceptance_criteria_and_check_compliance":
               confirmationText =
@@ -484,7 +484,13 @@ export const processMessages = async () => {
             // Add to conversation items
             conversationItems.push({
               role: "assistant",
-              content: confirmationMessage.content[0].text,
+              content: confirmationMessage.content[0].text || "",
+            });
+
+            conversationItems.map((item) => {
+              if (!item.content) {
+                item.content = [];
+              }
             });
 
             setConversationItems([...conversationItems]);

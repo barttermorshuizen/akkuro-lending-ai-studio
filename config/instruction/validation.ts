@@ -8,8 +8,10 @@ export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
   InitialSetup: `
     ${COMMON_INSTRUCTIONS}
     This is InitialSetup parameter validation instructions:
-    - The geography should be in Europe.
-    - The intended use should be green investments.
+    - The geography is the country code of the country where the product will be offered.
+    - The intended use is the purpose of the product.
+    - The product name is the name of the product.
+    - The targeted customer is the type of customer the product is designed for.
   `,
   SetRegulatoryCheckAtEveryStep: `
     ${COMMON_INSTRUCTIONS}

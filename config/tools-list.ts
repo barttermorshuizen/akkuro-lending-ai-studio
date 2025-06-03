@@ -292,9 +292,9 @@ export const toolsList = [
     },
   },
   {
-    name: "check_compliance_for_product_parameters",
+    name: "current_collected_parameters_compliance_check",
     description:
-      "Check if product parameters (loan parameters, acceptance criteria, pricing) comply with relevant regulations, returning details per parameter",
+      "Check if current collected parameters at current state comply with relevant regulations, returning details per parameter",
     parameters: {
       countryCode: {
         type: "string",
@@ -603,7 +603,7 @@ export const toolsListCompatableCheck = [
       },
       greenInvestmentDiscount: {
         type: "number",
-        description: "Discount percentage for green investments",
+        description: "Discount percentage for the product",
       },
       earlyRepaymentPenalty: {
         type: "string",
@@ -794,9 +794,9 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "check_compliance_for_product_parameters",
+    name: "current_collected_parameters_compliance_check",
     description:
-      "Check all product parameters (loan parameters, acceptance criteria, pricing, regulatory check, go-live) at current state comply with relevant regulations or not, returning details per parameter",
+      "Check if current collected parameters at current state comply with relevant regulations, returning details per parameter",
     parameters: {
       ...compatibleCheckConfig,
     },
