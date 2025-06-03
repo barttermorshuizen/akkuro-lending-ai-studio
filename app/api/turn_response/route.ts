@@ -91,13 +91,25 @@ export async function POST(request: Request) {
     const openai = new OpenAI();
 
     const filteredMessages = messages.filter((msg: any) => {
-      console.log("msg", msg);
-      return !msg.type || !["function_call", "tool"].includes(msg.type);
+      return (
+        !msg.type ||
+        ![
+          "function_call",
+          "tool",
+          "web_search_call",
+          "file_search_call",
+        ].includes(msg.type)
+      );
     });
+    console.log("filteredMessages", filteredMessages);
 
     const validatedMessages = filteredMessages.map(
       (msg: ChatCompletionMessageParam) => {
-        if (msg && !("content" in msg)) {
+        if (
+          (msg && !("content" in msg)) ||
+          (msg && typeof msg.content !== "string") ||
+          !msg.content
+        ) {
           return {
             ...msg,
             content: "",
@@ -106,6 +118,7 @@ export async function POST(request: Request) {
         return msg;
       },
     );
+    console.log("validatedMessages", validatedMessages[89]);
 
     const events = await openai.responses.create({
       model: MODEL,

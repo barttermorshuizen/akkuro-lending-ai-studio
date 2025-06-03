@@ -1,5 +1,8 @@
 import { FORMAT_INSTRUCTIONS } from "./instruction/format";
-import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
+import {
+  COMPLIANCE_INSTRUCTIONS,
+  GLOBAL_INSTRUCTIONS,
+} from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 
 export const regulatoryInstructions: Record<string, string> = {
@@ -47,8 +50,11 @@ export const regulatoryInstructions: Record<string, string> = {
     - repayment term (duration and frequency)
     - early repayment conditions
     
-    Use the store_loan_parameters_and_check_compliance tool when you have collected all required information.
-    ALWAYS call the store_loan_parameters_and_check_compliance tool before moving to the AcceptanceCriteria state.
+    ${COMPLIANCE_INSTRUCTIONS}
+
+
+    Use the store_loan_parameters_secondary tool when you have collected all required information.
+    ALWAYS call the store_loan_parameters_secondary tool before moving to the AcceptanceCriteria state.
     The compliance check will be done for all necessary parameters, not skip any of them.
 
     After storing, guide the user to the AcceptanceCriteria state.
@@ -67,9 +73,11 @@ export const regulatoryInstructions: Record<string, string> = {
     - minimum credit score thresholds
     - financial ratio requirements
     - industry-specific criteria
-    
-    Use the store_acceptance_criteria_and_check_compliance tool when you have collected all required information.
-    ALWAYS call the store_acceptance_criteria_and_check_compliance tool before moving to the Pricing state.
+
+    ${COMPLIANCE_INSTRUCTIONS}
+
+    Use the store_acceptance_criteria_secondary tool when you have collected all required information.
+    ALWAYS call the store_acceptance_criteria_secondary tool before moving to the Pricing state.
     After storing, guide the user to the Pricing state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -86,9 +94,11 @@ export const regulatoryInstructions: Record<string, string> = {
     - green investment discounts
     - risk-based pricing adjustments
     - early repayment penalties
+
+    ${COMPLIANCE_INSTRUCTIONS}
     
-    Use the store_pricing_and_check_compliance tool when you have collected all required information.
-    ALWAYS call the store_pricing_and_check_compliance tool before moving to the RegulatoryCheck state.
+    Use the store_pricing_secondary tool when you have collected all required information.
+    ALWAYS call the store_pricing_secondary tool before moving to the RegulatoryCheck state.
     After storing, guide the user to the RegulatoryCheck state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -107,9 +117,11 @@ export const regulatoryInstructions: Record<string, string> = {
     - compliance requirements
     - risk disclosure needs
     - reporting obligations
-    
-    Use the store_regulatory_check_and_check_compliance tool when you have collected all required information.
-    ALWAYS call the store_regulatory_check_and_check_compliance tool before moving to the GoLive state.
+
+    ${COMPLIANCE_INSTRUCTIONS}
+
+    Use the store_regulatory_check_secondary tool when you have collected all required information.
+    ALWAYS call the store_regulatory_check_secondary tool before moving to the GoLive state.
     After storing, guide the user to the GoLive state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -125,9 +137,11 @@ export const regulatoryInstructions: Record<string, string> = {
     - sets launch date
     - defines distribution channels
     - establishes monitoring requirements
+
+    ${COMPLIANCE_INSTRUCTIONS}
     
-    Use the store_go_live_and_check_compliance tool when you have collected all required information.
-    After calling the store_go_live_and_check_compliance tool, follow up with the user by asking if they would like to view a simulation or preview of the product. 
+    Use the store_go_live_secondary tool when you have collected all required information.
+    After calling the store_go_live_secondary tool, follow up with the user by asking if they would like to view a simulation or preview of the product. 
     This is an opportunity to let the user explore how the configured product would work in real scenarios. 
     If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
 

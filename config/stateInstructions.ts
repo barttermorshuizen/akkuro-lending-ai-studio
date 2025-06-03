@@ -1,3 +1,6 @@
+import { INTIAL_SET_UP_EXAMPLE } from "./example/intial-set-up";
+import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
+import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
 import { FORMAT_INSTRUCTIONS } from "./instruction/format";
 import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
@@ -20,6 +23,8 @@ export const stateInstructions: Record<string, string> = {
     ${FORMAT_INSTRUCTIONS}
     
     ${VALIDATION_INSTRUCTIONS.InitialSetup}
+
+    ${INTIAL_SET_UP_EXAMPLE}
     `,
   SetRegulatoryCheckAtEveryStep: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the SetRegulatoryCheckAtEveryStep state of the conversation.
@@ -37,6 +42,8 @@ export const stateInstructions: Record<string, string> = {
     IMPORTANT: After the user confirms their choice, you MUST call the store_is_regulatory_check_at_every_step tool with the correct parameter before moving to the next step. Do not skip this tool call.
 
     After calling the tool, move to the LoanParameters state.
+
+    ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}
     `,
   LoanParameters: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the LoanParameters state of the conversation.
@@ -53,7 +60,9 @@ export const stateInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
     
-    ${VALIDATION_INSTRUCTIONS.LoanParameters}`,
+    ${VALIDATION_INSTRUCTIONS.LoanParameters}
+
+    ${LOAN_PARAMETER_EXAMPLE}`,
 
   AcceptanceCriteria: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the AcceptanceCriteria state of the conversation.

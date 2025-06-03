@@ -292,9 +292,9 @@ export const toolsList = [
     },
   },
   {
-    name: "current_collected_parameters_compliance_check",
+    name: "do_compliance_check",
     description:
-      "Check if current collected parameters at current state comply with relevant regulations, returning details per parameter",
+      "Do the compliance check for the current collected parameters at current state",
     parameters: {
       countryCode: {
         type: "string",
@@ -354,7 +354,7 @@ export const toolsList = [
     required: ["countryCode", "parametersToCheck"],
   },
   {
-    name: "store_loan_parameters_and_check_compliance",
+    name: "store_loan_parameters_secondary",
     description:
       "Store loan parameters information and check compliance for the loan parameters, returning details per parameter",
     parameters: {
@@ -518,9 +518,16 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_loan_parameters_and_check_compliance",
+    name: "do_compliance_check",
     description:
-      "Store loan parameters information and check compliance for the loan parameters, returning details per parameter",
+      "Do the compliance check for the current collected parameters at current state",
+    parameters: {
+      ...compatibleCheckConfig,
+    },
+  },
+  {
+    name: "store_loan_parameters_secondary",
+    description: "Store loan parameters information",
     parameters: {
       loanAmountMin: {
         type: "number",
@@ -550,7 +557,7 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_acceptance_criteria_and_check_compliance",
+    name: "store_acceptance_criteria_secondary",
     description: "Store acceptance criteria information",
     parameters: {
       collateralRequirements: {
@@ -577,7 +584,7 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_pricing_and_check_compliance",
+    name: "store_pricing_secondary",
     description:
       "Store pricing information and check compliance for the pricing parameters",
     parameters: {
@@ -613,7 +620,7 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_regulatory_check_and_check_compliance",
+    name: "store_regulatory_check_secondary",
     description:
       "Store regulatory check information and check compliance for the regulatory check parameters",
     parameters: {
@@ -641,7 +648,7 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_go_live_and_check_compliance",
+    name: "store_go_live_secondary",
     description: "Store go-live information",
     parameters: {
       launchDate: {
@@ -791,14 +798,6 @@ export const toolsListCompatableCheck = [
         type: "string",
         description: "Applicable regulatory framework",
       },
-    },
-  },
-  {
-    name: "current_collected_parameters_compliance_check",
-    description:
-      "Check if current collected parameters at current state comply with relevant regulations, returning details per parameter",
-    parameters: {
-      ...compatibleCheckConfig,
     },
   },
 ];

@@ -52,7 +52,9 @@ const TextToSpeech: React.FC<TextToSpeechProps> = ({
       }
     };
 
-    fetchAudio();
+    if (process.env.NODE_ENV === "production") {
+      fetchAudio();
+    }
   }, [cachedAudioUrl, isFinal, setAudioCacheUrl, text]);
 
   // Tự động phát nếu autoPlay

@@ -338,29 +338,24 @@ export const update_compliance_check = async (
   }
 };
 
-export const current_collected_parameters_compliance_check = async (
+export const do_compliance_check = async (
   params: ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("current_collected_parameters_compliance_check params", params);
-    console.log(
-      "executed current_collected_parameters_compliance_check function",
-    );
+    console.log("do_compliance_check params", params);
+    console.log("executed do_compliance_check function");
 
     update_compliance_check(params);
   } catch (error) {
-    console.error(
-      "Error in current_collected_parameters_compliance_check:",
-      error,
-    );
+    console.error("Error in do_compliance_check:", error);
   }
 };
 
-export const store_loan_parameters_and_check_compliance = async (
+export const store_loan_parameters_secondary = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("store_loan_parameters_and_check_compliance params", params);
+    console.log("store_loan_parameters_secondary params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
@@ -371,8 +366,8 @@ export const store_loan_parameters_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await current_collected_parameters_compliance_check(paramsToCheck);
-    console.log("executed store_loan_parameters_and_check_compliance function");
+    await do_compliance_check(paramsToCheck);
+    console.log("executed store_loan_parameters_secondary function");
 
     useConversationStore.getState().setConversationState(conversationStates[3]);
     console.log("set conversation state to", conversationStates[3]);
@@ -382,10 +377,7 @@ export const store_loan_parameters_and_check_compliance = async (
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error(
-      "Error in store_loan_parameters_and_check_compliance:",
-      error,
-    );
+    console.error("Error in store_loan_parameters_secondary:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -393,14 +385,11 @@ export const store_loan_parameters_and_check_compliance = async (
   }
 };
 
-export const store_acceptance_criteria_and_check_compliance = async (
+export const store_acceptance_criteria_secondary = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log(
-      "store_acceptance_criteria_and_check_compliance params",
-      params,
-    );
+    console.log("store_acceptance_criteria_secondary params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
@@ -411,10 +400,8 @@ export const store_acceptance_criteria_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await current_collected_parameters_compliance_check(paramsToCheck);
-    console.log(
-      "executed store_acceptance_criteria_and_check_compliance function",
-    );
+    await do_compliance_check(paramsToCheck);
+    console.log("executed store_acceptance_criteria_secondary function");
 
     useConversationStore.getState().setConversationState(conversationStates[4]);
     console.log("set conversation state to", conversationStates[4]);
@@ -424,10 +411,7 @@ export const store_acceptance_criteria_and_check_compliance = async (
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error(
-      "Error in store_acceptance_criteria_and_check_compliance:",
-      error,
-    );
+    console.error("Error in store_acceptance_criteria_secondary:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -435,11 +419,11 @@ export const store_acceptance_criteria_and_check_compliance = async (
   }
 };
 
-export const store_pricing_and_check_compliance = async (
+export const store_pricing_secondary = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("store_pricing_and_check_compliance params", params);
+    console.log("store_pricing_secondary params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
@@ -450,8 +434,8 @@ export const store_pricing_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await current_collected_parameters_compliance_check(paramsToCheck);
-    console.log("executed store_pricing_and_check_compliance function");
+    await do_compliance_check(paramsToCheck);
+    console.log("executed store_pricing_secondary function");
 
     useConversationStore.getState().setConversationState(conversationStates[5]);
     console.log("set conversation state to", conversationStates[5]);
@@ -461,7 +445,7 @@ export const store_pricing_and_check_compliance = async (
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error("Error in store_pricing_and_check_compliance:", error);
+    console.error("Error in store_pricing_secondary:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -469,11 +453,11 @@ export const store_pricing_and_check_compliance = async (
   }
 };
 
-export const store_regulatory_check_and_check_compliance = async (
+export const store_regulatory_check_secondary = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("store_regulatory_check_and_check_compliance params", params);
+    console.log("store_regulatory_check_secondary params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
@@ -484,10 +468,8 @@ export const store_regulatory_check_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await current_collected_parameters_compliance_check(paramsToCheck);
-    console.log(
-      "executed store_regulatory_check_and_check_compliance function",
-    );
+    await do_compliance_check(paramsToCheck);
+    console.log("executed store_regulatory_check_secondary function");
 
     useConversationStore.getState().setConversationState(conversationStates[6]);
     console.log("set conversation state to", conversationStates[6]);
@@ -497,10 +479,7 @@ export const store_regulatory_check_and_check_compliance = async (
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error(
-      "Error in store_regulatory_check_and_check_compliance:",
-      error,
-    );
+    console.error("Error in store_regulatory_check_secondary:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -508,11 +487,11 @@ export const store_regulatory_check_and_check_compliance = async (
   }
 };
 
-export const store_go_live_and_check_compliance = async (
+export const store_go_live_secondary = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("store_go_live_and_check_compliance params", params);
+    console.log("store_go_live_secondary params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
@@ -523,16 +502,16 @@ export const store_go_live_and_check_compliance = async (
       parametersToCheck,
     };
 
-    await current_collected_parameters_compliance_check(paramsToCheck);
+    await do_compliance_check(paramsToCheck);
 
-    console.log("executed store_go_live_and_check_compliance function");
+    console.log("executed store_go_live_secondary function");
 
     return {
       status: "success",
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error("Error in store_go_live_and_check_compliance:", error);
+    console.error("Error in store_go_live_secondary:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -553,10 +532,10 @@ export const functionsMap = {
   generate_iso_compliance_pdf,
   generate_eu_tax_compliance_pdf,
   generate_esg_declaration_pdf,
-  current_collected_parameters_compliance_check,
-  store_loan_parameters_and_check_compliance,
-  store_acceptance_criteria_and_check_compliance,
-  store_pricing_and_check_compliance,
-  store_regulatory_check_and_check_compliance,
-  store_go_live_and_check_compliance,
+  do_compliance_check,
+  store_loan_parameters_secondary,
+  store_acceptance_criteria_secondary,
+  store_pricing_secondary,
+  store_regulatory_check_secondary,
+  store_go_live_secondary,
 };

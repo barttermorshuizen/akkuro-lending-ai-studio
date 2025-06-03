@@ -141,6 +141,12 @@ export const processMessages = async () => {
   let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
   let isWaitingOutputIndexNext = false;
+  let isSkippingOutputText = false;
+  const ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT = [
+    "web_search_call",
+    "file_search_call",
+    "function_call",
+  ];
 
   await handleTurn(allConversationItems, tools, async ({ event, data }) => {
     switch (event) {
@@ -150,7 +156,7 @@ export const processMessages = async () => {
 
         const { delta, annotation } = data;
 
-        if (typeof delta === "string") {
+        if (typeof delta === "string" && !isSkippingOutputText) {
           assistantMessageBuffer += delta;
         }
 
@@ -181,11 +187,17 @@ export const processMessages = async () => {
         );
         console.log("output_item.added item", item);
 
-        if (output_index === 0 && item.type === "web_search_call") {
+        if (
+          output_index === 0 &&
+          ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
+        ) {
           isWaitingOutputIndexNext = true;
         }
 
-        if (output_index === 0 && item.type !== "web_search_call") {
+        if (
+          output_index === 0 &&
+          !ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
+        ) {
           isWaitingOutputIndexNext = false;
         }
         if (
@@ -196,6 +208,7 @@ export const processMessages = async () => {
           console.log(
             "output_item.added output_index > 0 and item.type === message break",
           );
+          isSkippingOutputText = true;
           break;
         }
         console.log(
@@ -226,21 +239,6 @@ export const processMessages = async () => {
           }
           case "function_call": {
             functionArguments += item.arguments || "";
-
-            // // Create an assistant message explaining what it's going to do
-            // const explanationMessage: MessageItem = {
-            //   type: "message",
-            //   role: "assistant",
-            //   id: `${item.id}_explanation`,
-            //   content: [
-            //     {
-            //       type: "output_text",
-            //       text: `I'll help you with that by calling the ${item.name} function.`,
-            //     },
-            //   ],
-            //   sendAt: new Date(),
-            // };
-            // chatMessages.push(explanationMessage);
 
             // Add the tool call message
             console.log("function_call item", item);
@@ -286,6 +284,10 @@ export const processMessages = async () => {
 
       case "response.output_item.done": {
         useConversationStore.getState().setIsProcessingNewMessage(false);
+        if (isSkippingOutputText) {
+          isSkippingOutputText = false;
+          break;
+        }
 
         // After output item is done, adding tool call ID
         const { item } = data || {};
@@ -355,44 +357,18 @@ export const processMessages = async () => {
 
           // Create a response message based on the tool result
           let responseText = "";
+          console.log("tool result", toolResult);
           if (typeof toolResult === "object") {
             if ("status" in toolResult && toolResult.status === "success") {
               responseText =
                 "message" in toolResult &&
                 typeof toolResult.message === "string"
                   ? toolResult.message
-                  : "I've successfully completed that action for you.";
+                  : "Tool execution completed successfully.";
             } else if ("error" in toolResult) {
               responseText = `I encountered an error while trying to do that: ${toolResult.error}`;
             }
           }
-
-          // Add response message
-          // if (
-          //   pushMessageFunctions.includes(
-          //     toolCallMessage.name as keyof typeof functionsMap,
-          //   )
-          // ) {
-          //   const responseMessage: MessageItem = {
-          //     type: "message",
-          //     role: "assistant",
-          //     id: `${item_id}_response`,
-          //     content: [
-          //       {
-          //         type: "output_text",
-          //         text:
-          //           responseText ||
-          //           getPushMessageForFunction(
-          //             toolCallMessage.name as PushMessageFunction,
-          //           ),
-          //       },
-          //     ],
-          //     sendAt: new Date(),
-          //     isFinal: true,
-          //   };
-          //   chatMessages.push(responseMessage);
-          //   setChatMessages([...chatMessages]);
-          // }
 
           // Add to conversation items
           conversationItems.push({
@@ -403,7 +379,7 @@ export const processMessages = async () => {
           // Determine message based on the current tool
           let confirmationText = "";
 
-          switch (toolCallMessage.name) {
+          switch (toolCallMessage.name as keyof typeof functionsMap) {
             case "store_initial_setup":
               confirmationText =
                 "Great! I've stored all the initial setup details. Please check the details and let me know if you'd like to move to the next step.";
@@ -429,11 +405,11 @@ export const processMessages = async () => {
                 "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
               break;
             case "store_go_live":
-            case "store_go_live_and_check_compliance":
+            case "store_go_live_secondary":
               confirmationText =
                 "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, take a look at how it appears in the mobile app, or start fresh with a new product?";
               break;
-            case "store_loan_parameters_and_check_compliance":
+            case "store_loan_parameters_secondary":
               confirmationText =
                 "Great! I've stored all the loan parameters and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or do you want to move on to the next step?";
               break;
@@ -445,19 +421,19 @@ export const processMessages = async () => {
               confirmationText =
                 "I've simulated the product. Is there anything else you'd like me to do?";
               break;
-            case "current_collected_parameters_compliance_check":
+            case "do_compliance_check":
               confirmationText =
-                "I've checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or should we back to the product configuration?";
+                "I've checked the compliance for the current collected parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or should we back to the product configuration?";
               break;
-            case "store_acceptance_criteria_and_check_compliance":
+            case "store_acceptance_criteria_secondary":
               confirmationText =
                 "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
               break;
-            case "store_pricing_and_check_compliance":
+            case "store_pricing_secondary":
               confirmationText =
                 "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
               break;
-            case "store_regulatory_check_and_check_compliance":
+            case "store_regulatory_check_secondary":
               confirmationText =
                 "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
               break;
