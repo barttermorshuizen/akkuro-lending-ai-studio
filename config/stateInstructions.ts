@@ -1,5 +1,9 @@
+import { ACCEPTANCE_CRITERIA_EXAMPLE } from "./example/acceptance-criteria";
+import { GO_LIVE_EXAMPLE } from "./example/go-live";
 import { INTIAL_SET_UP_EXAMPLE } from "./example/intial-set-up";
 import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
+import { PRICING_EXAMPLE } from "./example/pricing";
+import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
 import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
 import { FORMAT_INSTRUCTIONS } from "./instruction/format";
 import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
@@ -24,8 +28,7 @@ export const stateInstructions: Record<string, string> = {
     
     ${VALIDATION_INSTRUCTIONS.InitialSetup}
 
-    ${INTIAL_SET_UP_EXAMPLE}
-    `,
+    ${INTIAL_SET_UP_EXAMPLE}`,
   SetRegulatoryCheckAtEveryStep: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the SetRegulatoryCheckAtEveryStep state of the conversation.
 
@@ -43,8 +46,7 @@ export const stateInstructions: Record<string, string> = {
 
     After calling the tool, move to the LoanParameters state.
 
-    ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}
-    `,
+    ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}`,
   LoanParameters: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the LoanParameters state of the conversation.
     
@@ -80,7 +82,9 @@ export const stateInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
 
-    ${VALIDATION_INSTRUCTIONS.AcceptanceCriteria}`,
+    ${VALIDATION_INSTRUCTIONS.AcceptanceCriteria}
+
+    ${ACCEPTANCE_CRITERIA_EXAMPLE}`,
 
   Pricing: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the Pricing state of the conversation.
@@ -98,7 +102,9 @@ export const stateInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
 
-    ${VALIDATION_INSTRUCTIONS.Pricing}`,
+    ${VALIDATION_INSTRUCTIONS.Pricing}
+
+    ${PRICING_EXAMPLE}`,
 
   RegulatoryCheck: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the RegulatoryCheck state of the conversation.
@@ -118,7 +124,9 @@ export const stateInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
 
-    ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}`,
+    ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
+
+    ${REGULATORY_CHECK_EXAMPLE}`,
 
   GoLive: `${GLOBAL_INSTRUCTIONS}
     These instructions cover the GoLive state of the conversation.
@@ -138,5 +146,7 @@ export const stateInstructions: Record<string, string> = {
 
     ${FORMAT_INSTRUCTIONS}
     
-    ${VALIDATION_INSTRUCTIONS.GoLive}`,
+    ${VALIDATION_INSTRUCTIONS.GoLive}
+    
+    ${GO_LIVE_EXAMPLE}`,
 };

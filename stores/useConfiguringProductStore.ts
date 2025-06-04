@@ -74,7 +74,7 @@ export const emptyProduct: ProductConfigurationDTO = {
   riskDisclosure: "",
   reportingObligations: "",
   launchDate: "",
-  distributionChannels: [],
+  distributionChannels: "",
   monitoringRequirements: "",
 };
 

@@ -1,5 +1,6 @@
 import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
 import { Item, MessageItem } from "@/lib/assistant";
+import { useTextToVoiceToggleStore } from "@/stores/useTextToVoiceToggleStore";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import TextToSpeech from "./text-to-speech";
@@ -11,6 +12,7 @@ interface MessageProps {
 
 const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
   // Only process if it's a message item
+  const { isTextToVoiceEnabled } = useTextToVoiceToggleStore();
   if (message.type !== "message") return null;
 
   const messageItem = message as MessageItem;
@@ -62,7 +64,9 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
             </ReactMarkdown>
           </div>
         </div>
-        {isAssistant && <TextToSpeech text={text} isFinal={isFinal} />}
+        {isAssistant && isTextToVoiceEnabled && (
+          <TextToSpeech text={text} isFinal={isFinal} />
+        )}
       </div>
       {isAssistant && choices.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">

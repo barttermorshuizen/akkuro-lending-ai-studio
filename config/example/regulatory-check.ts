@@ -34,5 +34,4 @@ export const REGULATORY_CHECK_EXAMPLE = `
     • Disclosure: Climate, FX  
     • Reporting: Quarterly
 
-    Ready to save this and move on?
-`;
+    Ready to save this and move on?`;

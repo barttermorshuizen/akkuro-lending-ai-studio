@@ -1,3 +1,60 @@
+export const compatibleCheckConfig = {
+  countryCode: {
+    type: "string",
+    description:
+      "The 2-letter ISO country code (e.g. 'NL', 'US') to determine the applicable regulations",
+  },
+  parametersToCheck: {
+    type: "array",
+    description:
+      "List of product parameters at current state to check against regulations",
+    items: {
+      type: "object",
+      properties: {
+        productParam: {
+          type: "string",
+          description:
+            "The product parameter name (e.g. loanAmountMax, interestRateType, collateralRequirements) at current state",
+        },
+        productParamDescription: {
+          type: "string",
+          description: "Description of the product parameter",
+        },
+        paramValue: {
+          type: "string",
+          description: "The current value of the product parameter",
+        },
+        regulationDescription: {
+          type: "string",
+          description: "Short description of the regulation that applies",
+        },
+        expectedRange: {
+          type: "string",
+          description: "Expected value or range according to the regulation",
+        },
+        isCompliant: {
+          type: "boolean",
+          description:
+            "Whether the parameter value complies with the regulation",
+        },
+        notes: {
+          type: "string",
+          description: "Optional explanation of compliance or failure",
+        },
+      },
+      required: [
+        "productParam",
+        "productParamDescription",
+        "paramValue",
+        "regulationDescription",
+        "expectedRange",
+        "isCompliant",
+        "notes",
+      ],
+    },
+  },
+};
+
 export const toolsList = [
   {
     name: "store_initial_setup",
@@ -158,17 +215,8 @@ export const toolsList = [
         type: "string",
         description: "Product monitoring requirements",
       },
+      ...compatibleCheckConfig,
     },
-  },
-  {
-    name: "read_product",
-    description: "Read the stored loan product model from the Google Sheet",
-    parameters: {},
-  },
-  {
-    name: "product_simulation",
-    description: "Simulate the product creation process",
-    parameters: {},
   },
   {
     name: "store_is_regulatory_check_at_every_step",
@@ -353,149 +401,7 @@ export const toolsList = [
     },
     required: ["countryCode", "parametersToCheck"],
   },
-  {
-    name: "store_loan_parameters_secondary",
-    description:
-      "Store loan parameters information and check compliance for the loan parameters, returning details per parameter",
-    parameters: {
-      loanAmountMin: {
-        type: "number",
-        description: "Minimum loan amount",
-      },
-      loanAmountMax: {
-        type: "number",
-        description: "Maximum loan amount",
-      },
-      interestRateType: {
-        type: "string",
-        description: "Type of interest rate (fixed or variable)",
-      },
-      repaymentTerm: {
-        type: "number",
-        description: "Loan repayment term in months",
-      },
-      repaymentFrequency: {
-        type: "string",
-        description: "Frequency of repayments (monthly, quarterly, annually)",
-      },
-      earlyRepaymentConditions: {
-        type: "string",
-        description: "Conditions for early repayment",
-      },
-      countryCode: {
-        type: "string",
-        description:
-          "The 2-letter ISO country code (e.g. 'NL', 'US') to determine the applicable regulations",
-      },
-      parametersToCheck: {
-        type: "array",
-        description: "List of loan parameters to check against regulations",
-        items: {
-          type: "object",
-          properties: {
-            productParam: {
-              type: "string",
-              description:
-                "The loan parameter name (e.g. loanAmountMax, interestRateType)",
-            },
-            productParamDescription: {
-              type: "string",
-              description: "Description of the loan parameter",
-            },
-            paramValue: {
-              type: "string",
-              description: "The current value of the product parameter",
-            },
-            regulationDescription: {
-              type: "string",
-              description: "Short description of the regulation that applies",
-            },
-            expectedRange: {
-              type: "string",
-              description:
-                "Expected value or range according to the regulation",
-            },
-            isCompliant: {
-              type: "boolean",
-              description:
-                "Whether the parameter value complies with the regulation",
-            },
-            notes: {
-              type: "string",
-              description: "Optional explanation of compliance or failure",
-            },
-          },
-          required: [
-            "productParam",
-            "productParamDescription",
-            "paramValue",
-            "regulationDescription",
-            "expectedRange",
-            "isCompliant",
-            "notes",
-          ],
-        },
-      },
-    },
-  },
 ];
-
-export const compatibleCheckConfig = {
-  countryCode: {
-    type: "string",
-    description:
-      "The 2-letter ISO country code (e.g. 'NL', 'US') to determine the applicable regulations",
-  },
-  parametersToCheck: {
-    type: "array",
-    description:
-      "List of product parameters at current state to check against regulations",
-    items: {
-      type: "object",
-      properties: {
-        productParam: {
-          type: "string",
-          description:
-            "The product parameter name (e.g. loanAmountMax, interestRateType, collateralRequirements) at current state",
-        },
-        productParamDescription: {
-          type: "string",
-          description: "Description of the product parameter",
-        },
-        paramValue: {
-          type: "string",
-          description: "The current value of the product parameter",
-        },
-        regulationDescription: {
-          type: "string",
-          description: "Short description of the regulation that applies",
-        },
-        expectedRange: {
-          type: "string",
-          description: "Expected value or range according to the regulation",
-        },
-        isCompliant: {
-          type: "boolean",
-          description:
-            "Whether the parameter value complies with the regulation",
-        },
-        notes: {
-          type: "string",
-          description: "Optional explanation of compliance or failure",
-        },
-      },
-      required: [
-        "productParam",
-        "productParamDescription",
-        "paramValue",
-        "regulationDescription",
-        "expectedRange",
-        "isCompliant",
-        "notes",
-      ],
-    },
-  },
-};
 
 export const toolsListCompatableCheck = [
   {
@@ -648,7 +554,7 @@ export const toolsListCompatableCheck = [
     },
   },
   {
-    name: "store_go_live_secondary",
+    name: "store_go_live",
     description: "Store go-live information",
     parameters: {
       launchDate: {
@@ -668,16 +574,6 @@ export const toolsListCompatableCheck = [
       },
       ...compatibleCheckConfig,
     },
-  },
-  {
-    name: "read_product",
-    description: "Read the stored loan product model from the Google Sheet",
-    parameters: {},
-  },
-  {
-    name: "product_simulation",
-    description: "Simulate the product creation process",
-    parameters: {},
   },
   {
     name: "store_is_regulatory_check_at_every_step",

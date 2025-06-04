@@ -40,7 +40,7 @@ export type ProductConfigurationDTO = {
 
   // Go Live
   launchDate?: string;
-  distributionChannels?: string[];
+  distributionChannels?: string;
   monitoringRequirements?: string;
 };
 
@@ -152,7 +152,7 @@ export const transformProductModelToProductConfigurationDTO = (
     reportingObligations: productModel.reportingObligations,
 
     launchDate: productModel.launchDate,
-    distributionChannels: productModel.distributionChannels,
+    distributionChannels: productModel.distributionChannels?.toString(),
     monitoringRequirements: productModel.monitoringRequirements,
   };
 };

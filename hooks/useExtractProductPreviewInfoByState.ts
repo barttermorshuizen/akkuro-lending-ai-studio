@@ -49,7 +49,7 @@ export default function useExtractProductPreviewInfoByState() {
 
   const goLive = {
     launchDate: product?.launchDate,
-    distributionChannels: product?.distributionChannels,
+    distributionChannels: product?.distributionChannels?.toString(),
     monitoringRequirements: product?.monitoringRequirements,
   };
 

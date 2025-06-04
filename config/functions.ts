@@ -183,21 +183,6 @@ export const store_regulatory_check = async (params: Partial<ProductModel>) => {
   }
 };
 
-export const store_go_live = async (params: Partial<ProductModel>) => {
-  try {
-    console.log("store_go_live params", params);
-    const res = await storeGoLive(params);
-    console.log("executed store_go_live function", res);
-
-    await set_product();
-
-    return { status: "success", requiresFollowUp: false };
-  } catch (error) {
-    console.error("Error in store_go_live:", error);
-    return { status: "error", requiresFollowUp: false };
-  }
-};
-
 export const read_product = async () => {
   try {
     console.log("read_product called");
@@ -487,15 +472,17 @@ export const store_regulatory_check_secondary = async (
   }
 };
 
-export const store_go_live_secondary = async (
+export const store_go_live = async (
   params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
 ) => {
   try {
-    console.log("store_go_live_secondary params", params);
+    console.log("store_go_live params", params);
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
-    await store_go_live(rest);
+    await storeGoLive(rest);
+
+    await set_product();
 
     const paramsToCheck = {
       countryCode,
@@ -504,14 +491,14 @@ export const store_go_live_secondary = async (
 
     await do_compliance_check(paramsToCheck);
 
-    console.log("executed store_go_live_secondary function");
+    console.log("executed store_go_live function");
 
     return {
       status: "success",
       requiresFollowUp: false,
     };
   } catch (error) {
-    console.error("Error in store_go_live_secondary:", error);
+    console.error("Error in store_go_live:", error);
     return {
       status: "error",
       requiresFollowUp: false,
@@ -527,8 +514,6 @@ export const functionsMap = {
   store_pricing,
   store_regulatory_check,
   store_go_live,
-  read_product,
-  product_simulation,
   generate_iso_compliance_pdf,
   generate_eu_tax_compliance_pdf,
   generate_esg_declaration_pdf,
@@ -537,5 +522,4 @@ export const functionsMap = {
   store_acceptance_criteria_secondary,
   store_pricing_secondary,
   store_regulatory_check_secondary,
-  store_go_live_secondary,
 };

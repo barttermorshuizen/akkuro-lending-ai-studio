@@ -1,6 +1,7 @@
 "use client";
 
 import useAudioCacheStore from "@/stores/useAudioCacheStore";
+import { useTextToVoiceToggleStore } from "@/stores/useTextToVoiceToggleStore";
 import React, { useEffect, useRef, useState } from "react";
 import removeMd from "remove-markdown";
 
@@ -22,6 +23,7 @@ const TextToSpeech: React.FC<TextToSpeechProps> = ({
 
   const { getAudioCacheUrl, setAudioCacheUrl } = useAudioCacheStore();
   const cachedAudioUrl = getAudioCacheUrl(text);
+  const { isTextToVoiceEnabled } = useTextToVoiceToggleStore();
 
   // Gọi API khi text thay đổi
   useEffect(() => {
@@ -52,10 +54,10 @@ const TextToSpeech: React.FC<TextToSpeechProps> = ({
       }
     };
 
-    if (process.env.NODE_ENV === "production") {
+    if (isTextToVoiceEnabled) {
       fetchAudio();
     }
-  }, [cachedAudioUrl, isFinal, setAudioCacheUrl, text]);
+  }, [cachedAudioUrl, isFinal, setAudioCacheUrl, text, isTextToVoiceEnabled]);
 
   // Tự động phát nếu autoPlay
   useEffect(() => {

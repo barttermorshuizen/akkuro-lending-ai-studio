@@ -4,6 +4,7 @@ import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
 import { useChat } from "@/hooks/useChat";
 import { Item } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
+import { useTextToVoiceToggleStore } from "@/stores/useTextToVoiceToggleStore";
 import React from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -11,6 +12,8 @@ import SpeechRecognition, {
 import Annotations from "./annotations";
 import Message from "./message";
 import ToolCall from "./tool-call";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
 import VoiceInput from "./voice-input";
 
 interface ChatProps {
@@ -43,6 +46,8 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
   });
 
   const { isProcessingNewMessage } = useConversationStore();
+  const { isTextToVoiceEnabled, setIsTextToVoiceEnabled } =
+    useTextToVoiceToggleStore();
 
   return (
     <div className={`flex flex-1 h-full flex-col`}>
@@ -158,8 +163,23 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
             </div>
           </div>
         </div>
-        <div className="text-[#9e9791] pt-2 text-sm">
-          AI can make mistakes. Please check your response.
+        <div className="flex items-center justify-between gap-2 pt-2 w-full">
+          <div className="flex items-center gap-2 pl-4">
+            <Switch
+              id="text-to-voice"
+              checked={isTextToVoiceEnabled}
+              onCheckedChange={setIsTextToVoiceEnabled}
+            />
+            <Label
+              htmlFor="text-to-voice"
+              className="text-[#9e9791] pt-2 text-sm"
+            >
+              Text to Voice
+            </Label>
+          </div>
+          <div className="text-[#9e9791] pt-2 text-sm flex-1 text-center">
+            AI can make mistakes. Please check your response.
+          </div>
         </div>
         {/* <button
           className="bg-primary text-white px-8 py-[10px] rounded-lg cursor-pointer"
