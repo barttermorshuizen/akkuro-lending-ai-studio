@@ -118,7 +118,6 @@ export async function POST(request: Request) {
         return msg;
       },
     );
-    console.log("validatedMessages", validatedMessages[89]);
 
     const events = await openai.responses.create({
       model: MODEL,
