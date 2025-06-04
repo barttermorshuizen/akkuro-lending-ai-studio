@@ -1,3 +1,7 @@
+import { emptyProductModel } from "@/stores/useConfiguringProductStore";
+
+const PRODUCT_PARAMETERS = Object.keys(emptyProductModel).join(", ");
+
 export const compatibleCheckConfig = {
   countryCode: {
     type: "string",
@@ -13,8 +17,7 @@ export const compatibleCheckConfig = {
       properties: {
         productParam: {
           type: "string",
-          description:
-            "The product parameter name (e.g. loanAmountMax, interestRateType, collateralRequirements) at current state",
+          description: `The product parameter name is one of ${PRODUCT_PARAMETERS} at current state`,
         },
         productParamDescription: {
           type: "string",

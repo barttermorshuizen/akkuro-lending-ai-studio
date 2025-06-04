@@ -1,3 +1,4 @@
+import { ChatCompletionSystemMessageParam } from "openai/resources/chat/completions.mjs";
 import { PDF_INSTRUCTIONS } from "./instruction/pdf";
 import { WEB_SEARCH_INSTRUCTIONS } from "./instruction/webSearch";
 
@@ -43,6 +44,11 @@ User: Yes.`;
 export const INITIAL_MESSAGE = `
 Hi, how can I help you?
 `;
+
+export const INITIAL_CONVERSATION_ITEM: ChatCompletionSystemMessageParam = {
+  role: "system",
+  content: DEVELOPER_PROMPT,
+};
 
 export const defaultVectorStore = {
   id: "",
