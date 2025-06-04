@@ -405,21 +405,12 @@ export const processMessages = async () => {
                 "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
               break;
             case "store_go_live":
-            case "store_go_live_secondary":
               confirmationText =
-                "Everything is set up and ready to go! Would you like to check the product model in Akkuro Studio, take a look at how it appears in the mobile app, or start fresh with a new product?";
+                "Everything is set up and ready to go! Would you like to generate a pdf document?";
               break;
             case "store_loan_parameters_secondary":
               confirmationText =
                 "Great! I've stored all the loan parameters and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or do you want to move on to the next step?";
-              break;
-            case "read_product":
-              confirmationText =
-                "I've fetched the product details. Is there anything else you'd like me to do?";
-              break;
-            case "product_simulation":
-              confirmationText =
-                "I've simulated the product. Is there anything else you'd like me to do?";
               break;
             case "do_compliance_check":
               confirmationText =
