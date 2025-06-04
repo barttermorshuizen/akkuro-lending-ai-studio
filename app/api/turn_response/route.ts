@@ -101,7 +101,7 @@ export async function POST(request: Request) {
         ].includes(msg.type)
       );
     });
-    console.log("filteredMessages", filteredMessages);
+    // console.log("filteredMessages", filteredMessages);
 
     const validatedMessages = filteredMessages.map(
       (msg: ChatCompletionMessageParam) => {
@@ -199,12 +199,18 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Error in POST handler:", error);
-    return NextResponse.json(
+    console.log("error in POST turn_response", error);
+    return new NextResponse(
+      JSON.stringify({
+        message: "Internal server error",
+        errorCode: (error as any)?.code || "INTERNAL_SERVER_ERROR",
+      }),
       {
-        error: error instanceof Error ? error.message : "Unknown error",
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-      { status: 500 },
     );
   }
 }

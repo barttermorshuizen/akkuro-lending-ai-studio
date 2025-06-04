@@ -2,6 +2,10 @@ import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
 import { regulatoryInstructions } from "@/config/instruction/regulatory";
 import { stateInstructions } from "@/config/stateInstructions";
+import {
+  OPENAI_ERROR_CODES,
+  OPENAI_ERROR_HELPER_MESSAGES,
+} from "@/exceptions/openai-exceptions";
 import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
@@ -58,7 +62,33 @@ export const handleTurn = async (
     });
 
     if (!response.ok) {
-      console.error(`Error: ${response.status} - ${response.statusText}`);
+      const errorData = await response.json().catch((e) => {
+        console.log("error in response.json()", e);
+        return {
+          message: "Internal server error",
+          errorCode: "INTERNAL_SERVER_ERROR",
+        };
+      });
+      console.error("Error when turn response:", {
+        status: response.status,
+        message: errorData?.message,
+        errorCode: errorData?.errorCode,
+      });
+      if (OPENAI_ERROR_CODES.includes(errorData?.errorCode)) {
+        const errorHelperMessage =
+          OPENAI_ERROR_HELPER_MESSAGES[
+            errorData?.errorCode as keyof typeof OPENAI_ERROR_HELPER_MESSAGES
+          ];
+
+        const { chatMessages, setChatMessages } =
+          useConversationStore.getState();
+        chatMessages.push({
+          type: "message",
+          role: "assistant",
+          content: [{ type: "output_text", text: errorHelperMessage }],
+        });
+        setChatMessages([...chatMessages]);
+      }
       return;
     }
 
@@ -106,7 +136,7 @@ export const handleTurn = async (
       }
     }
   } catch (error) {
-    console.error("Error handling turn:", JSON.stringify(error, null, 2));
+    console.error("Error handling turn", error);
     throw error;
   }
 };
