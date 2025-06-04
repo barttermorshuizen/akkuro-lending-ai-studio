@@ -7,7 +7,7 @@ import HeaderDropdownMenu from "./header-dropdown-menu";
 export default function Header() {
   return (
     <div className="w-screen h-16 shadow-header fixed top-0 bg-white flex justify-between flex-row px-7 items-center">
-      <div className="flex flex-row gap-[10.5px]">
+      <div className="flex flex-row items-center gap-[10.5px]">
         <Image
           priority={true}
           className="object-contain w-[120px] h-[21.14px]"
