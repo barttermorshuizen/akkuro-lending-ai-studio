@@ -289,11 +289,13 @@ export const update_compliance_check = async (
         (p) => p.productParam === param.productParam,
       );
       if (paramToUpdate) {
-        const { productParam, ...rest } = paramToUpdate;
-        param = {
-          productParam: productParam,
-          ...rest,
-        };
+        param.isCompliant = paramToUpdate.isCompliant;
+        param.notes = paramToUpdate.notes;
+        param.expectedRange = paramToUpdate.expectedRange;
+        param.paramValue = paramToUpdate.paramValue;
+        param.productParam = paramToUpdate.productParam;
+        param.productParamDescription = paramToUpdate.productParamDescription;
+        param.regulationDescription = paramToUpdate.regulationDescription;
       }
     });
 
@@ -306,15 +308,24 @@ export const update_compliance_check = async (
 
     // avoid removing old check
     if (previousComplianceCheck) {
-      useComplianceCheckStore.getState().setComplianceCheck({
+      const newComplianceCheckObj = {
         countryCode: previousComplianceCheck.countryCode,
         parametersToCheck: [
           ...previousComplianceCheck.parametersToCheck,
           ...newParametersToCheck,
         ],
-      });
+      };
+      const setComplianceCheck =
+        useComplianceCheckStore.getState().setComplianceCheck;
+      setComplianceCheck(newComplianceCheckObj);
     } else {
-      useComplianceCheckStore.getState().setComplianceCheck(params);
+      const setComplianceCheck =
+        useComplianceCheckStore.getState().setComplianceCheck;
+      const newComplianceCheckObj = {
+        countryCode: params.countryCode,
+        parametersToCheck: [...newParametersToCheck],
+      };
+      setComplianceCheck(newComplianceCheckObj);
     }
 
     console.log("executed update_compliance_check function");
@@ -330,9 +341,17 @@ export const do_compliance_check = async (
     console.log("do_compliance_check params", params);
     console.log("executed do_compliance_check function");
 
-    update_compliance_check(params);
+    await update_compliance_check(params);
+    return {
+      status: "success",
+      requiresFollowUp: false,
+    };
   } catch (error) {
     console.error("Error in do_compliance_check:", error);
+    return {
+      status: "error",
+      requiresFollowUp: false,
+    };
   }
 };
 
