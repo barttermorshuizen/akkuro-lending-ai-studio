@@ -163,9 +163,9 @@ export const toolsList = [
         type: "string",
         description: "Late payment fee structure",
       },
-      greenInvestmentDiscount: {
+      discount: {
         type: "number",
-        description: "Discount percentage for green investments",
+        description: "Discount percentage for the product",
       },
       earlyRepaymentPenalty: {
         type: "string",
@@ -517,7 +517,7 @@ export const toolsListCompatableCheck = [
         type: "string",
         description: "Late payment fee structure",
       },
-      greenInvestmentDiscount: {
+      discount: {
         type: "number",
         description: "Discount percentage for the product",
       },

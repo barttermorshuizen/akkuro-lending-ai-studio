@@ -31,7 +31,7 @@ export interface ProductModel {
   originationFee?: string;
   servicingFee?: string;
   latePaymentFee?: string;
-  greenInvestmentDiscount?: number;
+  discount?: number;
   earlyRepaymentPenalty?: string;
 
   // Regulatory

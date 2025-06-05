@@ -92,7 +92,7 @@ export const stateInstructions: Record<string, string> = {
     The Pricing state identifies:
     - interest rate ranges
     - fee structure (origination, servicing, late payment)
-    - green investment discounts
+    - discount
     - risk-based pricing adjustments
     - early repayment penalties
     

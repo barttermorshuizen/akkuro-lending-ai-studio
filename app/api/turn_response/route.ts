@@ -125,6 +125,7 @@ export async function POST(request: Request) {
       tools,
       stream: true,
       parallel_tool_calls: false,
+      temperature: 0,
     });
 
     // Create a ReadableStream that emits SSE data

@@ -1,47 +1,14 @@
 "use server";
-import { google } from "googleapis";
-import { ProductModel } from "@/types/product";
-import { readProduct } from "./readProduct";
+
+import { COLUMNS } from "@/config/parse/google-sheet";
 import {
   ConfigurationError,
   ProductNotFoundError,
   ServiceUnavailableError,
 } from "@/types/errors";
-
-// Re-use column mapping from readProduct
-const COLUMNS = {
-  productName: 0,
-  targetCustomer: 1,
-  intendedUse: 2,
-  countryCode: 3,
-  currentState: 4,
-  loanAmountMin: 5,
-  loanAmountMax: 6,
-  interestRateType: 7,
-  repaymentTerm: 8,
-  repaymentFrequency: 9,
-  earlyRepaymentConditions: 10,
-  collateralRequirements: 11,
-  guarantees: 12,
-  minCreditScore: 13,
-  financialRatios: 14,
-  industrySpecificCriteria: 15,
-  interestRateMin: 16,
-  interestRateMax: 17,
-  originationFee: 18,
-  servicingFee: 19,
-  latePaymentFee: 20,
-  greenInvestmentDiscount: 21,
-  earlyRepaymentPenalty: 22,
-  regulatoryFramework: 23,
-  requiredDocumentation: 24,
-  complianceRequirements: 25,
-  riskDisclosure: 26,
-  reportingObligations: 27,
-  launchDate: 28,
-  distributionChannels: 29,
-  monitoringRequirements: 30,
-};
+import { ProductModel } from "@/types/product";
+import { google } from "googleapis";
+import { readProduct } from "./readProduct";
 
 export const storeGoLive = async (updates: Partial<ProductModel>) => {
   console.log("store_go_live input", updates);

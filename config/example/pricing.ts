@@ -1,9 +1,13 @@
+import { INSTRUCTION_EXAMPLE } from "./instruction";
+
 export const PRICING_EXAMPLE = `
+    ${INSTRUCTION_EXAMPLE}
+    
     Example interaction:
     Assistant: Let's set the pricing parameters. I'll ask you a few questions to shape the pricing structure.
     • Interest rate range
     • Fee structure
-    • Green discount
+    • Discount
     • Early repayment penalty
 
     Let's begin with the minimum interest rate.  
@@ -53,7 +57,7 @@ export const PRICING_EXAMPLE = `
 
     User: Yes.
 
-    Assistant: Great. For the **green investment discount**, banks usually offer 0%-2%.  
+    Assistant: Great. For the discount for the current industry, banks usually offer 0%-2%.  
     Do you want to include one?
 
     User: Yes, 0.75%.
@@ -73,7 +77,7 @@ export const PRICING_EXAMPLE = `
     • Origination: 0.5%  
     • Servicing: 0.5%  
     • Late fee: 11.15%  
-    • Green discount: 0.75%  
+    • Discount: 0.75%  
     • Early repayment: no penalty
 
     Ready to save? (Yes/Revise)

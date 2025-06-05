@@ -1,4 +1,8 @@
+import { INSTRUCTION_EXAMPLE } from "./instruction";
+
 export const LOAN_PARAMETER_EXAMPLE = `
+    ${INSTRUCTION_EXAMPLE}
+
     Example interaction:
     User: I'm ready to define the loan parameters for our Green Business Loan.
 
@@ -33,7 +37,7 @@ export const LOAN_PARAMETER_EXAMPLE = `
     User: Let's see what the market does.  
 
     Assistant:  
-    • Most competitors offer **36 - 48 months** for similar green loans.  
+    • Most competitors offer **36 - 48 months** for similar loans.  
     • A **60-month** term stands out but raises default risk by ~15%.  
     • **Suggested tiered structure:**  
       - **Up to 36 mo:** 6.0% fixed  

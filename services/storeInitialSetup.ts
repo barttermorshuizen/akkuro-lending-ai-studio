@@ -1,71 +1,41 @@
-'use server';
-import { google } from 'googleapis';
-import { ProductModel } from '@/types/product';
-import { readProduct } from './readProduct';
-import { ConfigurationError, ProductNotFoundError, ServiceUnavailableError } from '@/types/errors';
+"use server";
+import { COLUMNS } from "@/config/parse/google-sheet";
+import {
+  ConfigurationError,
+  ProductNotFoundError,
+  ServiceUnavailableError,
+} from "@/types/errors";
+import { ProductModel } from "@/types/product";
+import { google } from "googleapis";
+import { readProduct } from "./readProduct";
 
 // ISO 3166-1 country code mapping for common non-standard codes
 const COUNTRY_CODE_MAPPING: { [key: string]: string } = {
-  'UK': 'GB',  // United Kingdom
-  'USA': 'US', // United States
+  UK: "GB", // United Kingdom
+  USA: "US", // United States
 };
 
 // Validate and normalize country code
 function validateCountryCode(code: string): string {
-  if (!code) return '';
-  
+  if (!code) return "";
+
   const normalizedCode = code.toUpperCase();
-  
+
   // Check if it's a common non-standard code that needs mapping
   if (COUNTRY_CODE_MAPPING[normalizedCode]) {
     return COUNTRY_CODE_MAPPING[normalizedCode];
   }
-  
+
   // Validate the code format (2 uppercase letters)
   if (!/^[A-Z]{2}$/.test(normalizedCode)) {
     throw new ConfigurationError(
       `Invalid country code "${code}". Country code must be a valid ISO 3166-1 code (2 letters). ` +
-      `For example, use "GB" for the United Kingdom or "US" for the United States.`
+        `For example, use "GB" for the United Kingdom or "US" for the United States.`,
     );
   }
-  
+
   return normalizedCode;
 }
-
-// Re-use column mapping from readProduct
-const COLUMNS = {
-  productName: 0,
-  targetCustomer: 1,
-  intendedUse: 2,
-  countryCode: 3,
-  currentState: 4,
-  loanAmountMin: 5,
-  loanAmountMax: 6,
-  interestRateType: 7,
-  repaymentTerm: 8,
-  repaymentFrequency: 9,
-  earlyRepaymentConditions: 10,
-  collateralRequirements: 11,
-  guarantees: 12,
-  minCreditScore: 13,
-  financialRatios: 14,
-  industrySpecificCriteria: 15,
-  interestRateMin: 16,
-  interestRateMax: 17,
-  originationFee: 18,
-  servicingFee: 19,
-  latePaymentFee: 20,
-  greenInvestmentDiscount: 21,
-  earlyRepaymentPenalty: 22,
-  regulatoryFramework: 23,
-  requiredDocumentation: 24,
-  complianceRequirements: 25,
-  riskDisclosure: 26,
-  reportingObligations: 27,
-  launchDate: 28,
-  distributionChannels: 29,
-  monitoringRequirements: 30
-};
 
 export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
   console.log("store_initial_setup input", updates);
@@ -78,19 +48,19 @@ export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
       if (error instanceof ConfigurationError) {
         throw error;
       }
-      throw new ConfigurationError('Invalid country code format');
+      throw new ConfigurationError("Invalid country code format");
     }
   }
 
   // Validate environment variables
   if (!process.env.GOOGLE_CLIENT_EMAIL) {
-    throw new ConfigurationError('Google client email is not configured');
+    throw new ConfigurationError("Google client email is not configured");
   }
   if (!process.env.GOOGLE_PRIVATE_KEY) {
-    throw new ConfigurationError('Google private key is not configured');
+    throw new ConfigurationError("Google private key is not configured");
   }
   if (!process.env.GOOGLE_SHEET_ID) {
-    throw new ConfigurationError('Google sheet ID is not configured');
+    throw new ConfigurationError("Google sheet ID is not configured");
   }
 
   try {
@@ -102,11 +72,11 @@ export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
       if (error instanceof ProductNotFoundError) {
         // Initialize new product with required fields
         product = {
-          productName: '',
-          targetCustomer: '',
-          intendedUse: '',
-          countryCode: '',
-          currentState: 'InitialSetup'
+          productName: "",
+          targetCustomer: "",
+          intendedUse: "",
+          countryCode: "",
+          currentState: "InitialSetup",
         };
       } else {
         throw error;
@@ -118,23 +88,23 @@ export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
 
     const authClient = new google.auth.JWT({
       email: process.env.GOOGLE_CLIENT_EMAIL,
-      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const sheets = google.sheets({ version: "v4", auth: authClient });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = 'Sheet1!A2:AE2'; // Extended range to cover all columns
+    const range = "Sheet1!A2:AE2"; // Extended range to cover all columns
 
     // Convert product data to array format for sheets
     const rowData = new Array(Object.keys(COLUMNS).length).fill(null);
     Object.entries(updatedProduct).forEach(([key, value]) => {
       const columnIndex = COLUMNS[key as keyof typeof COLUMNS];
       if (columnIndex !== undefined) {
-        if (key === 'distributionChannels' && Array.isArray(value)) {
-          rowData[columnIndex] = value.join(',');
+        if (key === "distributionChannels" && Array.isArray(value)) {
+          rowData[columnIndex] = value.join(",");
         } else {
-          rowData[columnIndex] = value?.toString() ?? '';
+          rowData[columnIndex] = value?.toString() ?? "";
         }
       }
     });
@@ -142,7 +112,7 @@ export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId,
       range,
-      valueInputOption: 'USER_ENTERED',
+      valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [rowData],
       },
@@ -151,12 +121,14 @@ export const storeInitialSetup = async (updates: Partial<ProductModel>) => {
     console.log("store_initial_setup response", response.data);
     return response.data;
   } catch (error) {
-    if (error instanceof ConfigurationError ||
-        error instanceof ServiceUnavailableError ||
-        error instanceof ProductNotFoundError) {
+    if (
+      error instanceof ConfigurationError ||
+      error instanceof ServiceUnavailableError ||
+      error instanceof ProductNotFoundError
+    ) {
       throw error;
     }
-    console.error('Unexpected error in storeInitialSetup:', error);
-    throw new Error('Failed to store initial setup data');
+    console.error("Unexpected error in storeInitialSetup:", error);
+    throw new Error("Failed to store initial setup data");
   }
 };

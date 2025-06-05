@@ -28,7 +28,7 @@ export type ProductConfigurationDTO = {
   originationFee?: string;
   servicingFee?: string;
   latePaymentFee?: string;
-  greenInvestmentDiscount?: string;
+  discount?: string;
   earlyRepaymentPenalty?: string;
 
   // Regulatory
@@ -72,7 +72,7 @@ export const productsConfigurationMapping: Record<
   originationFee: "Origination fee",
   servicingFee: "Servicing fee",
   latePaymentFee: "Late payment fee",
-  greenInvestmentDiscount: "Discount",
+  discount: "Discount",
   earlyRepaymentPenalty: "Early repayment penalty",
 
   regulatoryFramework: "Regulatory framework",
@@ -142,7 +142,7 @@ export const transformProductModelToProductConfigurationDTO = (
         ? productModel.latePaymentFee?.toString()
         : productModel.latePaymentFee?.toString() + "€"
       : "",
-    greenInvestmentDiscount: productModel.greenInvestmentDiscount?.toString(),
+    discount: productModel.discount?.toString(),
     earlyRepaymentPenalty: productModel.earlyRepaymentPenalty,
 
     regulatoryFramework: productModel.regulatoryFramework,

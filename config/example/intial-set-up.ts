@@ -1,4 +1,8 @@
+import { INSTRUCTION_EXAMPLE } from "./instruction";
+
 export const INTIAL_SET_UP_EXAMPLE = `
+    ${INSTRUCTION_EXAMPLE}
+    
     Example interaction:
     User: I want to create a new business loan product.
 

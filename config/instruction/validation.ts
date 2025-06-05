@@ -2,6 +2,7 @@ const COMMON_INSTRUCTIONS = `
     Validation:
     - If a user enters a value outside its recommended market range, reflect it back, warn them, explain the trade-offs, suggest the boundary value, and ask for explicit confirmation.
     - Here are the validation instructions for each parameter:
+    Below is the validation example for the current industry, if user choose another industry, suggest the best fit validation instructions.
 `;
 
 export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
@@ -30,57 +31,51 @@ export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
     ${COMMON_INSTRUCTIONS}
     This is AcceptanceCriteria parameter validation instructions:
     - Collateral Requirements:  
-      • For loans ≤ €100K: unsecured (no collateral) is common.  
-      • For €100K - €250K: require collateral covering 50 - 80% of loan value (e.g., equipment pledge, real estate lien).  
+      Check the current loan amount and suggest the collateral requirements.
+      For example:
+      If the current loan amount range is higher than the market range, suggest the collateral requirements for the recommended loan amount in the market range.
+
     - Guarantees Needed:  
-      • Personal guarantee for loans > €50K.  
-      • Corporate guarantee or cross-default clause for loans > €150K.  
+      Check the current loan amount and suggest the guarantees needed.
     - Minimum Credit Score:  
-      • Market benchmark for SMEs: 650+.
-      • A good range for high approval rate is from 650 to 680, if user choose a higher value, explain the trade-offs and ask for explicit confirmation.
+      Market benchmark for SMEs: 650+.
+      A good range for high approval rate is from 650 to 680, if user choose a higher value, explain the trade-offs and ask for explicit confirmation.
     - Financial Ratios:  
-      • DSCR (Debt Service Coverage Ratio): ≥ 1.2 (minimum).  
+      DSCR (Debt Service Coverage Ratio): ≥ 1.2 (minimum).  
       • Current Ratio: ≥ 1.1.  
       • Debt/Equity Ratio: ≤ 2.0.  
-    - Industry-Specific Criteria (Renewable Energy):  
+    - Industry-Specific Criteria:  
+      For example for Renewable Energy industry:
       • Borrower must have ≥ 2 years' operating history in RE projects.  
       • Project must demonstrate an IRR ≥ 8%.  
       • If funding solar or wind: require site permits and off-taker agreements in place.  
+      If user choose a different industry, suggest the industry-specific criteria.
   `,
   Pricing: `
     ${COMMON_INSTRUCTIONS}
     This is Pricing parameter validation instructions:
     - interestRateMin (Minimum Interest Rate):
-      • Recommended range: 4.0%-6.0%
-      • If below 4.0%: reflect back “You chose X%, below 4.0%”, warn margin squeeze, suggest 4.0%, ask “Keep X% or switch to 4.0%?”
-      • If above 6.0%: reflect “You chose X%, above 6.0%”, warn borrower deterrence, suggest 6.0%, ask “Keep X% or switch to 6.0%?”
+      Check the current loan amount configuration, the market range and suggest the interest rate range.
 
     - interestRateMax (Maximum Interest Rate):
-      • Recommended: at least interestRateMin + 0.5%, up to 8.0%
-      • If < interestRateMin + 0.5%: reflect inconsistency, suggest interestRateMin + 0.5%, ask confirm
-      • If > 8.0%: reflect “X% exceeds 8.0%”, warn competitiveness loss, suggest 8.0%, ask confirm
+      Check the current loan amount configuration, the market range and suggest the interest rate range.
 
     - originationFee:
-      • Recommended: 1%-3% of loan amount
-      • If < 1%: reflect “X% below 1%”, warn cost under-recovery, suggest 1%, ask confirm
-      • If > 3%: reflect “X% above 3%”, warn borrower resistance, suggest 3%, ask confirm
+      Check the current loan amount configuration, the market range and suggest the origination fee range.
 
     - servicingFee:
-      • Recommended: 0.1%-0.5% p.a. of outstanding balance
-      • If < 0.1%: reflect “X% below 0.1%”, warn admin cost gap, suggest 0.1%, ask confirm
-      • If > 0.5%: reflect “X% above 0.5%”, warn pushback risk, suggest 0.5%, ask confirm
+      Check the current loan amount configuration, the market range and suggest the servicing fee range. 
 
     - latePaymentFee:
-      • Must be ≥ ECB refi + 8 pp (≈11.15% p.a.)
-      • If < 11.15%: reflect “X% below statutory minimum”, warn non-compliance, suggest 11.15%, ask confirm
+        • Must be ≥ ECB refi + 8 pp (≈11.15% p.a.)
+        • If < 11.15%: reflect “X% below statutory minimum”, warn non-compliance, suggest 11.15%, ask confirm
 
-    - greenInvestmentDiscount:
-      • Recommended: 0%-2%
-      • If < 0%: reflect invalid, suggest 0%, ask confirm
-      • If > 2%: reflect “X% above 2%”, warn overly generous, suggest 2%, ask confirm
+    - discount:
+      Check the current loan amount configuration, the market range and suggest the industry-specific discount range.
 
     - earlyRepaymentPenalty:
-      • Recommended: around 1% of outstanding balance
+      Check the current loan amount configuration, the market range and suggest the early repayment penalty range.
+      For example:
       • If 0%: reflect “No penalty chosen”, warn loss of protection, suggest 1%, ask confirm
       • If > 2%: reflect “X% above 2%”, warn deterrence, suggest 2%, ask confirm
   `,
@@ -93,7 +88,7 @@ export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
 
     - requiredDocumentation:
       • Valid options: Standard, Enhanced, Comprehensive.
-      • Enhanced is recommended for green products.
+      • Enhanced is recommended for green products. If user choose another industry, suggest the best fit documentation level.
       • If user skips, default to Enhanced and ask for confirmation.
 
     - complianceRequirements:
@@ -106,7 +101,7 @@ export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
 
     - reportingObligations:
       • Acceptable options: Quarterly, Semi-annually, Annually.
-      • For green loans, Quarterly or Semi-annually is preferred.
+      • For green loans, Quarterly or Semi-annually is preferred. If user choose another industry, suggest the reporting frequency.
       • If user selects Annual only, suggest Quarterly to align with ESG practices.
   `,
   GoLive: `

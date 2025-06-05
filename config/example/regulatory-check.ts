@@ -1,4 +1,8 @@
+import { INSTRUCTION_EXAMPLE } from "./instruction";
+
 export const REGULATORY_CHECK_EXAMPLE = `
+    ${INSTRUCTION_EXAMPLE}
+    
     Example interaction:
     Assistant: Let's set the regulatory framework. I'll ask you a few questions to shape the regulatory structure.
     Which regulatory framework governs this loan product? (e.g., Basel III, MiFID II)
@@ -7,7 +11,7 @@ export const REGULATORY_CHECK_EXAMPLE = `
 
     Assistant: 👍 Basel III confirmed. What level of documentation will you require?
     • Standard
-    • Enhanced (recommended for green products)
+    • Enhanced
     • Comprehensive
 
     User: Let's go with Enhanced.
@@ -18,7 +22,7 @@ export const REGULATORY_CHECK_EXAMPLE = `
     User: Let's include AML/KYC and ESG alignment.
 
     Assistant: Noted. What types of risk should be disclosed to borrowers?
-    For green loans, regulators often expect climate and default risk disclosure.
+    For this loan, regulators often expect climate and default risk disclosure.
 
     User: Climate and FX risk.
 

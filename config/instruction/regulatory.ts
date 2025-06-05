@@ -2,7 +2,7 @@ import { stateInstructions } from "../stateInstructions";
 
 const REGULATORY_EXTENSIONS = {
   LoanParameters: `\n\n    
-    You are now collecting loan parameters for the new green loan product.
+    You are now collecting loan parameters for the new loan product.
 
     The user has opted to include regulatory checks at every step.
     ⚠️ You MUST check whether each parameter complies with EU and user's region lending guidelines.
@@ -30,7 +30,7 @@ const REGULATORY_EXTENSIONS = {
     `,
 
   AcceptanceCriteria: `\n\n    
-    You're now collecting acceptance criteria for the green loan product.
+    You're now collecting acceptance criteria for the current loan product.
 
     ⚠️ The user has opted to include regulatory compliance checks for each step.
     ⚠️ You MUST evaluate whether each acceptance criterion follows typical EU/Netherlands SME lending standards.
@@ -65,7 +65,7 @@ const REGULATORY_EXTENSIONS = {
     `,
 
   Pricing: `\n\n    
-    Now it's time to define pricing for the green loan product.
+    Now it's time to define pricing for the current loan product.
 
     ⚠️ The user has opted to include regulatory checks at every step.
     You MUST verify that all pricing inputs are aligned with regulatory expectations in the EU and the Netherlands.
@@ -93,7 +93,7 @@ const REGULATORY_EXTENSIONS = {
     - Origination Fee (cap ~3%)
     - Servicing Fee (check against market caps)
     - Late Payment Fee (EU minimum is ECB refi + 8%)
-    - Green Investment Discount (typically capped at 2%)
+    - Discount (typically capped at 2%)
     - Early Repayment Penalty (warn if excessive or unclear)
 
     Always prioritize regulatory compliance and guide the user accordingly.`,

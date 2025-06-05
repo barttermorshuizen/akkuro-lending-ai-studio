@@ -35,7 +35,7 @@ export default function useExtractProductPreviewInfoByState() {
     originationFee: product?.originationFee,
     servicingFee: product?.servicingFee,
     latePaymentFee: product?.latePaymentFee,
-    greenInvestmentDiscount: product?.greenInvestmentDiscount,
+    discount: product?.discount,
     earlyRepaymentPenalty: product?.earlyRepaymentPenalty,
   };
 

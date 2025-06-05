@@ -18,7 +18,7 @@
 - **Origination Fee**: 1% of loan
 - **Servicing Fee**: None
 - **Late Payment Fee**: €50 flat
-- **Green Investment Discount**: 0.75%
+- **Discount**: 0.75%
 - **Early Repayment Penalty**: None
 - **Regulatory Framework**: Basel III
 - **Required Documentation**: Enhanced documentation
@@ -51,7 +51,7 @@
 - **Origination Fee**: 2% of loan
 - **Servicing Fee**: €100 annual
 - **Late Payment Fee**: None
-- **Green Investment Discount**: 0%
+- **Discount**: 0%
 - **Early Repayment Penalty**: 2% if early
 - **Regulatory Framework**: Other
 - **Required Documentation**: Standard documentation
@@ -84,7 +84,7 @@
 - **Origination Fee**: €500 flat
 - **Servicing Fee**: None
 - **Late Payment Fee**: €75 late fee
-- **Green Investment Discount**: 0%
+- **Discount**: 0%
 - **Early Repayment Penalty**: No
 - **Regulatory Framework**: MiFID II
 - **Required Documentation**: Comprehensive documentation

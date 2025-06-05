@@ -1,4 +1,8 @@
+import { INSTRUCTION_EXAMPLE } from "./instruction";
+
 export const GO_LIVE_EXAMPLE = `
+    ${INSTRUCTION_EXAMPLE}
+    
     Example interaction:
     Assistant: Almost done! When would you like to launch this product?
     Options: Immediate, Next week, or pick a date (e.g., 2025-07-01)
