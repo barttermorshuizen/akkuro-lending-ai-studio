@@ -1,6 +1,6 @@
 import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
-import { regulatoryInstructions } from "@/config/instruction/regulatory";
+import { regulatoryInstructions } from "@/config/regulatoryInstructions";
 import { stateInstructions } from "@/config/stateInstructions";
 import {
   OPENAI_ERROR_CODES,
@@ -448,15 +448,15 @@ export const processMessages = async () => {
               break;
             case "store_acceptance_criteria_secondary":
               confirmationText =
-                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             case "store_pricing_secondary":
               confirmationText =
-                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             case "store_regulatory_check_secondary":
               confirmationText =
-                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do?";
+                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             default:
               confirmationText = "";

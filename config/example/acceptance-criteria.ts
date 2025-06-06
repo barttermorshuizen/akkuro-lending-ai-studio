@@ -1,7 +1,7 @@
-import { INSTRUCTION_EXAMPLE } from "./instruction";
+import { EXAMPLE_INSTRUCTION } from "./instruction";
 
 export const ACCEPTANCE_CRITERIA_EXAMPLE = `
-    ${INSTRUCTION_EXAMPLE}
+    ${EXAMPLE_INSTRUCTION}
     
     Example interaction:
     Assistant: Let's define eligibility criteria. I'll ask you a few questions to shape the borrower profile.

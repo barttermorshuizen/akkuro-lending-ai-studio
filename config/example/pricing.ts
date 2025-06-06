@@ -1,84 +1,99 @@
-import { INSTRUCTION_EXAMPLE } from "./instruction";
+import { EXAMPLE_INSTRUCTION } from "./instruction";
 
 export const PRICING_EXAMPLE = `
-    ${INSTRUCTION_EXAMPLE}
+    ${EXAMPLE_INSTRUCTION}
     
-    Example interaction:
-    Assistant: Let's set the pricing parameters. I'll ask you a few questions to shape the pricing structure.
-    • Interest rate range
-    • Fee structure
-    • Discount
-    • Early repayment penalty
+    CONTEXT-ADAPTIVE PRICING EXAMPLE:
+    This example shows the framework - ALWAYS adapt ranges, rates, and recommendations to the user's specific:
+    🌍 Geography (local market rates and regulations)
+    🏭 Industry (sector risk and market norms)  
+    👥 Customer Segment (SME, corporate, retail requirements)
 
-    Let's begin with the minimum interest rate.  
-    The market average for similar loans is around 4.0%-6.0%.  
-    What's the lowest interest rate you'd like to offer?
+    Example interaction framework (customize to actual context):
 
-    User: 3.5%
+    Assistant: Let's configure pricing for your {{USER_GEOGRAPHY}} {{USER_INDUSTRY}} {{CUSTOMER_SEGMENT}} loan product. I'll research current market conditions and guide you through:
+    • Interest rate range (based on local central bank rates + market spreads)
+    • Fee structure (compliant with local regulations)
+    • Discount programs (aligned with industry incentives)
+    • Early repayment conditions (per local consumer protection laws)
 
-    Assistant: ⚠️ 3.5% is below the 4.0% minimum we usually recommend.  
-    At your cost of funds (2.5%), that leaves little margin.  
-    Would you like to adjust to 4.0%, or keep 3.5%?
+    Let me start by researching current {{USER_GEOGRAPHY}} market rates for {{USER_INDUSTRY}} {{CUSTOMER_SEGMENT}} lending...
 
-    User: Let's go with 4.0%.
+    Based on current {{CENTRAL_BANK_NAME}} rates and {{USER_GEOGRAPHY}} market conditions, typical {{USER_INDUSTRY}} {{CUSTOMER_SEGMENT}} loans range {{RESEARCH_BASED_RANGE}}.
+    What minimum interest rate would you like to offer?
 
-    Assistant: 👍 Good call. And what about the maximum rate?
+    User: {{USER_INPUTS_RATE}}
 
-    User: 7.5%
+    Assistant: For {{USER_CONTEXT}}, you've specified {{USER_RATE}}, which is {{COMPARISON_TO_LOCAL_MARKET_NORMS}}.
+    {{IF_OUTSIDE_NORMS: ⚠️ This is [above/below] typical {{LOCAL_MARKET}} standards. [Explain market implications and risks]}}
+    Would you like to {{SUGGESTED_ADJUSTMENT}} based on local market conditions, or proceed with {{USER_RATE}}?
 
-    Assistant: That works. A 4.0%-7.5% range gives you flexibility across risk tiers.
+    User: {{USER_DECISION}}
 
-    Now, about the origination fee - how much will you charge upfront?  
-    Market norm is 1%-3% of the loan amount.
+    Assistant: {{ACKNOWLEDGMENT}}. For the maximum rate, considering {{LOCAL_USURY_LAWS}} and {{COMPETITIVE_LANDSCAPE}}...
 
-    User: 0.5%
+    User: {{USER_MAX_RATE}}
 
-    Assistant: ⚠️ That's below the norm. It may attract users, but you risk under-recovering onboarding costs.  
-    Would you like to change it to 1%?
+    Assistant: {{VALIDATION_AGAINST_LOCAL_REGULATIONS}}. That gives you a {{FINAL_RANGE}} spread, which {{MARKET_ASSESSMENT}}.
 
-    User: Keep 0.5% for now—we're launching competitively.
+    Now for origination fees - in {{USER_GEOGRAPHY}}, {{CUSTOMER_SEGMENT}} lenders typically charge {{LOCAL_MARKET_RANGE}} with regulatory caps at {{LOCAL_FEE_LIMITS}}.
 
-    Assistant: Got it. Next, the servicing fee.  
-    Lenders usually charge 0.1%-0.5% per year on outstanding balances.
+    User: {{USER_FEE_INPUT}}
 
-    User: Let's set it at 0.8%.
+    Assistant: {{CONTEXT_SPECIFIC_VALIDATION}}
+    {{IF_COMPLIANCE_ISSUE: ⚠️ In {{USER_GEOGRAPHY}}, {{SPECIFIC_REGULATION}} limits {{FEE_TYPE}} to {{LEGAL_MAXIMUM}}}}
+    {{IF_MARKET_OUTLIER: ⚠️ That's {{COMPARISON}} typical {{LOCAL_MARKET}} practices. {{COMPETITIVE_IMPLICATIONS}}}}
 
-    Assistant: ⚠️ That's higher than usual. It could trigger friction.  
-    Would you like to lower it to 0.5%?
+    User: {{USER_ADJUSTMENT}}
 
-    User: Yes, let's do 0.5%.
+    Assistant: {{CONFIRMATION}}. For servicing fees, {{LOCAL_MARKET_RESEARCH}} shows {{TYPICAL_RANGE}} for {{USER_CONTEXT}}.
 
-    Assistant: 👍 Done. Now, the **late payment fee**.  
-    EU regulation requires a minimum of 11.15% (ECB refi + 8 pp).
+    User: {{USER_SERVICING_FEE}}
 
-    User: I was thinking 6%.
+    Assistant: {{VALIDATION}}. Now for late payment fees - this is critical for compliance.
+    {{RESEARCH_LOCAL_USURY_LAWS}}
+    In {{USER_GEOGRAPHY}}, maximum late fees are {{LOCAL_LEGAL_LIMIT}} per {{REGULATION_REFERENCE}}.
 
-    Assistant: ⚠️ That's not compliant. Let's go with 11.15%?
+    User: {{USER_LATE_FEE}}
 
-    User: Yes.
+    Assistant: {{COMPLIANCE_CHECK}}
+    {{IF_NON_COMPLIANT: ⚠️ That exceeds {{LOCAL_LAW}} maximum of {{LEGAL_LIMIT}}. We need to adjust to {{COMPLIANT_AMOUNT}}.}}
 
-    Assistant: Great. For the discount for the current industry, banks usually offer 0%-2%.  
-    Do you want to include one?
+    User: {{COMPLIANCE_ADJUSTMENT}}
 
-    User: Yes, 0.75%.
+    Assistant: {{CONFIRMATION}}. For {{USER_INDUSTRY}} in {{USER_GEOGRAPHY}}, common discount programs include {{RESEARCH_LOCAL_INCENTIVES}}.
+    {{GOVERNMENT_PROGRAMS}} {{INDUSTRY_SPECIFIC_DISCOUNTS}} {{ESG_CONSIDERATIONS}}
 
-    Assistant: 👍 Perfect balance. Lastly, do you want to charge a penalty for early repayment?  
-    Market average is about 1%, but many green loans offer flexibility.
+    User: {{USER_DISCOUNT_PREFERENCE}}
 
-    User: Let's not charge a penalty.
+    Assistant: {{VALIDATION_AGAINST_LOCAL_COMPETITION_LAWS}}. Finally, early repayment terms.
+    {{RESEARCH_LOCAL_CONSUMER_PROTECTION_LAWS}}
+    In {{USER_GEOGRAPHY}}, {{PREPAYMENT_REGULATIONS}} {{BUSINESS_VS_CONSUMER_DIFFERENCES}}.
 
-    Assistant: ⚠️ Skipping the penalty supports adoption but exposes you to early churn.  
-    Keep no penalty?
+    User: {{USER_EARLY_REPAYMENT_DECISION}}
 
-    User: Yes—no penalty.
+    Assistant: {{LEGAL_COMPLIANCE_CHECK}}
+    {{IF_LEGAL_ISSUES: ⚠️ {{LOCAL_CONSUMER_PROTECTION_LAW}} restricts {{PENALTY_TYPE}} for {{CUSTOMER_SEGMENT}}}}
 
-    Assistant: ✅ Summary:
-    • Interest rate: 4.0% - 7.5%  
-    • Origination: 0.5%  
-    • Servicing: 0.5%  
-    • Late fee: 11.15%  
-    • Discount: 0.75%  
-    • Early repayment: no penalty
+    ✅ **Configured Pricing Summary for {{USER_GEOGRAPHY}} {{USER_INDUSTRY}} {{CUSTOMER_SEGMENT}}:**
+    • **Interest Rate**: {{FINAL_MIN}}% - {{FINAL_MAX}}% (based on {{LOCAL_CENTRAL_BANK}} + market spreads)
+    • **Origination Fee**: {{FINAL_ORIGINATION}}% (compliant with {{LOCAL_REGULATION}})
+    • **Servicing Fee**: {{FINAL_SERVICING}}% (aligned with {{LOCAL_MARKET}} standards)
+    • **Late Payment Fee**: {{FINAL_LATE_FEE}}% (per {{REGULATORY_REFERENCE}})
+    • **Discount Program**: {{FINAL_DISCOUNT}} ({{PROGRAM_RATIONALE}})
+    • **Early Repayment**: {{FINAL_TERMS}} ({{LEGAL_COMPLIANCE_NOTE}})
 
-    Ready to save? (Yes/Revise)
+    **Market Positioning**: {{COMPETITIVE_ANALYSIS}}
+    **Regulatory Status**: {{COMPLIANCE_CONFIRMATION}}
+    **Risk Assessment**: {{PRICING_RISK_EVALUATION}}
+
+    Ready to proceed? (Confirm/Revise specific parameters)
+
+    ---
+    CRITICAL IMPLEMENTATION NOTES:
+    - Replace ALL {{VARIABLES}} with actual researched data for user's context
+    - NEVER use template ranges as actual recommendations
+    - ALWAYS research current local market conditions before suggesting ranges
+    - MANDATORY compliance verification for each jurisdiction
+    - Adapt conversation flow to local business customs and practices
 `;

@@ -11,21 +11,21 @@ export const compatibleCheckConfig = {
   parametersToCheck: {
     type: "array",
     description:
-      "List of product parameters at current state to check against regulations",
+      "List of parameters at current state to check against regulations",
     items: {
       type: "object",
       properties: {
         productParam: {
           type: "string",
-          description: `The product parameter name is one of ${PRODUCT_PARAMETERS} at current state`,
+          description: `The parameter name is one of ${PRODUCT_PARAMETERS} at current state`,
         },
         productParamDescription: {
           type: "string",
-          description: "Description of the product parameter",
+          description: "Description of the parameter",
         },
         paramValue: {
           type: "string",
-          description: "The current value of the product parameter",
+          description: "The current value of the parameter",
         },
         regulationDescription: {
           type: "string",
@@ -345,62 +345,9 @@ export const toolsList = [
   {
     name: "do_compliance_check",
     description:
-      "Do the compliance check for the current collected parameters at current state",
+      "Do the compliance check whether the current collected parameters at current state are compliant with the country regulations",
     parameters: {
-      countryCode: {
-        type: "string",
-        description:
-          "The 2-letter ISO country code (e.g. 'NL', 'US') to determine the applicable regulations",
-      },
-      parametersToCheck: {
-        type: "array",
-        description: "List of loan parameters to check against regulations",
-        items: {
-          type: "object",
-          properties: {
-            productParam: {
-              type: "string",
-              description:
-                "The loan parameter name (e.g. loanAmountMax, interestRateType)",
-            },
-            productParamDescription: {
-              type: "string",
-              description: "Description of the loan parameter",
-            },
-            paramValue: {
-              type: "string",
-              description: "The current value of the product parameter",
-            },
-            regulationDescription: {
-              type: "string",
-              description: "Short description of the regulation that applies",
-            },
-            expectedRange: {
-              type: "string",
-              description:
-                "Expected value or range according to the regulation",
-            },
-            isCompliant: {
-              type: "boolean",
-              description:
-                "Whether the parameter value complies with the regulation",
-            },
-            notes: {
-              type: "string",
-              description: "Optional explanation of compliance or failure",
-            },
-          },
-          required: [
-            "productParam",
-            "productParamDescription",
-            "paramValue",
-            "regulationDescription",
-            "expectedRange",
-            "isCompliant",
-            "notes",
-          ],
-        },
-      },
+      ...compatibleCheckConfig,
     },
     required: ["countryCode", "parametersToCheck"],
   },
@@ -429,7 +376,7 @@ export const toolsListCompatableCheck = [
   {
     name: "do_compliance_check",
     description:
-      "Do the compliance check for the current collected parameters at current state",
+      "Do the compliance check whether the current collected parameters at current state are compliant with the country regulations",
     parameters: {
       ...compatibleCheckConfig,
     },

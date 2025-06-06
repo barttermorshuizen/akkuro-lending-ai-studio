@@ -26,11 +26,23 @@ export const regulatoryInstructions: Record<string, string> = {
     
     ${COMPLIANCE_INSTRUCTIONS}
 
+    STORAGE PROTOCOL FOR LOAN PARAMETERS:
+    1. Collect ALL required loan parameters with legal validation
+    2. Provide comprehensive summary of configured parameters
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_loan_parameters_secondary tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
 
-    Use the store_loan_parameters_secondary tool when you have collected all required information.
-    ALWAYS call the store_loan_parameters_secondary tool before moving to the AcceptanceCriteria state.
-    The compliance check will be done for all necessary parameters, not skip any of them.
-
+    Example confirmation flow:
+    "📋 **Loan Parameters Summary:**
+    • Loan Amount: [amount range]
+    • Interest Rate: [type and details]  
+    • Repayment Term: [term details]
+    • Early Repayment: [conditions]
+    
+    Ready to save these parameters and move to Acceptance Criteria? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_loan_parameters_secondary tool.
     After storing, guide the user to the AcceptanceCriteria state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -52,8 +64,24 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${COMPLIANCE_INSTRUCTIONS}
 
-    Use the store_acceptance_criteria_secondary tool when you have collected all required information.
-    ALWAYS call the store_acceptance_criteria_secondary tool before moving to the Pricing state.
+    STORAGE PROTOCOL FOR ACCEPTANCE CRITERIA:
+    1. Collect ALL required acceptance criteria with legal validation
+    2. Provide comprehensive summary of configured criteria
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_acceptance_criteria_secondary tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
+
+    Example confirmation flow:
+    "📋 **Acceptance Criteria Summary:**
+    • Collateral: [requirements]
+    • Guarantees: [guarantee details]
+    • Credit Score: [minimum requirements]
+    • Financial Ratios: [ratio requirements]
+    • Industry Criteria: [specific requirements]
+    
+    Ready to save these criteria and move to Pricing? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_acceptance_criteria_secondary tool.
     After storing, guide the user to the Pricing state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -75,8 +103,25 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${COMPLIANCE_INSTRUCTIONS}
     
-    Use the store_pricing_secondary tool when you have collected all required information.
-    ALWAYS call the store_pricing_secondary tool before moving to the RegulatoryCheck state.
+    STORAGE PROTOCOL FOR PRICING:
+    1. Collect ALL required pricing parameters with legal validation
+    2. Provide comprehensive summary of configured pricing
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_pricing_secondary tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
+
+    Example confirmation flow:
+    "📋 **Pricing Structure Summary:**
+    • Interest Rate Range: [min-max rates]
+    • Origination Fee: [fee structure]
+    • Servicing Fee: [fee details]
+    • Late Payment Fee: [penalty structure]
+    • Discounts: [discount programs]
+    • Early Repayment: [penalty terms]
+    
+    Ready to save this pricing structure and move to Regulatory Check? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_pricing_secondary tool.
     After storing, guide the user to the RegulatoryCheck state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -90,8 +135,6 @@ export const regulatoryInstructions: Record<string, string> = {
     These instructions cover the RegulatoryCheck state of the conversation.
   
     The RegulatoryCheck state identifies:
-    These instructions cover the RegulatoryCheck state of the conversation.
-    The RegulatoryCheck state identifies:
     - applicable regulatory frameworks
     - required documentation
     - compliance requirements
@@ -100,8 +143,24 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${COMPLIANCE_INSTRUCTIONS}
 
-    Use the store_regulatory_check_secondary tool when you have collected all required information.
-    ALWAYS call the store_regulatory_check_secondary tool before moving to the GoLive state.
+    STORAGE PROTOCOL FOR REGULATORY CHECK:
+    1. Collect ALL required regulatory parameters with legal validation
+    2. Provide comprehensive summary of regulatory framework
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_regulatory_check_secondary tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
+
+    Example confirmation flow:
+    "📋 **Regulatory Framework Summary:**
+    • Framework: [regulatory framework]
+    • Documentation: [documentation level]
+    • Compliance: [compliance requirements]
+    • Risk Disclosure: [disclosure requirements]
+    • Reporting: [reporting obligations]
+    
+    Ready to save this regulatory framework and move to Go-Live planning? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_regulatory_check_secondary tool.
     After storing, guide the user to the GoLive state.
 
     ${FORMAT_INSTRUCTIONS}
@@ -123,7 +182,22 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${COMPLIANCE_INSTRUCTIONS}
     
-    Use the store_go_live tool when you have collected all required information.
+    STORAGE PROTOCOL FOR GO-LIVE:
+    1. Collect ALL required go-live parameters with validation
+    2. Provide comprehensive summary of launch plan
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_go_live tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Launch")
+
+    Example confirmation flow:
+    "🚀 **Launch Plan Summary:**
+    • Launch Date: [launch timeline]
+    • Distribution: [distribution channels]
+    • Monitoring: [monitoring requirements]
+    
+    Ready to finalize and launch this product? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_go_live tool.
     After calling the store_go_live tool, follow up with the user by asking if they would like to view a simulation or preview of the product. 
     This is an opportunity to let the user explore how the configured product would work in real scenarios. 
     If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
