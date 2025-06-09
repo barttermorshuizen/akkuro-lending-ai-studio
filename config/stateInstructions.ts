@@ -5,12 +5,10 @@ import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
 import { PRICING_EXAMPLE } from "./example/pricing";
 import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
 import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
-import { FORMAT_INSTRUCTIONS } from "./instruction/format";
-import { GLOBAL_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 
 export const stateInstructions: Record<string, string> = {
-  InitialSetup: `${GLOBAL_INSTRUCTIONS}
+  InitialSetup: `
     These instructions cover the InitialSetup state of the conversation.
 
     The InitialSetup state identifies:
@@ -23,31 +21,40 @@ export const stateInstructions: Record<string, string> = {
     Before storing, ask the user to confirm the information.
     ALWAYS call the store_initial_setup tool before moving to the SetRegulatoryCheckAtEveryStep state.
     After storing, guide the user to the SetRegulatoryCheckAtEveryStep state.
-    
-    ${FORMAT_INSTRUCTIONS}
-    
+        
     ${VALIDATION_INSTRUCTIONS.InitialSetup}
 
     ${INTIAL_SET_UP_EXAMPLE}`,
-  SetRegulatoryCheckAtEveryStep: `${GLOBAL_INSTRUCTIONS}
+  SetRegulatoryCheckAtEveryStep: `
     These instructions cover the SetRegulatoryCheckAtEveryStep state of the conversation.
 
-    Now, please ask the user:
+    Ask the user:
     "Would you like regulatory checks to be included at each step, or only at the end?"
     Choices:
-    - "Include in each step"
+    - "Include in each step" (or "yes")
     - "Only at the end"
-     If the user chooses "Include in each step", call the store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to true.
-    If the user chooses "Only at the end", call the tool with includeRegulatoryCheckFromInitialSetup set to false.
-    
-    Before calling the store_is_regulatory_check_at_every_step tool, you should ask the user to confirm their choice.
 
-    IMPORTANT: After the user confirms their choice, you MUST call the store_is_regulatory_check_at_every_step tool with the correct parameter before moving to the next step. Do not skip this tool call.
+    **If user chooses "Include in each step":**
+    1. Use web_search to find current regulatory frameworks for the target country/region
+    2. Present the regulatory frameworks to the user with relevant links and information
+    3. Ask: "These are the regulatory frameworks that will apply to your loan product. Do you agree to use these frameworks for compliance checking at each step?"
+    4. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.**
+    5. **ONLY IF** user explicitly says "yes", "agree", "confirm", "ok", "proceed" - then call store_is_regulatory_check_at_every_step tool
+    6. If user says "no" or wants modifications - allow modifications then ask for confirmation again
 
-    After calling the tool, move to the LoanParameters state.
+    **If user chooses "Only at the end":**
+    1. Ask for confirmation: "You have chosen to perform regulatory checks only at the end. Do you confirm this choice?"
+    2. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.**
+    3. **ONLY IF** user explicitly confirms - then call store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to false
+
+    **CRITICAL RULES:**
+    - NEVER CALL store_is_regulatory_check_at_every_step IMMEDIATELY AFTER ASKING A QUESTION
+    - ALWAYS WAIT FOR USER'S EXPLICIT RESPONSE FIRST
+    - ONLY CALL THE TOOL AFTER USER CONFIRMS
+    - IF UNCLEAR, ASK AGAIN FOR CONFIRMATION
 
     ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}`,
-  LoanParameters: `${GLOBAL_INSTRUCTIONS}
+  LoanParameters: `
     These instructions cover the LoanParameters state of the conversation.
     
     The LoanParameters state identifies:
@@ -59,14 +66,12 @@ export const stateInstructions: Record<string, string> = {
     Use the store_loan_parameters tool when you have collected all required information.
     ALWAYS call the store_loan_parameters tool before moving to the AcceptanceCriteria state.
     After storing, guide the user to the AcceptanceCriteria state.
-
-    ${FORMAT_INSTRUCTIONS}
     
     ${VALIDATION_INSTRUCTIONS.LoanParameters}
 
     ${LOAN_PARAMETER_EXAMPLE}`,
 
-  AcceptanceCriteria: `${GLOBAL_INSTRUCTIONS}
+  AcceptanceCriteria: `
     These instructions cover the AcceptanceCriteria state of the conversation.
 
     The AcceptanceCriteria state identifies:
@@ -80,13 +85,11 @@ export const stateInstructions: Record<string, string> = {
     ALWAYS call the store_acceptance_criteria tool before moving to the Pricing state.
     After storing, guide the user to the Pricing state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.AcceptanceCriteria}
 
     ${ACCEPTANCE_CRITERIA_EXAMPLE}`,
 
-  Pricing: `${GLOBAL_INSTRUCTIONS}
+  Pricing: `
     These instructions cover the Pricing state of the conversation.
 
     The Pricing state identifies:
@@ -100,13 +103,11 @@ export const stateInstructions: Record<string, string> = {
     ALWAYS call the store_pricing tool before moving to the RegulatoryCheck state.
     After storing, guide the user to the RegulatoryCheck state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.Pricing}
 
     ${PRICING_EXAMPLE}`,
 
-  RegulatoryCheck: `${GLOBAL_INSTRUCTIONS}
+  RegulatoryCheck: `
     These instructions cover the RegulatoryCheck state of the conversation.
   
     The RegulatoryCheck state identifies:
@@ -122,13 +123,11 @@ export const stateInstructions: Record<string, string> = {
     ALWAYS call the store_regulatory_check tool before moving to the GoLive state.
     After storing, guide the user to the GoLive state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
 
     ${REGULATORY_CHECK_EXAMPLE}`,
 
-  GoLive: `${GLOBAL_INSTRUCTIONS}
+  GoLive: `
     These instructions cover the GoLive state of the conversation.
    
     The GoLive state:
@@ -144,8 +143,6 @@ export const stateInstructions: Record<string, string> = {
     This is an opportunity to let the user explore how the configured product would work in real scenarios. 
     If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
 
-    ${FORMAT_INSTRUCTIONS}
-    
     ${VALIDATION_INSTRUCTIONS.GoLive}
     
     ${GO_LIVE_EXAMPLE}`,

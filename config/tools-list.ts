@@ -224,12 +224,33 @@ export const toolsList = [
   },
   {
     name: "store_is_regulatory_check_at_every_step",
-    description: "Set the regulatory check to be included at every step",
+    description:
+      "Set the regulatory check to be included at every step and store the regulatory check information",
     parameters: {
       includeRegulatoryCheckFromInitialSetup: {
         type: "boolean",
         description:
           "Whether regulatory checks should be included at each step or only at the end",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
+      },
+      requiredDocumentation: {
+        type: "string",
+        description: "Required documentation level",
+      },
+      complianceRequirements: {
+        type: "string",
+        description: "Specific compliance requirements",
+      },
+      riskDisclosure: {
+        type: "string",
+        description: "Risk disclosure requirements",
+      },
+      reportingObligations: {
+        type: "string",
+        description: "Reporting obligations",
       },
     },
   },

@@ -65,13 +65,28 @@ export const store_initial_setup = async (params: Partial<ProductModel>) => {
 
 export const store_is_regulatory_check_at_every_step = async ({
   includeRegulatoryCheckFromInitialSetup,
+  regulatoryFramework,
+  requiredDocumentation,
+  complianceRequirements,
+  riskDisclosure,
+  reportingObligations,
 }: {
   includeRegulatoryCheckFromInitialSetup: boolean;
+  regulatoryFramework: string;
+  requiredDocumentation: string;
+  complianceRequirements: string;
+  riskDisclosure: string;
+  reportingObligations: string;
 }) => {
   try {
     console.log(
       "store_is_regulatory_check_at_every_step params",
       includeRegulatoryCheckFromInitialSetup,
+      regulatoryFramework,
+      requiredDocumentation,
+      complianceRequirements,
+      riskDisclosure,
+      reportingObligations,
     );
 
     useRegulatoryCheckStore
@@ -79,6 +94,20 @@ export const store_is_regulatory_check_at_every_step = async ({
       .setIncludeRegulatoryCheckFromInitialSetup(
         includeRegulatoryCheckFromInitialSetup,
       );
+
+    if (includeRegulatoryCheckFromInitialSetup) {
+      await storeRegulatoryCheck(
+        {
+          regulatoryFramework,
+          requiredDocumentation,
+          complianceRequirements,
+          riskDisclosure,
+          reportingObligations,
+        },
+        true,
+      );
+      await set_product();
+    }
 
     useConversationStore.getState().setConversationState(conversationStates[2]);
     console.log("set conversation state to", conversationStates[2]);
@@ -149,8 +178,29 @@ export const store_pricing = async (params: Partial<ProductModel>) => {
 
     await set_product();
 
-    useConversationStore.getState().setConversationState(conversationStates[5]);
-    console.log("set conversation state to", conversationStates[5]);
+    const includeRegulatoryCheckFromInitialSetup =
+      useRegulatoryCheckStore.getState().includeRegulatoryCheckFromInitialSetup;
+
+    if (includeRegulatoryCheckFromInitialSetup) {
+      console.log("includeRegulatoryCheckFromInitialSetup is true");
+      useConversationStore
+        .getState()
+        .setConversationState(conversationStates[6]);
+      console.log(
+        "set conversation state to",
+        conversationStates[6],
+        "because regulatory check has been set at previous step ",
+      );
+    } else {
+      useConversationStore
+        .getState()
+        .setConversationState(conversationStates[5]);
+      console.log(
+        "set conversation state to",
+        conversationStates[5],
+        "because regulatory check has not been set at previous step",
+      );
+    }
 
     return { status: "success", requiresFollowUp: false };
   } catch (error) {
@@ -441,8 +491,8 @@ export const store_pricing_secondary = async (
     await do_compliance_check(paramsToCheck);
     console.log("executed store_pricing_secondary function");
 
-    useConversationStore.getState().setConversationState(conversationStates[5]);
-    console.log("set conversation state to", conversationStates[5]);
+    useConversationStore.getState().setConversationState(conversationStates[6]);
+    console.log("set conversation state to", conversationStates[6]);
 
     return {
       status: "success",

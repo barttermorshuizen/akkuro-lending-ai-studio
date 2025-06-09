@@ -10,7 +10,10 @@ import { ProductModel } from "@/types/product";
 import { google } from "googleapis";
 import { readProduct } from "./readProduct";
 
-export const storeRegulatoryCheck = async (updates: Partial<ProductModel>) => {
+export const storeRegulatoryCheck = async (
+  updates: Partial<ProductModel>,
+  skipStateUpdate = false,
+) => {
   console.log("store_regulatory_check input", updates);
 
   // Validate environment variables
@@ -32,7 +35,7 @@ export const storeRegulatoryCheck = async (updates: Partial<ProductModel>) => {
     const updatedProduct = {
       ...product,
       ...updates,
-      currentState: "RegulatoryCheck",
+      currentState: skipStateUpdate ? product.currentState : "RegulatoryCheck",
     };
 
     const authClient = new google.auth.JWT({

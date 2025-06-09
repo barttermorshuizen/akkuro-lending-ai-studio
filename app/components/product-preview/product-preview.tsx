@@ -78,6 +78,9 @@ export default function ProductPreview() {
             </div>
 
             <ProductReviewSection data={initialSetup} />
+            <Show when={includeRegulatoryCheckFromInitialSetup}>
+              <ProductReviewSection data={regulatory} title="Regulatory" />
+            </Show>
             <ProductReviewSection
               data={loanParameters}
               title="Loan Parameters"
@@ -87,7 +90,9 @@ export default function ProductPreview() {
               title="Acceptance Criteria"
             />
             <ProductReviewSection data={pricing} title="Pricing" />
-            <ProductReviewSection data={regulatory} title="Regulatory" />
+            <Show when={!includeRegulatoryCheckFromInitialSetup}>
+              <ProductReviewSection data={regulatory} title="Regulatory" />
+            </Show>
             <ProductReviewSection data={goLive} title="Go Live" />
           </div>
           <div className="flex flex-col gap-2 w-full">

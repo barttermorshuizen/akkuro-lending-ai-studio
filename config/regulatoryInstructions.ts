@@ -3,11 +3,7 @@ import { GO_LIVE_EXAMPLE } from "./example/go-live";
 import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
 import { PRICING_EXAMPLE } from "./example/pricing";
 import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
-import { FORMAT_INSTRUCTIONS } from "./instruction/format";
-import {
-  COMPLIANCE_INSTRUCTIONS,
-  GLOBAL_INSTRUCTIONS,
-} from "./instruction/global";
+import { COMPLIANCE_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 import { stateInstructions } from "./stateInstructions";
 
@@ -15,7 +11,7 @@ export const regulatoryInstructions: Record<string, string> = {
   InitialSetup: stateInstructions.InitialSetup,
   SetRegulatoryCheckAtEveryStep:
     stateInstructions.SetRegulatoryCheckAtEveryStep,
-  LoanParameters: `${GLOBAL_INSTRUCTIONS}
+  LoanParameters: `
     These instructions cover the LoanParameters state of the conversation.
     
     The LoanParameters state identifies:
@@ -44,15 +40,13 @@ export const regulatoryInstructions: Record<string, string> = {
     
     Wait for user confirmation before calling store_loan_parameters_secondary tool.
     After storing, guide the user to the AcceptanceCriteria state.
-
-    ${FORMAT_INSTRUCTIONS}
     
     ${VALIDATION_INSTRUCTIONS.LoanParameters}
 
     ${LOAN_PARAMETER_EXAMPLE}
     `,
 
-  AcceptanceCriteria: `${GLOBAL_INSTRUCTIONS}
+  AcceptanceCriteria: `
     These instructions cover the AcceptanceCriteria state of the conversation.
 
     The AcceptanceCriteria state identifies:
@@ -84,14 +78,12 @@ export const regulatoryInstructions: Record<string, string> = {
     Wait for user confirmation before calling store_acceptance_criteria_secondary tool.
     After storing, guide the user to the Pricing state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.AcceptanceCriteria}
 
     ${ACCEPTANCE_CRITERIA_EXAMPLE}
     `,
 
-  Pricing: `${GLOBAL_INSTRUCTIONS}
+  Pricing: `
     These instructions cover the Pricing state of the conversation.
 
     The Pricing state identifies:
@@ -124,14 +116,12 @@ export const regulatoryInstructions: Record<string, string> = {
     Wait for user confirmation before calling store_pricing_secondary tool.
     After storing, guide the user to the RegulatoryCheck state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.Pricing}
 
     ${PRICING_EXAMPLE}
     `,
 
-  RegulatoryCheck: `${GLOBAL_INSTRUCTIONS}
+  RegulatoryCheck: `
     These instructions cover the RegulatoryCheck state of the conversation.
   
     The RegulatoryCheck state identifies:
@@ -163,14 +153,12 @@ export const regulatoryInstructions: Record<string, string> = {
     Wait for user confirmation before calling store_regulatory_check_secondary tool.
     After storing, guide the user to the GoLive state.
 
-    ${FORMAT_INSTRUCTIONS}
-
     ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
 
     ${REGULATORY_CHECK_EXAMPLE}
     `,
 
-  GoLive: `${GLOBAL_INSTRUCTIONS}
+  GoLive: `
     These instructions cover the GoLive state of the conversation.
    
     The GoLive state:
@@ -202,8 +190,6 @@ export const regulatoryInstructions: Record<string, string> = {
     This is an opportunity to let the user explore how the configured product would work in real scenarios. 
     If user responses positively, or whenever user mention about simulation or want to see product output, call the product_simulation tool.
 
-    ${FORMAT_INSTRUCTIONS}
-    
     ${VALIDATION_INSTRUCTIONS.GoLive}
 
     ${GO_LIVE_EXAMPLE}

@@ -1,4 +1,5 @@
 import { Annotation } from "@/components/annotations";
+import { DEVELOPER_PROMPT } from "@/config/constants";
 import { functionsMap } from "@/config/functions";
 import { regulatoryInstructions } from "@/config/regulatoryInstructions";
 import { stateInstructions } from "@/config/stateInstructions";
@@ -153,7 +154,7 @@ export const processMessages = async () => {
   // State-specific instruction lookup
   const includeRegulatoryCheckFromInitialSetup =
     useRegulatoryCheckStore.getState().includeRegulatoryCheckFromInitialSetup;
-  const stateInstruction = includeRegulatoryCheckFromInitialSetup
+  const systemInstruction = includeRegulatoryCheckFromInitialSetup
     ? regulatoryInstructions[conversationState]
     : stateInstructions[conversationState];
 
@@ -162,7 +163,7 @@ export const processMessages = async () => {
     // Adding state-specific system instruction
     {
       role: "system",
-      content: stateInstruction,
+      content: DEVELOPER_PROMPT + "\n\n" + systemInstruction,
     },
     ...conversationItems,
   ];
@@ -170,7 +171,7 @@ export const processMessages = async () => {
   let assistantMessageBuffer = "";
   let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
-  let isWaitingOutputIndexNext = false;
+  const isWaitingOutputIndexNext = false;
   let isSkippingOutputText = false;
   const ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT = [
     "web_search_call",
@@ -217,33 +218,33 @@ export const processMessages = async () => {
         );
         console.log("output_item.added item", item);
 
-        if (
-          output_index === 0 &&
-          ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
-        ) {
-          isWaitingOutputIndexNext = true;
-        }
+        // if (
+        //   output_index === 0 &&
+        //   ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
+        // ) {
+        //   isWaitingOutputIndexNext = true;
+        // }
 
-        if (
-          output_index === 0 &&
-          !ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
-        ) {
-          isWaitingOutputIndexNext = false;
-        }
-        if (
-          output_index > 0 &&
-          item.type === "message" &&
-          !isWaitingOutputIndexNext
-        ) {
-          console.log(
-            "output_item.added output_index > 0 and item.type === message break",
-          );
-          isSkippingOutputText = true;
-          break;
-        }
-        console.log(
-          "output_item.added output_index > 0 and item.type === message break end",
-        );
+        // if (
+        //   output_index === 0 &&
+        //   !ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
+        // ) {
+        //   isWaitingOutputIndexNext = false;
+        // }
+        // if (
+        //   output_index > 0 &&
+        //   item.type === "message" &&
+        //   !isWaitingOutputIndexNext
+        // ) {
+        //   console.log(
+        //     "output_item.added output_index > 0 and item.type === message break",
+        //   );
+        //   isSkippingOutputText = true;
+        //   break;
+        // }
+        // console.log(
+        //   "output_item.added output_index > 0 and item.type === message break end",
+        // );
         // New item coming in
         if (!item || !item.type) {
           break;
