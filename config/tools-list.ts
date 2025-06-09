@@ -174,8 +174,9 @@ export const toolsList = [
     },
   },
   {
-    name: "store_regulatory_check",
-    description: "Store regulatory check information",
+    name: "store_regulatory_check_secondary",
+    description:
+      "Store regulatory check information and check compliance for the regulatory check parameters",
     parameters: {
       regulatoryFramework: {
         type: "string",
@@ -197,6 +198,7 @@ export const toolsList = [
         type: "string",
         description: "Reporting obligations",
       },
+      ...compatibleCheckConfig,
     },
   },
   {
@@ -218,7 +220,6 @@ export const toolsList = [
         type: "string",
         description: "Product monitoring requirements",
       },
-      ...compatibleCheckConfig,
     },
   },
   {
@@ -522,7 +523,6 @@ export const toolsListCompatableCheck = [
         type: "string",
         description: "Product monitoring requirements",
       },
-      ...compatibleCheckConfig,
     },
   },
   {

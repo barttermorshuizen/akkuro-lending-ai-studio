@@ -8,21 +8,26 @@ import {
 import { noValueFallback } from "@/lib/fallback";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { WithAuthProtectionPage } from "../components/protected-page";
 
 type ProductInfoProps = {
   name: string;
   description: string;
+  isLoading: boolean;
 };
-function ProductInfo({ name, description }: ProductInfoProps) {
+function ProductInfo({ name, description, isLoading }: ProductInfoProps) {
   return (
     <div className="flex flex-col">
       <div className="text-sm font-semibold capitalize">
         {productsConfigurationMapping[name as keyof ProductConfigurationDTO]}
       </div>
       <div className="text-sm flex flex-wrap max-w-sm">
-        {description || "N/A"}
+        {isLoading ? (
+          <div className="sound-loader"></div>
+        ) : (
+          description || "N/A"
+        )}
       </div>
     </div>
   );
@@ -30,8 +35,11 @@ function ProductInfo({ name, description }: ProductInfoProps) {
 
 const Studio = WithAuthProtectionPage(function Studio() {
   const { product, setProduct } = useConfiguringProductStore();
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    read_product();
+    read_product().then(() => {
+      setIsLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -49,6 +57,7 @@ const Studio = WithAuthProtectionPage(function Studio() {
             key={key}
             name={key}
             description={noValueFallback(value).toString()}
+            isLoading={isLoading}
           />
         ))}
       </div>

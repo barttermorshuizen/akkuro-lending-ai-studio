@@ -491,24 +491,13 @@ export const store_regulatory_check_secondary = async (
   }
 };
 
-export const store_go_live = async (
-  params: Partial<ProductModel> & ComplianceCheckProductParametersModel,
-) => {
+export const store_go_live = async (params: Partial<ProductModel>) => {
   try {
     console.log("store_go_live params", params);
 
-    const { countryCode, parametersToCheck, ...rest } = params;
-
-    await storeGoLive(rest);
+    await storeGoLive(params);
 
     await set_product();
-
-    const paramsToCheck = {
-      countryCode,
-      parametersToCheck,
-    };
-
-    await do_compliance_check(paramsToCheck);
 
     console.log("executed store_go_live function");
 
