@@ -5,10 +5,11 @@ import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
 import { PRICING_EXAMPLE } from "./example/pricing";
 import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
 import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
+import { COMPLIANCE_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 
 const FORMAT_OUTPUT_ITEM_TEXT =
-  "ALWAYS return one complete answer in output item text and then stop.";
+  "ALWAYS return one complete answer in output_item contains web_search_call result and text response, and then stop.";
 
 export const stateInstructions: Record<string, string> = {
   InitialSetup: `
@@ -117,22 +118,40 @@ export const stateInstructions: Record<string, string> = {
 
   RegulatoryCheck: `
     These instructions cover the RegulatoryCheck state of the conversation.
-    ${FORMAT_OUTPUT_ITEM_TEXT}
-    
+  
     The RegulatoryCheck state identifies:
     - applicable regulatory frameworks
     - required documentation
     - compliance requirements
     - risk disclosure needs
     - reporting obligations
+
+    ${COMPLIANCE_INSTRUCTIONS}
+
+    STORAGE PROTOCOL FOR REGULATORY CHECK:
+    1. Collect ALL required regulatory parameters with legal validation
+    2. Provide comprehensive summary of regulatory framework
+    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
+    4. ONLY call store_regulatory_check_secondary tool AFTER user confirms
+    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
+
+    Example confirmation flow:
+    "📋 **Regulatory Framework Summary:**
+    • Framework: [regulatory framework]
+    • Documentation: [documentation level]
+    • Compliance: [compliance requirements]
+    • Risk Disclosure: [disclosure requirements]
+    • Reporting: [reporting obligations]
     
-    Use the store_regulatory_check tool when you have collected all required information.
-    ALWAYS call the store_regulatory_check tool before moving to the GoLive state.
+    Ready to save this regulatory framework and move to Go-Live planning? (Yes/Revise)"
+    
+    Wait for user confirmation before calling store_regulatory_check_secondary tool.
     After storing, guide the user to the GoLive state.
 
     ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
 
-    ${REGULATORY_CHECK_EXAMPLE}`,
+    ${REGULATORY_CHECK_EXAMPLE}
+    `,
 
   GoLive: `
     These instructions cover the GoLive state of the conversation.

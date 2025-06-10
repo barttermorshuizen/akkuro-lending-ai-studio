@@ -7,6 +7,7 @@ interface ConversationState {
   chatMessages: Item[];
   conversationItems: ChatCompletionMessageParam[];
   conversationStates: string[];
+  setConversationStates: (states: string[]) => void;
   conversationState: string;
   setChatMessages: (items: Item[]) => void;
   setConversationItems: (messages: ChatCompletionMessageParam[]) => void;
@@ -46,6 +47,7 @@ const useConversationStore = create<ConversationState>((set, get) => ({
   ],
   conversationItems: [],
   conversationStates: CONVERSATION_STATES,
+  setConversationStates: (states) => set({ conversationStates: states }),
   conversationState: CONVERSATION_STATES[0],
   setChatMessages: (items) => set({ chatMessages: items }),
   setConversationItems: (messages) => set({ conversationItems: messages }),
@@ -72,6 +74,7 @@ const useConversationStore = create<ConversationState>((set, get) => ({
       ],
       conversationItems: [],
       conversationState: CONVERSATION_STATES[0],
+      conversationStates: CONVERSATION_STATES,
       isProcessingNewMessage: false,
     }),
   isProcessingNewMessage: false,

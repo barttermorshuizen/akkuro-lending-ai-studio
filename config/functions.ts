@@ -106,6 +106,13 @@ export const store_is_regulatory_check_at_every_step = async ({
         },
         true,
       );
+      const noRegulatoryCheckLaterConversationStates: string[] =
+        conversationStates.filter((item) => item !== "RegulatoryCheck");
+
+      useConversationStore
+        .getState()
+        .setConversationStates(noRegulatoryCheckLaterConversationStates);
+
       await set_product();
     }
 
@@ -226,8 +233,8 @@ export const store_regulatory_check = async (
     if (!skipStateUpdate) {
       useConversationStore
         .getState()
-        .setConversationState(conversationStates[6]);
-      console.log("set conversation state to", conversationStates[6]);
+        .setConversationState(conversationStates[2]);
+      console.log("set conversation state to", conversationStates[2]);
     }
 
     return { status: "success", requiresFollowUp: false };
@@ -522,8 +529,27 @@ export const store_regulatory_check_secondary = async (
 
     await do_compliance_check(paramsToCheck);
 
-    useConversationStore.getState().setConversationState(conversationStates[2]);
-    console.log("set conversation state to", conversationStates[2]);
+    const currentState = useConversationStore.getState().conversationState;
+
+    if (
+      currentState === conversationStates[1] ||
+      currentState === conversationStates[2]
+    ) {
+      useConversationStore
+        .getState()
+        .setConversationState(conversationStates[2]);
+      console.log("set conversation state to", conversationStates[2]);
+    } else {
+      useConversationStore
+        .getState()
+        .setConversationState(
+          conversationStates[conversationStates.length - 1],
+        );
+      console.log(
+        "set conversation state to",
+        conversationStates[conversationStates.length - 1],
+      );
+    }
 
     console.log("executed store_regulatory_check_secondary function");
 
@@ -569,7 +595,6 @@ export const functionsMap = {
   store_loan_parameters,
   store_acceptance_criteria,
   store_pricing,
-  store_regulatory_check,
   store_go_live,
   generate_iso_compliance_pdf,
   generate_eu_tax_compliance_pdf,

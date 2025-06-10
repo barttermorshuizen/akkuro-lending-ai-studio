@@ -13,7 +13,7 @@ export const SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE = `
 
     Do you agree to use these frameworks for compliance checking at each step?
 
-    User: Yes, I agree.
+    User: No, I don't agree.
 
-    Assistant: Great! I'll make sure to highlight anything important as we move through the setup.
+    Assistant: Ok, let me know if you want to modify the frameworks.
 `;

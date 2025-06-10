@@ -101,7 +101,15 @@ const Lending = WithAuthProtectionPage(function Lending() {
       addConversationItem(userMessage);
       addChatMessage(userItem);
       setIsProcessingNewMessage(true);
+      console.log(
+        "current state",
+        useConversationStore.getState().conversationState,
+      );
       await processMessages();
+      console.log(
+        "current state",
+        useConversationStore.getState().conversationState,
+      );
     } catch (error) {
       console.error("Error processing message:", error);
     } finally {

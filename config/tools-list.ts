@@ -176,7 +176,7 @@ export const toolsList = [
   {
     name: "store_regulatory_check_secondary",
     description:
-      "Store regulatory check information and check compliance for the regulatory check parameters",
+      "Store regulatory check information and check compliance for all parameters",
     parameters: {
       regulatoryFramework: {
         type: "string",
@@ -363,15 +363,6 @@ export const toolsList = [
         description: "Applicable regulatory framework",
       },
     },
-  },
-  {
-    name: "do_compliance_check",
-    description:
-      "Do the compliance check whether the current collected parameters at current state are compliant with the country regulations",
-    parameters: {
-      ...compatibleCheckConfig,
-    },
-    required: ["countryCode", "parametersToCheck"],
   },
 ];
 

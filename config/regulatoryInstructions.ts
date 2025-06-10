@@ -2,7 +2,6 @@ import { ACCEPTANCE_CRITERIA_EXAMPLE } from "./example/acceptance-criteria";
 import { GO_LIVE_EXAMPLE } from "./example/go-live";
 import { LOAN_PARAMETER_EXAMPLE } from "./example/loan-parameter";
 import { PRICING_EXAMPLE } from "./example/pricing";
-import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
 import { COMPLIANCE_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 import { stateInstructions } from "./stateInstructions";
@@ -120,44 +119,6 @@ export const regulatoryInstructions: Record<string, string> = {
 
     ${PRICING_EXAMPLE}
     `,
-
-  RegulatoryCheck: `
-    These instructions cover the RegulatoryCheck state of the conversation.
-  
-    The RegulatoryCheck state identifies:
-    - applicable regulatory frameworks
-    - required documentation
-    - compliance requirements
-    - risk disclosure needs
-    - reporting obligations
-
-    ${COMPLIANCE_INSTRUCTIONS}
-
-    STORAGE PROTOCOL FOR REGULATORY CHECK:
-    1. Collect ALL required regulatory parameters with legal validation
-    2. Provide comprehensive summary of regulatory framework
-    3. ASK USER FOR EXPLICIT CONFIRMATION before storing
-    4. ONLY call store_regulatory_check_secondary tool AFTER user confirms
-    5. DO NOT call store tool without clear user confirmation (e.g., "Yes", "Confirm", "Save", "Proceed")
-
-    Example confirmation flow:
-    "📋 **Regulatory Framework Summary:**
-    • Framework: [regulatory framework]
-    • Documentation: [documentation level]
-    • Compliance: [compliance requirements]
-    • Risk Disclosure: [disclosure requirements]
-    • Reporting: [reporting obligations]
-    
-    Ready to save this regulatory framework and move to Go-Live planning? (Yes/Revise)"
-    
-    Wait for user confirmation before calling store_regulatory_check_secondary tool.
-    After storing, guide the user to the GoLive state.
-
-    ${VALIDATION_INSTRUCTIONS.RegulatoryCheck}
-
-    ${REGULATORY_CHECK_EXAMPLE}
-    `,
-
   GoLive: `
     These instructions cover the GoLive state of the conversation.
    

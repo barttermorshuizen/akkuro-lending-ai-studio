@@ -171,7 +171,7 @@ export const processMessages = async () => {
   let assistantMessageBuffer = "";
   let currentMessageItem: MessageItem | null = null;
   let functionArguments = "";
-  const isWaitingOutputIndexNext = false;
+  let isWaitingOutputIndexNext = false;
   let isSkippingOutputText = false;
   const ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT = [
     "web_search_call",
@@ -218,27 +218,30 @@ export const processMessages = async () => {
         );
         console.log("output_item.added item", item);
 
-        // if (ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)) {
-        //   isWaitingOutputIndexNext = true;
-        // }
+        if (ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)) {
+          isWaitingOutputIndexNext = true;
+        }
 
-        // if (!ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)) {
-        //   isWaitingOutputIndexNext = false;
-        // }
-        // if (
-        //   output_index > 0 &&
-        //   item.type === "message" &&
-        //   !isWaitingOutputIndexNext
-        // ) {
-        //   console.log(
-        //     "output_item.added output_index > 0 and item.type === message break",
-        //   );
-        //   isSkippingOutputText = true;
-        //   break;
-        // }
-        // console.log(
-        //   "output_item.added output_index > 0 and item.type === message break end",
-        // );
+        if (
+          output_index === 0 &&
+          !ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
+        ) {
+          isWaitingOutputIndexNext = false;
+        }
+        if (
+          output_index > 0 &&
+          item.type === "message" &&
+          !isWaitingOutputIndexNext
+        ) {
+          console.log(
+            "output_item.added output_index > 0 and item.type === message break",
+          );
+          isSkippingOutputText = true;
+          break;
+        }
+        console.log(
+          "output_item.added output_index > 0 and item.type === message break end",
+        );
         // New item coming in
         if (!item || !item.type) {
           break;
@@ -425,10 +428,6 @@ export const processMessages = async () => {
               confirmationText =
                 "I've stored all the pricing details. Should we proceed with the regulatory check? This will ensure our product complies with all necessary regulations.";
               break;
-            case "store_regulatory_check":
-              confirmationText =
-                "Great! All regulatory requirements are stored. Would you like to move to the final go-live phase? We'll review everything and set up the launch details.";
-              break;
             case "store_go_live":
               confirmationText =
                 "Everything is set up and ready to go! Would you like to generate a pdf document?";
@@ -443,11 +442,11 @@ export const processMessages = async () => {
               break;
             case "store_acceptance_criteria_secondary":
               confirmationText =
-                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to set up pricing?";
               break;
             case "store_pricing_secondary":
               confirmationText =
-                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the go live step?";
               break;
             case "store_regulatory_check_secondary":
               confirmationText =
