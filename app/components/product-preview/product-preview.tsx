@@ -99,8 +99,7 @@ export default function ProductPreview() {
             <Show when={!!complianceCheck}>
               <div className="flex flex-row justify-between py-3">
                 <div className="font-semibold">
-                  Regulatory Compliance Check ({compliancePercentage}%
-                  compliant)
+                  Policy Compliance Check ({compliancePercentage}% compliant)
                 </div>
                 <div className="font-semibold">
                   Compliant: {compliancePercentage}%

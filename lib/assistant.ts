@@ -218,17 +218,11 @@ export const processMessages = async () => {
         );
         console.log("output_item.added item", item);
 
-        // if (
-        //   output_index === 0 &&
-        //   ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
-        // ) {
+        // if (ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)) {
         //   isWaitingOutputIndexNext = true;
         // }
 
-        // if (
-        //   output_index === 0 &&
-        //   !ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)
-        // ) {
+        // if (!ITEM_TYPES_ALLOW_MULTIPLE_OUTPUT_TEXT.includes(item.type)) {
         //   isWaitingOutputIndexNext = false;
         // }
         // if (
@@ -441,23 +435,23 @@ export const processMessages = async () => {
               break;
             case "store_loan_parameters_secondary":
               confirmationText =
-                "Great! I've stored all the loan parameters and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or do you want to move on to the next step?";
+                "Great! I've stored all the loan parameters and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or do you want to move on to the next step?";
               break;
             case "do_compliance_check":
               confirmationText =
-                "I've checked the compliance for the current collected parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or should we back to the product configuration?";
+                "I've checked the compliance for the current collected parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or should we back to the product configuration?";
               break;
             case "store_acceptance_criteria_secondary":
               confirmationText =
-                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the acceptance criteria and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             case "store_pricing_secondary":
               confirmationText =
-                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the pricing details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             case "store_regulatory_check_secondary":
               confirmationText =
-                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Regulatory Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
               break;
             default:
               confirmationText = "";

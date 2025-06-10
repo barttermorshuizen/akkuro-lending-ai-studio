@@ -212,7 +212,10 @@ export const store_pricing = async (params: Partial<ProductModel>) => {
   }
 };
 
-export const store_regulatory_check = async (params: Partial<ProductModel>) => {
+export const store_regulatory_check = async (
+  params: Partial<ProductModel>,
+  skipStateUpdate = false,
+) => {
   try {
     console.log("store_regulatory_check params", params);
     const res = await storeRegulatoryCheck(params);
@@ -220,8 +223,12 @@ export const store_regulatory_check = async (params: Partial<ProductModel>) => {
 
     await set_product();
 
-    useConversationStore.getState().setConversationState(conversationStates[6]);
-    console.log("set conversation state to", conversationStates[6]);
+    if (!skipStateUpdate) {
+      useConversationStore
+        .getState()
+        .setConversationState(conversationStates[6]);
+      console.log("set conversation state to", conversationStates[6]);
+    }
 
     return { status: "success", requiresFollowUp: false };
   } catch (error) {
@@ -423,9 +430,6 @@ export const store_loan_parameters_secondary = async (
     await do_compliance_check(paramsToCheck);
     console.log("executed store_loan_parameters_secondary function");
 
-    useConversationStore.getState().setConversationState(conversationStates[3]);
-    console.log("set conversation state to", conversationStates[3]);
-
     return {
       status: "success",
       requiresFollowUp: false,
@@ -456,9 +460,6 @@ export const store_acceptance_criteria_secondary = async (
 
     await do_compliance_check(paramsToCheck);
     console.log("executed store_acceptance_criteria_secondary function");
-
-    useConversationStore.getState().setConversationState(conversationStates[4]);
-    console.log("set conversation state to", conversationStates[4]);
 
     return {
       status: "success",
@@ -491,9 +492,6 @@ export const store_pricing_secondary = async (
     await do_compliance_check(paramsToCheck);
     console.log("executed store_pricing_secondary function");
 
-    useConversationStore.getState().setConversationState(conversationStates[6]);
-    console.log("set conversation state to", conversationStates[6]);
-
     return {
       status: "success",
       requiresFollowUp: false,
@@ -515,7 +513,7 @@ export const store_regulatory_check_secondary = async (
 
     const { countryCode, parametersToCheck, ...rest } = params;
 
-    await store_regulatory_check(rest);
+    await store_regulatory_check(rest, true);
 
     const paramsToCheck = {
       countryCode,
@@ -523,10 +521,11 @@ export const store_regulatory_check_secondary = async (
     };
 
     await do_compliance_check(paramsToCheck);
-    console.log("executed store_regulatory_check_secondary function");
 
-    useConversationStore.getState().setConversationState(conversationStates[6]);
-    console.log("set conversation state to", conversationStates[6]);
+    useConversationStore.getState().setConversationState(conversationStates[2]);
+    console.log("set conversation state to", conversationStates[2]);
+
+    console.log("executed store_regulatory_check_secondary function");
 
     return {
       status: "success",

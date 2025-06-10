@@ -48,20 +48,6 @@ export const VALIDATION_INSTRUCTIONS: Record<string, string> = {
     - Consider local market definitions of customer segments and their legal protections
   `,
 
-  SetRegulatoryCheckAtEveryStep: `
-    ${COMMON_INSTRUCTIONS}
-    Regulatory Check Frequency Validation:
-    
-    - Standard options: "Include in each step" or "Only at the end"
-    - LEGAL REQUIREMENT: Some jurisdictions mandate step-by-step compliance validation
-    - Recommend based on:
-      • Geography: EU requires step-by-step for certain products; US may allow end-validation
-      • Industry: Highly regulated sectors (financial services, healthcare) benefit from step-by-step
-      • Product complexity: Complex products need continuous validation
-      • LEGAL MANDATE: Check if local law requires continuous compliance monitoring
-    - If user chooses "Only at the end" for high-risk scenarios, warn about potential compliance issues
-  `,
-
   LoanParameters: `
     ${COMMON_INSTRUCTIONS}
     Loan Parameters Validation (MANDATORY legal compliance for all parameters):

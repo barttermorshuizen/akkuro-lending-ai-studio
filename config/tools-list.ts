@@ -397,11 +397,31 @@ export const toolsListCompatableCheck = [
   },
   {
     name: "do_compliance_check",
-    description:
-      "Do the compliance check whether the current collected parameters at current state are compliant with the country regulations",
+    description: `Perform detailed compliance validation of loan parameters against country-specific regulations.
+      VALIDATION RULES:
+      1. NUMERIC RANGES: If paramValue is outside expectedRange, set isCompliant = false
+        - Example: paramValue="150%" vs expectedRange="100%-120%" → isCompliant = false
+      2. THRESHOLD VALUES: Check if values exceed legal/regulatory limits
+      3. BOOLEAN COMPLIANCE: Check mandatory requirements vs actual implementation
+      4. CONTEXTUAL VALIDATION: Consider regulatory framework type (legal vs policy)
+
+      COMPLIANCE DETERMINATION:
+      - Legal violations: MUST be isCompliant = false (can face penalties)
+      - Policy non-compliance: May be isCompliant = false (best practice deviation)
+      - Market recommendations: Use judgment based on severity
+
+      OUTPUT REQUIREMENTS:
+      - isCompliant: true/false based on strict regulatory evaluation
+      - notes: Explain WHY compliant/non-compliant with specific regulation reference
+      - expectedRange: Provide specific regulatory acceptable range/value
+
+      EXAMPLES:
+      ✅ Compliant: paramValue="10%" vs expectedRange="5%-15%" → isCompliant = true
+      ❌ Non-compliant: paramValue="150%" vs expectedRange="100%-120%" → isCompliant = false`,
     parameters: {
       ...compatibleCheckConfig,
     },
+    required: ["countryCode", "parametersToCheck"],
   },
   {
     name: "store_loan_parameters_secondary",
@@ -548,12 +568,33 @@ export const toolsListCompatableCheck = [
   },
   {
     name: "store_is_regulatory_check_at_every_step",
-    description: "Set the regulatory check to be included at every step",
+    description:
+      "Set the regulatory check to be included at every step and store the regulatory check information",
     parameters: {
       includeRegulatoryCheckFromInitialSetup: {
         type: "boolean",
         description:
           "Whether regulatory checks should be included at each step or only at the end",
+      },
+      regulatoryFramework: {
+        type: "string",
+        description: "Applicable regulatory framework",
+      },
+      requiredDocumentation: {
+        type: "string",
+        description: "Required documentation level",
+      },
+      complianceRequirements: {
+        type: "string",
+        description: "Specific compliance requirements",
+      },
+      riskDisclosure: {
+        type: "string",
+        description: "Risk disclosure requirements",
+      },
+      reportingObligations: {
+        type: "string",
+        description: "Reporting obligations",
       },
     },
   },

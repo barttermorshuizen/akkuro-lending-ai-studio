@@ -7,9 +7,13 @@ import { REGULATORY_CHECK_EXAMPLE } from "./example/regulatory-check";
 import { SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE } from "./example/set-regulatory-check-at-every-step";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 
+const FORMAT_OUTPUT_ITEM_TEXT =
+  "ALWAYS return one complete answer in output item text and then stop.";
+
 export const stateInstructions: Record<string, string> = {
   InitialSetup: `
     These instructions cover the InitialSetup state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
 
     The InitialSetup state identifies:
     - the targeted customer (e.g. SMEs, large enterprises, startups)
@@ -27,6 +31,7 @@ export const stateInstructions: Record<string, string> = {
     ${INTIAL_SET_UP_EXAMPLE}`,
   SetRegulatoryCheckAtEveryStep: `
     These instructions cover the SetRegulatoryCheckAtEveryStep state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
 
     Ask the user:
     "Would you like regulatory checks to be included at each step, or only at the end?"
@@ -38,24 +43,25 @@ export const stateInstructions: Record<string, string> = {
     1. Use web_search to find current regulatory frameworks for the target country/region
     2. Present the regulatory frameworks to the user with relevant links and information
     3. Ask: "These are the regulatory frameworks that will apply to your loan product. Do you agree to use these frameworks for compliance checking at each step?"
-    4. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.**
-    5. **ONLY IF** user explicitly says "yes", "agree", "confirm", "ok", "proceed" - then call store_is_regulatory_check_at_every_step tool
-    6. If user says "no" or wants modifications - allow modifications then ask for confirmation again
+    4. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.** 
+    5. If user says "no" or wants modifications - allow modifications then ask for confirmation again
+    6. If user explicitly confirms - then call store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to true
 
     **If user chooses "Only at the end":**
     1. Ask for confirmation: "You have chosen to perform regulatory checks only at the end. Do you confirm this choice?"
-    2. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.**
-    3. **ONLY IF** user explicitly confirms - then call store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to false
+    2. **STOP HERE. DO NOT CALL ANY TOOLS. WAIT FOR USER RESPONSE.** 
+    3. If user explicitly confirms - then call store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to false
 
     **CRITICAL RULES:**
-    - NEVER CALL store_is_regulatory_check_at_every_step IMMEDIATELY AFTER ASKING A QUESTION
+    - NEVER CALL store_is_regulatory_check_at_every_step IMMEDIATELY AFTER SEARCHING WEB
     - ALWAYS WAIT FOR USER'S EXPLICIT RESPONSE FIRST
     - ONLY CALL THE TOOL AFTER USER CONFIRMS
-    - IF UNCLEAR, ASK AGAIN FOR CONFIRMATION
+    - IF UNCLEAR, ASK AGAIN FOR CONFIRMATION, DO NOT CALL THE TOOL
 
     ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}`,
   LoanParameters: `
     These instructions cover the LoanParameters state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
     
     The LoanParameters state identifies:
     - loan amount range (minimum and maximum amounts)
@@ -73,6 +79,7 @@ export const stateInstructions: Record<string, string> = {
 
   AcceptanceCriteria: `
     These instructions cover the AcceptanceCriteria state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
 
     The AcceptanceCriteria state identifies:
     - collateral requirements
@@ -91,6 +98,7 @@ export const stateInstructions: Record<string, string> = {
 
   Pricing: `
     These instructions cover the Pricing state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
 
     The Pricing state identifies:
     - interest rate ranges
@@ -109,9 +117,8 @@ export const stateInstructions: Record<string, string> = {
 
   RegulatoryCheck: `
     These instructions cover the RegulatoryCheck state of the conversation.
-  
-    The RegulatoryCheck state identifies:
-    These instructions cover the RegulatoryCheck state of the conversation.
+    ${FORMAT_OUTPUT_ITEM_TEXT}
+    
     The RegulatoryCheck state identifies:
     - applicable regulatory frameworks
     - required documentation
@@ -129,7 +136,8 @@ export const stateInstructions: Record<string, string> = {
 
   GoLive: `
     These instructions cover the GoLive state of the conversation.
-   
+    ${FORMAT_OUTPUT_ITEM_TEXT}
+    
     The GoLive state:
     - reviews all product details
     - confirms completeness
