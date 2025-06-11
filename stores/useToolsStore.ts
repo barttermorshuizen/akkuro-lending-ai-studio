@@ -51,7 +51,12 @@ interface StoreState {
   setWebSearchConfig: (config: WebSearchConfig) => void;
   countryCode: string;
   setCountryCode: (code: string) => void;
+  isDisplayToolCallInChat: boolean;
+  setIsDisplayToolCallInChat: (isDisplayToolCallInChat: boolean) => void;
 }
+
+const defaultDisplayToolCallInChat =
+  process.env.NODE_ENV === "development" ? true : false;
 
 const useToolsStore = create<StoreState>()(
   persist(
@@ -97,6 +102,9 @@ const useToolsStore = create<StoreState>()(
               : undefined,
           },
         }),
+      isDisplayToolCallInChat: defaultDisplayToolCallInChat,
+      setIsDisplayToolCallInChat: (isDisplayToolCallInChat) =>
+        set({ isDisplayToolCallInChat }),
     }),
     {
       name: "tools-store",

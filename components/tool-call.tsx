@@ -2,18 +2,15 @@
 
 import React from "react";
 
-import KuroChatIcon from "@/app/assets/icons/KuroChatIcon";
-import PDFIcon from "@/app/assets/icons/PDFIcon";
 import { ToolCallItem } from "@/lib/assistant";
-import {
-  EsgDeclarationPdfDataModel,
-  EuTaxCompliancePdfDataModel,
-  ISOCompliancePdfDataModel,
-} from "@/types/pdf-data-model";
-import { BookOpenText, Clock, DownloadIcon, Globe, Zap } from "lucide-react";
+import { pdfToolCallTypeMap } from "@/lib/pdf/pdf-handling";
+import useToolsStore from "@/stores/useToolsStore";
+import { BookOpenText, Clock, Globe, Zap } from "lucide-react";
 import { Prism, SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Message from "./message";
+import GeneratePDFCell from "./tools/generate-pdf";
+import KuroProcess from "./tools/kuro-process";
 
 interface ToolCallProps {
   toolCall: ToolCallItem;
@@ -21,6 +18,7 @@ interface ToolCallProps {
 
 const SyntaxHighlighter =
   Prism as unknown as typeof React.Component<SyntaxHighlighterProps>;
+
 function ApiCallCell({ toolCall }: ToolCallProps) {
   const getErrorStyle = (output: string) => {
     try {
@@ -151,114 +149,22 @@ function WebSearchCell({ toolCall }: ToolCallProps) {
   );
 }
 
-const GeneratingCell = () => {
-  return (
-    <div className="text-sm font-medium text-red-600">Generating PDF...</div>
-  );
-};
-
-const toolCallTypeMap = {
-  generate_iso_compliance_pdf: "iso_compliance",
-  generate_eu_tax_compliance_pdf: "eu_tax_compliance",
-  generate_esg_declaration_pdf: "esg_declaration",
-} as const;
-
 export default function ToolCall({ toolCall }: ToolCallProps) {
-  const handleDownloadPdf = async (
-    product: any,
-    type: "iso_compliance" | "eu_tax_compliance" | "esg_declaration",
-    fileName: string,
-  ) => {
-    const res = await fetch("/api/pdf", {
-      method: "POST",
-      body: JSON.stringify({ ...product, type }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const getPdfFileName = (
-    toolCallName: keyof typeof toolCallTypeMap,
-    product:
-      | ISOCompliancePdfDataModel
-      | EuTaxCompliancePdfDataModel
-      | EsgDeclarationPdfDataModel,
-  ) => {
-    if (toolCallName === "generate_iso_compliance_pdf") {
-      return `RegulatoryCompliance_ISO_Configuration_${product.productName}.pdf`;
-    } else if (toolCallName === "generate_eu_tax_compliance_pdf") {
-      return `RegulatoryCompliance_EU_Tax_Configuration_${product.productName}.pdf`;
-    } else if (toolCallName === "generate_esg_declaration_pdf") {
-      return `RegulatoryCompliance_ESG_Declaration_${product.productName}.pdf`;
-    }
-    return "";
-  };
+  const { isDisplayToolCallInChat } = useToolsStore();
 
   return (
-    <div className="flex justify-start pt-2">
+    <div className="flex justify-start">
       {(() => {
         switch (toolCall.tool_type) {
           case "function_call":
-            if (Object.keys(toolCallTypeMap).includes(toolCall.name || "")) {
-              return (
-                <div className="flex flex-col gap-2">
-                  {toolCall.status === "completed" ? (
-                    <>
-                      <div className="text-sm font-medium text-red-600">
-                        {`Generated PDF`}
-                      </div>
-                      <div className={`font-bold text-[#ff5630]`}>
-                        <div className="flex gap-2 pb-1 items-center flex-row">
-                          <KuroChatIcon />
-                          <span className="text-[#BD00C4] font-bold">Kuro</span>
-                        </div>
-                      </div>
-                      <button
-                        className="flex gap-4 border text-start rounded-lg bg-white border-gray-200 px-4 py-3 hover:bg-gray-100 transition-colors"
-                        onClick={() =>
-                          handleDownloadPdf(
-                            toolCall.parsedArguments,
-                            toolCallTypeMap[
-                              toolCall.name as keyof typeof toolCallTypeMap
-                            ],
-                            getPdfFileName(
-                              toolCall.name as keyof typeof toolCallTypeMap,
-                              toolCall.parsedArguments as
-                                | ISOCompliancePdfDataModel
-                                | EuTaxCompliancePdfDataModel
-                                | EsgDeclarationPdfDataModel,
-                            ),
-                          )
-                        }
-                      >
-                        <PDFIcon className="size-4" />
-                        <div className="text-sm font-medium text-gray-700">
-                          {getPdfFileName(
-                            toolCall.name as keyof typeof toolCallTypeMap,
-                            toolCall.parsedArguments as
-                              | ISOCompliancePdfDataModel
-                              | EuTaxCompliancePdfDataModel
-                              | EsgDeclarationPdfDataModel,
-                          )}
-                        </div>
-                        <DownloadIcon className="size-4 text-gray-700" />
-                      </button>
-                    </>
-                  ) : (
-                    <GeneratingCell />
-                  )}
-                </div>
-              );
+            if (Object.keys(pdfToolCallTypeMap).includes(toolCall.name || "")) {
+              return <GeneratePDFCell toolCall={toolCall} />;
             }
-            if (process.env.NODE_ENV === "development" && toolCall.name) {
+            if (isDisplayToolCallInChat && toolCall.name) {
               return <ApiCallCell toolCall={toolCall} />;
+            }
+            if (!isDisplayToolCallInChat && toolCall.name) {
+              return <KuroProcess toolCall={toolCall} />;
             }
             return <Message message={toolCall} />;
           case "file_search_call":

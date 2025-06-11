@@ -5,6 +5,7 @@ import { useChat } from "@/hooks/useChat";
 import { Item } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
 import { useTextToVoiceToggleStore } from "@/stores/useTextToVoiceToggleStore";
+import useToolsStore from "@/stores/useToolsStore";
 import React from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -48,6 +49,8 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
   const { isProcessingNewMessage } = useConversationStore();
   const { isTextToVoiceEnabled, setIsTextToVoiceEnabled } =
     useTextToVoiceToggleStore();
+  const { isDisplayToolCallInChat, setIsDisplayToolCallInChat } =
+    useToolsStore();
 
   return (
     <div className={`flex flex-1 h-full flex-col`}>
@@ -164,18 +167,33 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
           </div>
         </div>
         <div className="flex items-center justify-between gap-2 pt-2 w-full">
-          <div className="flex items-center gap-2 pl-4">
-            <Switch
-              id="text-to-voice"
-              checked={isTextToVoiceEnabled}
-              onCheckedChange={setIsTextToVoiceEnabled}
-            />
-            <Label
-              htmlFor="text-to-voice"
-              className="text-[#9e9791] pt-2 text-sm"
-            >
-              Text to Voice
-            </Label>
+          <div>
+            <div className="flex items-center gap-2 pl-4">
+              <Switch
+                id="text-to-voice"
+                checked={isTextToVoiceEnabled}
+                onCheckedChange={setIsTextToVoiceEnabled}
+              />
+              <Label
+                htmlFor="text-to-voice"
+                className="text-[#9e9791] pt-2 text-sm"
+              >
+                Text to Voice
+              </Label>
+            </div>
+            <div className="flex items-center gap-2 pl-4">
+              <Switch
+                id="tool-call-shown-in-chat"
+                checked={isDisplayToolCallInChat}
+                onCheckedChange={setIsDisplayToolCallInChat}
+              />
+              <Label
+                htmlFor="tool-call-shown-in-chat"
+                className="text-[#9e9791] pt-2 text-sm"
+              >
+                Display Tool Calls
+              </Label>
+            </div>
           </div>
           <div className="text-[#9e9791] pt-2 text-sm flex-1 text-center">
             AI can make mistakes. Please check your response.

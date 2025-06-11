@@ -59,7 +59,21 @@ const Message: React.FC<MessageProps> = ({ message, onChoiceSelect }) => {
           }`}
         >
           <div className="markdown-content [&>*]:block [&>*]:mb-2 last:[&>*]:mb-0">
-            <ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                a: ({ node, ...props }) => {
+                  return (
+                    <a
+                      {...props}
+                      className="text-gray-500 underline hover:text-gray-700"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  );
+                },
+              }}
+            >
               {text ? text : "Akkuro is thinking..."}
             </ReactMarkdown>
           </div>
