@@ -414,7 +414,7 @@ export const processMessages = async () => {
               break;
             case "store_is_regulatory_check_at_every_step":
               confirmationText =
-                "Perfect! I've remembered your choice. Should we move on to defining the loan parameters? This is where we'll set up who can qualify for this loan.";
+                "Perfect! I've remembered your choice. Should we move on to defining the loan parameters? This is where we’ll set the key terms like the loan amount, interest type, and repayment schedule.";
               break;
             case "store_loan_parameters":
               confirmationText =
@@ -426,7 +426,7 @@ export const processMessages = async () => {
               break;
             case "store_pricing":
               confirmationText =
-                "I've stored all the pricing details. Should we proceed with the regulatory check? This will ensure our product complies with all necessary regulations.";
+                "I've stored all the pricing details. Should we proceed with the regulatory check set up?";
               break;
             case "store_go_live":
               confirmationText =
@@ -450,7 +450,7 @@ export const processMessages = async () => {
               break;
             case "store_regulatory_check_secondary":
               confirmationText =
-                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or we go to the next step?";
+                "Great! I've stored all the regulatory check details and checked the compliance for the product parameters. You can see the results in the Policy Compliance Check section. Is there anything else you'd like me to do or should we go to the next step?";
               break;
             default:
               confirmationText = "";
