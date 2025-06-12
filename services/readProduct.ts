@@ -69,13 +69,13 @@ export const readProduct = async (): Promise<ProductModel> => {
           "InitialSetup") as ProductState,
 
         // Loan Parameters
-        loanAmountMin: parseNumber(row[COLUMNS.loanAmountMin]),
-        loanAmountMax: parseNumber(row[COLUMNS.loanAmountMax]),
+        loanAmountMin: row[COLUMNS.loanAmountMin],
+        loanAmountMax: row[COLUMNS.loanAmountMax],
         interestRateType: row[COLUMNS.interestRateType] as
           | "fixed"
           | "variable"
           | undefined,
-        repaymentTerm: parseNumber(row[COLUMNS.repaymentTerm]),
+        repaymentTerm: row[COLUMNS.repaymentTerm],
         repaymentFrequency: row[COLUMNS.repaymentFrequency] as
           | "monthly"
           | "quarterly"
@@ -91,12 +91,12 @@ export const readProduct = async (): Promise<ProductModel> => {
         industrySpecificCriteria: row[COLUMNS.industrySpecificCriteria],
 
         // Pricing
-        interestRateMin: parseNumber(row[COLUMNS.interestRateMin]),
-        interestRateMax: parseNumber(row[COLUMNS.interestRateMax]),
+        interestRateMin: row[COLUMNS.interestRateMin],
+        interestRateMax: row[COLUMNS.interestRateMax],
         originationFee: row[COLUMNS.originationFee],
         servicingFee: row[COLUMNS.servicingFee],
         latePaymentFee: row[COLUMNS.latePaymentFee],
-        discount: parseNumber(row[COLUMNS.discount]),
+        discount: row[COLUMNS.discount],
         earlyRepaymentPenalty: row[COLUMNS.earlyRepaymentPenalty],
 
         // Regulatory

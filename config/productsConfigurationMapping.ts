@@ -96,16 +96,8 @@ export const transformProductModelToProductConfigurationDTO = (
     countryCode: productModel.countryCode,
     currentState: productModel.currentState,
 
-    loanAmountMin: productModel.loanAmountMin
-      ? productModel.loanAmountMin?.toString().includes("€")
-        ? productModel.loanAmountMin?.toString()
-        : "€" + productModel.loanAmountMin?.toString()
-      : "",
-    loanAmountMax: productModel.loanAmountMax
-      ? productModel.loanAmountMax?.toString().includes("€")
-        ? productModel.loanAmountMax?.toString()
-        : "€" + productModel.loanAmountMax?.toString()
-      : "",
+    loanAmountMin: productModel.loanAmountMin,
+    loanAmountMax: productModel.loanAmountMax,
     interestRateType: productModel.interestRateType,
     repaymentTerm: productModel.repaymentTerm?.toString(),
     repaymentFrequency: productModel.repaymentFrequency,
@@ -117,32 +109,12 @@ export const transformProductModelToProductConfigurationDTO = (
     financialRatios: productModel.financialRatios,
     industrySpecificCriteria: productModel.industrySpecificCriteria,
 
-    interestRateMin: productModel.interestRateMin
-      ? productModel.interestRateMin?.toString().includes("%")
-        ? productModel.interestRateMin?.toString()
-        : productModel.interestRateMin?.toString() + "%"
-      : "",
-    interestRateMax: productModel.interestRateMax
-      ? productModel.interestRateMax?.toString().includes("%")
-        ? productModel.interestRateMax?.toString()
-        : productModel.interestRateMax?.toString() + "%"
-      : "",
-    originationFee: productModel.originationFee
-      ? productModel.originationFee?.toString().includes("€")
-        ? productModel.originationFee?.toString()
-        : productModel.originationFee?.toString() + "€"
-      : "",
-    servicingFee: productModel.servicingFee
-      ? productModel.servicingFee?.toString().includes("€")
-        ? productModel.servicingFee?.toString()
-        : productModel.servicingFee?.toString() + "€"
-      : "",
-    latePaymentFee: productModel.latePaymentFee
-      ? productModel.latePaymentFee?.toString().includes("€")
-        ? productModel.latePaymentFee?.toString()
-        : productModel.latePaymentFee?.toString() + "€"
-      : "",
-    discount: productModel.discount?.toString(),
+    interestRateMin: productModel.interestRateMin,
+    interestRateMax: productModel.interestRateMax,
+    originationFee: productModel.originationFee,
+    servicingFee: productModel.servicingFee,
+    latePaymentFee: productModel.latePaymentFee,
+    discount: productModel.discount,
     earlyRepaymentPenalty: productModel.earlyRepaymentPenalty,
 
     regulatoryFramework: productModel.regulatoryFramework,

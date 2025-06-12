@@ -11,10 +11,10 @@ export interface ProductModel {
   currentState: ProductState;
 
   // Loan Parameters
-  loanAmountMin?: number;
-  loanAmountMax?: number;
+  loanAmountMin?: string;
+  loanAmountMax?: string;
   interestRateType?: "fixed" | "variable";
-  repaymentTerm?: number;
+  repaymentTerm?: string;
   repaymentFrequency?: "monthly" | "quarterly" | "annually";
   earlyRepaymentConditions?: string;
 
@@ -26,12 +26,12 @@ export interface ProductModel {
   industrySpecificCriteria?: string;
 
   // Pricing
-  interestRateMin?: number;
-  interestRateMax?: number;
+  interestRateMin?: string;
+  interestRateMax?: string;
   originationFee?: string;
   servicingFee?: string;
   latePaymentFee?: string;
-  discount?: number;
+  discount?: string;
   earlyRepaymentPenalty?: string;
 
   // Regulatory

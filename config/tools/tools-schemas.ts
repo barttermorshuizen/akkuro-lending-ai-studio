@@ -205,19 +205,19 @@ const STORE_LOAN_PARAMETERS_TOOL_CONFIG = {
   description: "Store loan parameters information",
   parameters: {
     loanAmountMin: {
-      type: "number",
-      description: "Minimum loan amount",
+      type: "string",
+      description: "Minimum loan amount, include the user's country's currency",
     },
     loanAmountMax: {
-      type: "number",
-      description: "Maximum loan amount",
+      type: "string",
+      description: "Maximum loan amount, include the user's country's currency",
     },
     interestRateType: {
       type: "string",
       description: "Type of interest rate (fixed or variable)",
     },
     repaymentTerm: {
-      type: "number",
+      type: "string",
       description: "Loan repayment term in months",
     },
     repaymentFrequency: {
@@ -263,12 +263,12 @@ const STORE_PRICING_TOOL_CONFIG = {
   description: "Store pricing information",
   parameters: {
     interestRateMin: {
-      type: "number",
-      description: "Minimum interest rate",
+      type: "string",
+      description: "Minimum interest rate, add suffix %",
     },
     interestRateMax: {
-      type: "number",
-      description: "Maximum interest rate",
+      type: "string",
+      description: "Maximum interest rate, add suffix %",
     },
     originationFee: {
       type: "string",
@@ -283,8 +283,8 @@ const STORE_PRICING_TOOL_CONFIG = {
       description: "Late payment fee structure",
     },
     discount: {
-      type: "number",
-      description: "Discount percentage for the product",
+      type: "string",
+      description: "Discount percentage for the product, add suffix %",
     },
     earlyRepaymentPenalty: {
       type: "string",
