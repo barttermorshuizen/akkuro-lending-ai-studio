@@ -209,7 +209,6 @@ Handles speech recognition for voice commands.
 interface VoiceInputProps {
   onTranscript: (text: string) => void;
   isListening?: boolean;
-  className?: string;
 }
 ```
 
@@ -421,20 +420,7 @@ Screen components represent full-page interfaces for specific workflows.
 
 ### Product Configuration Screens (`components/screens/`)
 
-#### Product Screen Component (`components/product-screen.tsx`)
-
 Main interface for product configuration workflow.
-
-**Props Interface:**
-
-```typescript
-interface ProductScreenProps {
-  step: number;
-  onNext: () => void;
-  onPrevious: () => void;
-  onComplete: () => void;
-}
-```
 
 **Workflow Steps:**
 
@@ -463,17 +449,6 @@ Tool components handle specific AI tool integrations.
 ### Web Search Config (`components/websearch-config.tsx`)
 
 Configuration interface for web search functionality.
-
-**Props Interface:**
-
-```typescript
-interface WebSearchConfigProps {
-  enabled: boolean;
-  onToggle: (enabled: boolean) => void;
-  settings: WebSearchSettings;
-  onSettingsChange: (settings: WebSearchSettings) => void;
-}
-```
 
 ### Panel Config Component (`components/panel-config.tsx`)
 

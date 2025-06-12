@@ -105,7 +105,7 @@ GOOGLE_SHEET_ID=your_google_sheet_id
 2. **Install dependencies**:
 
    ```bash
-   (optional - if you have not installed yarn yet) npm install -g yarn 
+   (optional - if you have not installed yarn yet) npm install -g yarn
    yarn install
    ```
 
@@ -259,7 +259,7 @@ All product data is stored in Google Sheets for easy access and collaboration:
 
 #### Services:
 
-- `storeAll.ts` - Bulk data operations
+- `storeAll.ts` - Bulk data operations (`deprecated` - use for testing)
 - `storeInitialSetup.ts` - Initial product setup
 - `storeLoanParameters.ts` - Loan configuration
 - `storePricing.ts` - Pricing setup
@@ -279,7 +279,7 @@ Multiple OpenAI services are integrated:
 
 #### Key Endpoints:
 
-- `/api/responses/` - Main conversation handling
+- `/api/responses/` - Main conversation handling (`deprecated` let use `turn_response`)
 - `/api/turn_response/` - Turn-based responses
 - `/api/openai-tts/` - Text-to-speech conversion
 - `/api/vector_stores/` - File search setup
@@ -434,8 +434,6 @@ Ensure all environment variables are properly configured in the production envir
 
 - Monitor OpenAI API usage and rate limits
 - Check for memory leaks in state management
-- Optimize image and asset loading
-- Review database query efficiency
 
 ---
 
