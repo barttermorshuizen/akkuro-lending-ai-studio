@@ -303,10 +303,10 @@ Handles file uploads for vector store integration.
 
 ```typescript
 interface FileUploadProps {
-  onUpload: (files: File[]) => void;
-  acceptedTypes?: string[];
-  maxSize?: number;
-  multiple?: boolean;
+  vectorStoreId?: string;
+  vectorStoreName?: string;
+  onAddStore: (id: string) => void;
+  onUnlinkStore: () => void;
 }
 ```
 
@@ -330,16 +330,6 @@ interface FileUploadProps {
 #### File Search Setup Component (`components/file-search-setup.tsx`)
 
 Configuration interface for vector store setup.
-
-**Props Interface:**
-
-```typescript
-interface FileSearchSetupProps {
-  vectorStores: VectorStore[];
-  onCreateStore: (name: string, files: string[]) => void;
-  onDeleteStore: (storeId: string) => void;
-}
-```
 
 ## UI Components
 
@@ -426,9 +416,9 @@ Main interface for product configuration workflow.
 
 1. Initial Setup
 2. Loan Parameters
-3. Pricing Configuration
-4. Regulatory Checks
-5. Acceptance Criteria
+3. Acceptance Criteria
+4. Pricing Configuration
+5. Regulatory Checks
 6. Go Live Process
 
 ### Conditional Components (`components/condition/`)
