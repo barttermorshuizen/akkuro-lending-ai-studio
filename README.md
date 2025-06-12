@@ -18,6 +18,49 @@ Features:
 
 This app is meant to be used as a starting point to build a conversational assistant that you can customize to your needs.
 
+## Documentation
+
+For comprehensive information about developing, configuring, and maintaining this project, please refer to our detailed documentation:
+
+### 📚 Complete Documentation Set
+
+- **[Development Guide](./DEVELOPMENT.md)** - Main development documentation
+  - Project overview and architecture
+  - Development setup and installation
+  - Project structure and core components
+  - Services, APIs, and state management
+  - Development workflow and best practices
+  
+- **[API Documentation](./API.md)** - Complete API reference
+  - OpenAI integration endpoints
+  - Product management APIs
+  - File operations and vector stores
+  - Error handling and rate limits
+  
+- **[Component Documentation](./COMPONENTS.md)** - UI architecture guide
+  - Component hierarchy and design principles
+  - Core components (Chat, Voice, Tools)
+  - UI components and screen components
+  - State integration and testing
+  
+- **[Configuration Guide](./CONFIGURATION.md)** - Environment and setup
+  - Environment variables and API keys
+  - OpenAI and Google Sheets configuration
+  - Development and production setup
+  - Docker configuration and security
+  
+- **[Deployment Guide](./DEPLOYMENT.md)** - Production deployment
+  - Antagonist hosting deployment steps
+  - Environment configuration
+  - Process management and troubleshooting
+
+### 🚀 Quick Start Links
+
+- [Installation & Setup](./DEVELOPMENT.md#development-setup) - Get started in minutes
+- [Environment Configuration](./CONFIGURATION.md#environment-variables) - Required API keys and settings
+- [Project Structure](./DEVELOPMENT.md#project-structure) - Understand the codebase layout
+- [Troubleshooting](./DEVELOPMENT.md#troubleshooting) - Common issues and solutions
+
 ## How to use
 
 1. **Set up the OpenAI API:**
@@ -48,13 +91,13 @@ This app is meant to be used as a starting point to build a conversational assis
    Run in the project root:
 
    ```bash
-   npm install
+   yarn install
    ```
 
 5. **Run the app:**
 
    ```bash
-   npm run dev
+   yarn run dev
    ```
 
    The app will be available at [`http://localhost:3000`](http://localhost:3000).
@@ -62,6 +105,8 @@ This app is meant to be used as a starting point to build a conversational assis
 ## Contributing
 
 You are welcome to open issues or submit PRs to improve this app, however, please note that we may not review all suggestions.
+
+For detailed contributing guidelines, see our [Development Guide](./DEVELOPMENT.md#contributing).
 
 ## License
 

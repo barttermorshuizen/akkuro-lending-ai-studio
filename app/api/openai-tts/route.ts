@@ -1,3 +1,4 @@
+import { OPENAI_CONFIG } from "@/config/openai";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "tts-1-hd",
+        model: OPENAI_CONFIG.models.tts,
         voice,
         input: text,
         response_format: "mp3",

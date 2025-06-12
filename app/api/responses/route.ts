@@ -1,13 +1,17 @@
-import { MODEL } from "@/config/constants";
+import { OPENAI_CONFIG } from "@/config/openai";
+import { handleTool } from "@/lib/tools/tools-handling";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { handleTool } from "@/lib/tools/tools-handling";
 
 export async function POST(request: Request) {
   try {
     const { messages, tools } = await request.json();
     // console.log("Received messages:", JSON.stringify(messages, null, 2));
-    console.log("OpenAI request payload:", { model: MODEL, messages, tools });
+    console.log("OpenAI request payload:", {
+      model: OPENAI_CONFIG.models.chat,
+      messages,
+      tools,
+    });
     // Manual function_call handling
     const lastMsg = (messages as any[])[messages.length - 1];
     if (lastMsg.role === "assistant" && (lastMsg as any).function_call) {
@@ -57,14 +61,15 @@ export async function POST(request: Request) {
     const openai = new OpenAI();
 
     const events = await openai.responses.create({
-      model: MODEL,
+      model: OPENAI_CONFIG.models.chat,
       input: messages.filter(
         (msg: any) =>
           !msg.type || !["function_call", "tool"].includes(msg.type),
       ),
       tools,
-      stream: true,
+      stream: OPENAI_CONFIG.features.streaming || true,
       parallel_tool_calls: false,
+      temperature: OPENAI_CONFIG.settings.temperature,
     });
 
     // Create a ReadableStream that emits SSE data

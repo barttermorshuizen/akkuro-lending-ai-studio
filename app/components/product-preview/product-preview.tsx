@@ -12,10 +12,9 @@ import ProductReviewSection from "./product-review-section";
 import Show from "@/components/condition/show";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { formatNumber } from "@/lib/formatNumber";
 import { useComplianceCheckStore } from "@/stores/useComplianceCheckStore";
 import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
-import { useMemo } from "react";
+import ComplianceCheckSection from "./compliance-check-section";
 
 export default function ProductPreview() {
   const {
@@ -46,18 +45,6 @@ export default function ProductPreview() {
   const handleApplyToConfig = () => {
     window.open("/studio", "_blank");
   };
-
-  const { complianceCheck } = useComplianceCheckStore();
-
-  const compliancePercentage = useMemo(() => {
-    if (!complianceCheck) return 0;
-    const compliantCount = complianceCheck.parametersToCheck.filter(
-      (check) => check.isCompliant,
-    ).length;
-    return Math.round(
-      (compliantCount / complianceCheck.parametersToCheck.length) * 100,
-    );
-  }, [complianceCheck]);
 
   return (
     <div className="flex-1 h-full w-full px-6 py-4">
@@ -95,52 +82,10 @@ export default function ProductPreview() {
             </Show>
             <ProductReviewSection data={goLive} title="Go Live" />
           </div>
-          <div className="flex flex-col gap-2 w-full">
-            <Show when={!!complianceCheck}>
-              <div className="flex flex-row justify-between py-3">
-                <div className="font-semibold">
-                  Policy Compliance Check ({compliancePercentage}% compliant)
-                </div>
-                <div className="font-semibold">
-                  Compliant: {compliancePercentage}%
-                </div>
-              </div>
-            </Show>
-            <div className="flex flex-col max-h-[120px] overflow-y-auto gap-2">
-              {complianceCheck?.parametersToCheck.map((check, index) => (
-                <div
-                  className={`flex flex-row justify-between gap-2 border rounded-xl py-2 px-4 ${
-                    check.isCompliant
-                      ? "bg-[#EBFAEC] border-[#B8E4BB] text-[#1C6A2B]"
-                      : "bg-[#FFEEEE] border-[#EDC0C0] text-[#B13635]"
-                  }`}
-                  key={index}
-                >
-                  <div>
-                    {check.productParamDescription} ({check.expectedRange})
-                  </div>
-                  <div className="text-right">
-                    {check.isCompliant ? (
-                      <span className="flex flex-row gap-2">
-                        Compliant ({formatNumber(check.paramValue)})
-                      </span>
-                    ) : (
-                      <span className="flex flex-row gap-2 text-wrap">
-                        {check.notes} ({formatNumber(check.paramValue)})
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ComplianceCheckSection />
           <div className="flex flex-row items-center gap-2 py-4">
             <Switch
-              onCheckedChange={() => {
-                setIncludeRegulatoryCheckFromInitialSetup(
-                  !includeRegulatoryCheckFromInitialSetup,
-                );
-              }}
+              onCheckedChange={setIncludeRegulatoryCheckFromInitialSetup}
               id="regulatory-compliance"
               checked={includeRegulatoryCheckFromInitialSetup}
             />

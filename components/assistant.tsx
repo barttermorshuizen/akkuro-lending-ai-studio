@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
-import Chat from "./chat";
-import useConversationStore from "@/stores/useConversationStore";
 import { Item, processMessages } from "@/lib/assistant";
-import ProductScreen from "./product-screen";
-import Header from "./header";
-import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 import { listenToProductUpdates } from "@/lib/productSyncChannel";
+import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
+import useConversationStore from "@/stores/useConversationStore";
+import { useEffect } from "react";
+import Chat from "../app/components/chat";
+import Header from "./header";
+import ProductScreen from "./product-screen";
 
 export default function Assistant() {
   const { chatMessages, addConversationItem, addChatMessage } =

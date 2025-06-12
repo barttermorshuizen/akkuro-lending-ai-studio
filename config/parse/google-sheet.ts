@@ -1,4 +1,7 @@
-// Column indices for each field in the spreadsheet
+/** Columns mapping:
+ * The key is the name of the field in the product model (ProductModel)
+ * The value is the column index in the spreadsheet
+ */
 export const COLUMNS = {
   productName: 0,
   targetCustomer: 1,

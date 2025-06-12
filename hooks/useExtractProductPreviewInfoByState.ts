@@ -1,5 +1,9 @@
 import useConfiguringProductStore from "@/stores/useConfiguringProductStore";
 
+/**
+ * Custom hook to extract the product preview information by state
+ * @returns Object containing the product preview information
+ */
 export default function useExtractProductPreviewInfoByState() {
   const { product } = useConfiguringProductStore();
 

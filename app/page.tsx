@@ -1,7 +1,7 @@
 "use client";
 
+import Chat from "@/app/components/chat";
 import ProductPreview from "@/app/components/product-preview/product-preview";
-import Chat from "@/components/chat";
 import Show from "@/components/condition/show";
 import SimulateProductConfirmPopUp from "@/components/simulate-product-confirm-pop-up";
 import {

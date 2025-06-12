@@ -10,12 +10,12 @@ import React from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import Annotations from "./annotations";
-import Message from "./message";
-import ToolCall from "./tool-call";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
-import VoiceInput from "./voice-input";
+import Annotations from "../../components/annotations";
+import Message from "../../components/message";
+import ToolCall from "../../components/tool-call";
+import { Label } from "../../components/ui/label";
+import { Switch } from "../../components/ui/switch";
+import VoiceInput from "../../components/voice-input";
 
 interface ChatProps {
   items: Item[];
@@ -51,6 +51,25 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
     useTextToVoiceToggleStore();
   const { isDisplayToolCallInChat, setIsDisplayToolCallInChat } =
     useToolsStore();
+
+  const handlePlayAudio = () => {
+    if (!browserSupportsSpeechRecognition) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
+    if (!isMicrophoneAvailable) {
+      alert("Please enable microphone access in your browser settings.");
+      return;
+    }
+    if (listening) {
+      SpeechRecognition.stopListening();
+      resetTranscript();
+    } else {
+      SpeechRecognition.startListening({
+        continuous: true,
+      });
+    }
+  };
 
   return (
     <div className={`flex flex-1 h-full flex-col`}>
@@ -96,31 +115,7 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
           <div className="flex w-full items-center pb-4 md:pb-0">
             <div className="flex w-full flex-col gap-1.5 rounded-lg pr-2.5 pl-1.5 transition-colors bg-white border border-stone-200 shadow-sm">
               <div className="flex items-center gap-1.5 md:gap-2 pl-4">
-                <VoiceInput
-                  listening={listening}
-                  onClick={() => {
-                    if (!browserSupportsSpeechRecognition) {
-                      alert(
-                        "Your browser does not support speech recognition.",
-                      );
-                      return;
-                    }
-                    if (!isMicrophoneAvailable) {
-                      alert(
-                        "Please enable microphone access in your browser settings.",
-                      );
-                      return;
-                    }
-                    if (listening) {
-                      SpeechRecognition.stopListening();
-                      resetTranscript();
-                    } else {
-                      SpeechRecognition.startListening({
-                        continuous: true,
-                      });
-                    }
-                  }}
-                />
+                <VoiceInput listening={listening} onClick={handlePlayAudio} />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <textarea
                     readOnly={listening}

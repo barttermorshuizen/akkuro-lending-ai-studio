@@ -1,5 +1,5 @@
 import { Item } from "@/lib/assistant";
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseChatProps {
   onSendMessage: (message: string) => void;
@@ -9,6 +9,22 @@ interface UseChatProps {
   transcript: string;
 }
 
+/**
+ * Custom hook to manage the chat conversation
+ * @param onSendMessage - Function to send message to the assistant
+ * @param items - Array of chat items
+ * @param listening - Whether the user is listening to the microphone
+ * @param resetTranscript - Function to reset the transcript
+ * @param transcript - The transcript of the user's voice input
+ * @returns Object containing the following properties:
+ * - itemsEndRef: Ref to the end of the items container
+ * - textareaRef: Ref to the textarea element
+ * - isComposing: Whether the user is composing a message
+ * - handleVoiceTranscript: Function to handle voice transcript
+ * - handleKeyDown: Function to handle key down event
+ * - setIsComposing: Function to set the composing state
+ * - resetMessage: Function to reset the message
+ */
 export const useChat = ({
   onSendMessage,
   items,
