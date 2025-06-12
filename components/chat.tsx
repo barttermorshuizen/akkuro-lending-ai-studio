@@ -176,7 +176,7 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
               />
               <Label
                 htmlFor="text-to-voice"
-                className="text-[#9e9791] pt-2 text-sm"
+                className="text-[#9e9791] py-2 text-sm"
               >
                 Text to Voice
               </Label>
@@ -189,7 +189,7 @@ const Chat = ({ items, onSendMessage }: ChatProps) => {
               />
               <Label
                 htmlFor="tool-call-shown-in-chat"
-                className="text-[#9e9791] pt-2 text-sm"
+                className="text-[#9e9791] py-2 text-sm"
               >
                 Display Tool Calls
               </Label>

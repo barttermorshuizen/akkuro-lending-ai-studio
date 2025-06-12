@@ -46,6 +46,9 @@ export interface ToolCallItem {
 
 export type Item = MessageItem | ToolCallItem;
 
+const NOT_FOUND_ERROR_MESSAGE =
+  "There was an error from OpenAI. Please try again later.";
+
 export const handleTurn = async (
   messages: any[],
   tools: any[],
@@ -79,7 +82,7 @@ export const handleTurn = async (
         const errorHelperMessage =
           OPENAI_ERROR_HELPER_MESSAGES[
             errorData?.errorCode as keyof typeof OPENAI_ERROR_HELPER_MESSAGES
-          ];
+          ] || NOT_FOUND_ERROR_MESSAGE;
 
         const { chatMessages, setChatMessages } =
           useConversationStore.getState();
