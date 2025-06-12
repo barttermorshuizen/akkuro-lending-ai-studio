@@ -137,11 +137,11 @@ export const stateInstructions: Record<string, string> = {
 
     Example confirmation flow:
     "📋 **Regulatory Framework Summary:**
-    • Framework: [regulatory framework]
-    • Documentation: [documentation level]
-    • Compliance: [compliance requirements]
-    • Risk Disclosure: [disclosure requirements]
-    • Reporting: [reporting obligations]
+    • Framework: {{regulatory framework}}
+    • Documentation: {{documentation level}}
+    • Compliance: {{compliance requirements}}
+    • Risk Disclosure: {{disclosure requirements}}
+    • Reporting: {{reporting obligations}}
     
     Ready to save this regulatory framework and move to Go-Live planning? (Yes/Revise)"
     
