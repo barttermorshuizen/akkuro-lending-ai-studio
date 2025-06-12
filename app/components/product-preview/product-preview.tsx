@@ -117,7 +117,7 @@ export default function ProductPreview() {
                   key={index}
                 >
                   <div>
-                    {check.productParamDescription} {check.expectedRange}
+                    {check.productParamDescription} ({check.expectedRange})
                   </div>
                   <div className="text-right">
                     {check.isCompliant ? (
