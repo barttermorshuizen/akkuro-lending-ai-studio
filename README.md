@@ -30,29 +30,28 @@ For comprehensive information about developing, configuring, and maintaining thi
   - Project structure and core components
   - Services, APIs, and state management
   - Development workflow and best practices
-  
 - **[API Documentation](./API.md)** - Complete API reference
   - OpenAI integration endpoints
   - Product management APIs
   - File operations and vector stores
   - Error handling and rate limits
-  
 - **[Component Documentation](./COMPONENTS.md)** - UI architecture guide
   - Component hierarchy and design principles
   - Core components (Chat, Voice, Tools)
   - UI components and screen components
   - State integration and testing
-  
 - **[Configuration Guide](./CONFIGURATION.md)** - Environment and setup
   - Environment variables and API keys
   - OpenAI and Google Sheets configuration
   - Development and production setup
-  - Docker configuration and security
-  
+  - Docker configuration
 - **[Deployment Guide](./DEPLOYMENT.md)** - Production deployment
   - Antagonist hosting deployment steps
   - Environment configuration
   - Process management and troubleshooting
+- **[Error Handling](./ERROR_HANDLING.md)** -
+  - Possible unexpected AI behaviors
+  - How to workaround
 
 ### 🚀 Quick Start Links
 

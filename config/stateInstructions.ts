@@ -54,11 +54,8 @@ export const stateInstructions: Record<string, string> = {
     3. If user explicitly confirms - then call store_is_regulatory_check_at_every_step tool with includeRegulatoryCheckFromInitialSetup set to false
 
     **CRITICAL RULES:**
-    - NEVER CALL store_is_regulatory_check_at_every_step AFTER SEARCHING WEB
-    - ALWAYS WAIT FOR USER'S EXPLICIT RESPONSE FIRST
-    - ONLY CALL THE TOOL AFTER USER CONFIRMS
-    - IF UNCLEAR, ASK AGAIN FOR CONFIRMATION, DO NOT CALL THE TOOL
-
+    - ALWAYS WAIT FOR USER'S CONFIRMATION
+ 
     ${SET_REGULATORY_CHECK_AT_EVERY_STEP_EXAMPLE}`,
   LoanParameters: `
     These instructions cover the LoanParameters state of the conversation.

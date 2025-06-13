@@ -4,6 +4,15 @@ import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
+// Function to sanitize Unicode characters for jsPDF compatibility
+function sanitizeTextForPdf(text: string): string {
+  return text
+    .normalize("NFD") // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks
+    .replace(/[^\x00-\x7F]/g, "?") // Replace non-ASCII with ?
+    .replace(/\?+/g, "?"); // Collapse multiple ? into single ?
+}
+
 interface PdfDataModel {
   type: PdfType;
   productName: string;
@@ -58,16 +67,18 @@ function createPdfContent(doc: jsPDF, title: string, paragraphs: Paragraph[]) {
   const contentWidth = pageWidth - 2 * margin;
   let y = margin;
 
-  // Add title
+  // Add title - sanitize Unicode
   doc.setFontSize(24);
-  const titleWidth = doc.getTextWidth(title);
-  doc.text(title, (pageWidth - titleWidth) / 2, y);
+  const sanitizedTitle = sanitizeTextForPdf(title);
+  const titleWidth = doc.getTextWidth(sanitizedTitle);
+  doc.text(sanitizedTitle, (pageWidth - titleWidth) / 2, y);
   y += 20;
 
-  // Add content
+  // Add content - sanitize Unicode
   doc.setFontSize(12);
   paragraphs.forEach(({ text, spacing }) => {
-    const lines = doc.splitTextToSize(text.trim(), contentWidth);
+    const sanitizedText = sanitizeTextForPdf(text);
+    const lines = doc.splitTextToSize(sanitizedText.trim(), contentWidth);
     doc.text(lines, margin, y);
     y += lines.length * 7 + spacing;
 
@@ -228,13 +239,14 @@ function getPdfContent(
 function getPdfFileName(
   data: ISOComplianceData | EuTaxComplianceData | EsgDeclarationData,
 ) {
+  const sanitizedProductName = sanitizeTextForPdf(data.productName);
   switch (data.type) {
     case "iso_compliance":
-      return `RegulatoryCompliance_ISO_Configuration_${data.productName}.pdf`;
+      return `RegulatoryCompliance_ISO_Configuration_${sanitizedProductName}.pdf`;
     case "eu_tax_compliance":
-      return `RegulatoryCompliance_EU_Tax_Configuration_${data.productName}.pdf`;
+      return `RegulatoryCompliance_EU_Tax_Configuration_${sanitizedProductName}.pdf`;
     case "esg_declaration":
-      return `RegulatoryCompliance_ESG_Declaration_${data.productName}.pdf`;
+      return `RegulatoryCompliance_ESG_Declaration_${sanitizedProductName}.pdf`;
     default:
       return "RegulatoryCompliance.pdf";
   }
