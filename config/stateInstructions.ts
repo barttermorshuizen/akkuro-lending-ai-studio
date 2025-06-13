@@ -9,7 +9,7 @@ import { COMPLIANCE_INSTRUCTIONS } from "./instruction/global";
 import { VALIDATION_INSTRUCTIONS } from "./instruction/validation";
 
 const FORMAT_OUTPUT_ITEM_TEXT =
-  "ALWAYS return one complete answer in output_item contains web_search_call result and text response, and then stop.";
+  "*IMPORTANT: ALWAYS return ONLY ONE complete answer in output_item contains web_search_call result and text response, and then stop.*";
 
 export const stateInstructions: Record<string, string> = {
   InitialSetup: `
