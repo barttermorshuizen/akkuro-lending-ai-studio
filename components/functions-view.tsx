@@ -1,8 +1,8 @@
 "use client";
 
-import { toolsList } from "@/config/tools-list";
+import { toolsList, toolsListCompatableCheck } from "@/config/tools-list";
+import { useRegulatoryCheckStore } from "@/stores/useRegulatoryCheck";
 import { Code } from "lucide-react";
-import React from "react";
 
 type ToolParameter = {
   type: string;
@@ -27,9 +27,13 @@ const getToolArgs = (parameters: {
 };
 
 export default function FunctionsView() {
+  const { includeRegulatoryCheckFromInitialSetup } = useRegulatoryCheckStore();
+  const tools = includeRegulatoryCheckFromInitialSetup
+    ? toolsListCompatableCheck
+    : toolsList;
   return (
     <div className="flex flex-col space-y-4">
-      {toolsList.map((tool) => (
+      {tools.map((tool) => (
         <div key={tool.name} className="flex items-start gap-2">
           <div className="bg-blue-100 text-blue-500 rounded-md p-1">
             <Code size={16} />
