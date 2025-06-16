@@ -1,6 +1,6 @@
-import ContextPanel from "@/components/tools-panel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import ContextPanel from "../../components/tools-panel";
 
 export default function ToolsPanel() {
   const [isCollapsed, setIsCollapsed] = useState(false);
